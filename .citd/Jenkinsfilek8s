@@ -1,0 +1,3 @@
+@Library('mpae_shared_pipeline') _
+
+invokePipeline()
