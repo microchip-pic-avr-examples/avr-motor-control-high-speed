@@ -161,10 +161,12 @@ If the MPPB and the Adaptor boards are not used, the user can integrate the AVR 
 <br> Because this demo counts on capturing the BEMF using a hardware capture mechanism of a timer, the captured signals need filtering to remove false zero-cross detection. The easiest method to do this is by using a RC low-pass filter. The MPPB board has placeholder pads for the capacitors that need to be added. The capacitor for virtual neutral point is already in place. The capacitor values for phases A, B and C must have the values of 3.3 nF (three times smaller than the one from virtual neutral, which has 10 nF). With these values for capacitors the resulted RC filters will add a delay of 30 us to zero-cross detection.
 
 <h3> Capacitors location marked with green rectangles </h3>
-<br><img src="images/rc_caps_add.png">
+
+<br><br><img src="images/rc_caps_add.png">
 
 <h3> Capacitors location zoomed in</h3>
-<br><img src="images/hardware_rc_zoomed.png">
+
+<br><br><img src="images/hardware_rc_zoomed.png">
 
 ### Predefined Config Settings
 
