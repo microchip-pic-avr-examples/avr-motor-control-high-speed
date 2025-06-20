@@ -4,8 +4,8 @@
     "content": {
         "metaDataVersion": "1.3.0",
         "name": "com.microchip.mcu8.mplabx.project.avr-motor-control-high-speed",
-        "version": " ",
-        "displayName": "",
+        "version": "1.0.0",
+        "displayName": "Motor Control High Speed With AVR® MCUs",
         "projectName": "avr-motor-control-high-speed",
         "shortDescription": "Demo application for a simplified trapezoidal high speed motor control that keeps stability at high count of electrical rotations per minute (> 150 000 Electrical RPM ). For this demo avr16eb32, avr128da48 and atmega4809 platforms are tested.",
         "ide": {
@@ -19,12 +19,12 @@
             }
         ],
         "dfp": {
-            "name": "",
-            "semverRange": ""
+            "name": "AVR-Ex_DFP, AVR-Dx_DFP, ATmega_DFP",
+            "semverRange": "^2.11.221, ^2.7.321, ^3.4.282"
         },
         "configurator": {
-            "name": "",
-            "semverRange": ""
+            "name": "MCC",
+            "semverRange": ">=5.8.2"
         },
         "device": {
             "metaDataVersion": "1.0.0",
@@ -32,13 +32,27 @@
             "content": {
                 "metaDataVersion": "1.0.0",
                 "category": "com.microchip.device",
-                "name": "AVR16EB32, AVR128DA48, ATmega4809",
+                "name": "AVR16EB32, AVR128DA48, ATMEGA4809",
                 "versionRange": "*"
             }
         },
         "author": "Teodor Lina",
-        "peripherals": [],
-        "keywords": [],
+        "peripherals": [
+                       "TCE",
+                       "WEX",
+                       "AC",
+                       "ADC",
+                       "EVSYS",
+                       "TCB",
+                       "TCA"
+        ],
+        "keywords": [
+                    "BLDC",
+                    "PMSM",
+                    "Motor Control PWM",
+                    "Signal Generation",
+                    "Motor Control"
+        ],
         "additionalData": {
             "longDescription": {
                 "metaDataVersion": "1.0.0",

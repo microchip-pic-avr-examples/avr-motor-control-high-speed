@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>com.microchip.mplab.nbide.embedded.makeproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/make-project/1">
+            <name>motor_demo_eb</name>
+            <creation-uuid>8c11b0ee-6741-413d-a7e6-84af3d90e338</creation-uuid>
+            <make-project-type>0</make-project-type>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
+            <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>../common_files</sourceRootElem>
+                <sourceRootElem>../common_files/motor</sourceRootElem>
+                <sourceRootElem>../common_files/utils</sourceRootElem>
+                <sourceRootElem>.</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>free</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
+        </data>
+    </configuration>
+</project>
