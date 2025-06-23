@@ -555,4 +555,3 @@ DRIVE AL, BL and CL are general purpose input/output (GPIO) pins, that change th
 ## Summary
 
 <br>This project provides support for spinning a BLDC/PMSM motor using Trapezoidal Drive method and feedback from BEMF ZCD to achieve motor synchronization in an Open Loop configuration. The control algorithm is fairly simple and robust and it can be implemented on a variety of low end MCUs that have a few timer capabilities, an analog comparator and an ADC.
-
