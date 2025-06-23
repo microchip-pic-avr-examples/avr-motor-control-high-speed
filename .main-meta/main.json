@@ -19,8 +19,8 @@
             }
         ],
         "dfp": {
-            "name": "AVR-Ex_DFP, AVR-Dx_DFP, ATmega_DFP",
-            "semverRange": "^2.11.221, ^2.7.321, ^3.4.282"
+            "name": "AVR-Ex_DFP",
+            "semverRange": "^2.11.221"
         },
         "configurator": {
             "name": "MCC",
@@ -32,7 +32,7 @@
             "content": {
                 "metaDataVersion": "1.0.0",
                 "category": "com.microchip.device",
-                "name": "AVR16EB32, AVR128DA48, ATMEGA4809",
+                "name": "AVR16EB32",
                 "versionRange": "*"
             }
         },
