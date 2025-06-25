@@ -2,7 +2,7 @@
 
 <h2> Table of Contents </h2>
 
-- [Motor Control With AVR®](#motor-control-with-avr)
+- [Motor Control With AVR®](#motor-control-with-avr®)
 - [Release Notes](#release-notes)
 - [Related Documentation](#related-documentation)
 - [Software Used](#software-used)
@@ -15,7 +15,7 @@
 - [Application Usage](#application-usage)
   - [Let's Spin the Motor](#lets-spin-the-motor)
   - [Tunning Guide](#tunning-guide)
-  - [Programming the AVR®](#programming-the-avr)
+  - [Programming the AVR®](#programming-the-avr®)
   - [Console Interface](#console-interface)
 - [Software Description](#software-description)
   - [Software Organization in Folders and Files](#software-organization-in-folders-and-files)
@@ -94,8 +94,8 @@ More details and code examples on the AVR16EB32, AVR128DA48 and ATmega4809 can b
 - [AVR<sup>®</sup> ATmega Curiosity Nano](https://www.microchip.com/en-us/development-tool/DM320115)
 - [Multi-Phase Power Board (MPPB)](https://www.microchip.com/en-us/development-tool/EV35Z86A)
 - [AVR EB Curiosity Nano Adaptor to MPPB](https://www.microchip.com/en-us/development-tool/EV88N31A)
-- [AVR DA Curiosity Nano Adaptor to MPPB](#cnano---mppb-pin-mapping), made with wires
-- [AVR ATmega Curiosity Nano Adaptor to MPPB](#cnano---mppb-pin-mapping), made with wires
+- [AVR DA Curiosity Nano Adaptor to MPPB](#curiosity-nano---mppb-pin-mapping), made with wires
+- [AVR ATmega Curiosity Nano Adaptor to MPPB](#curiosity-nano---mppb-pin-mapping), made with wires
 - BLDC Motor (Used in this demo for testing the algorithm: ACT42BLF01, ACT57BLF02, SZSPEED 2207 KV 2500, 130K RPM 12V low cost hair-dryer motor)
 - A Voltage power supply (6-55V and 10A limit, depending on the motor used)
 
