@@ -6,6 +6,9 @@
 
 #include "mcc_generated_files/system/system.h"
 
+#define __CPU_STRING__                  "ATmega4809"
+#define DEBUG_BUFF_SIZE                 100         /* This has to be an even number */
+
 /* BEMF comparator pins */
 #define CMP_MUX_A    AC_MUXPOS_PIN0_gc // PD2
 #define CMP_MUX_B    AC_MUXPOS_PIN1_gc // PD4
@@ -76,17 +79,24 @@ static void AC0_Invert(bool config){if(config) AC0.MUXCTRLA |=  AC_INVERT_bm; el
 #define POT_ADC_PIN             ADC_MUXPOS_AIN10_gc // PE2
 
 /* ADC APIs */
-#define ADC_CONVERSION_START    ADC0_ConversionStart
 #define ADC_MUX_SET             ADC0_ChannelSelect
-#define ADC_IS_DONE             ADC0_IsConversionDone
+#define ADC_CONV_START          ADC0_ConversionStart
 #define ADC_RESULT_GET          ADC0_ConversionResultGet
 #define ADC_RESOLUTION_GET      ADC0_ResolutionGet
-#define ADC_CB_REGISTER         ADC0_ConversionDoneCallbackRegister
+#define ADC_CB_REGISTER         TCA0_OverflowCallbackRegister
+#define ADC_NO_CONV_PROGRESS    ADC0_IsConversionDone
 
 #define System_Reset_Command    RSTCTRL_reset
 
 /* Button polarity */
 #define BUTTON_ACTIVE           0
+
+/* PWM Input capture */
+#define PWM_IN_PIN_REGISTER     PWM_IN_SetInterruptHandler
+#define PWM_IN_PIN_READ         PWM_IN_GetValue
+#define PWM_IN_TMR_REGISTER     TCB2_CaptureCallbackRegister
+#define PWM_IN_TMR_CLEAR()      TCB2_CounterSet(0)
+#define PWM_IN_TMR_READ         TCB2_CounterGet
 
 
 #endif /* MCC_MAPPING_H */

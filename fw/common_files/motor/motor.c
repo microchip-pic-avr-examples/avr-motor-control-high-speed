@@ -8,7 +8,8 @@
 /*** internal definitions ***/
 /****************************/
 #define U16_TSECT_OFF              ((uint16_t)(-1))
-#define MAX_AMP_GET                PWM_PERIOD
+#define MAX_AMP_GET                ((int24_t)(PWM_PERIOD/1))
+#define MIN_AMP_GET                ((int24_t)(0))
 
 #define DRIVE_OFF    (0)
 #define DRIVE_ALIGN  (DRIVE_BH | DRIVE_AL | DRIVE_CL)
@@ -46,7 +47,7 @@ static volatile bool status_running, status_amp_en;
 static volatile motor_status_t status_events;
 
 static volatile uint8_t  position;
-static volatile uint16_t actual_amplitude, target_amplitude, ramped_amplitude;
+static volatile uint16_t actual_amplitude, target_amplitude;
 static volatile uint16_t timerPeriod;
 static volatile uint16_t integrator;
 
@@ -55,21 +56,79 @@ static volatile uint16_t integrator;
 /***** private functions ****/
 /****************************/
 
+static void __AmpRamp(void)
+{
+    static uint16_t cnt = 0;
+    cnt++;
+    if(cnt == MOTOR_AMPRAMP_STEP_INTERVAL)
+    {
+        cnt = 0;
+        if(actual_amplitude > target_amplitude)
+        {
+            actual_amplitude --;
+        }
+        else if(actual_amplitude < target_amplitude)
+        {
+            actual_amplitude ++;
+        }
+    }
+}
+
 /* data shared across __Speed_* functions only */
-static volatile uint16_t speed_base, speed_counter, measured_speed;
+static volatile uint16_t speed_base, speed_counter, measured_speed, target_speed;
 static inline void __Speed_Clear(void)
 {
     speed_counter = 0;
     speed_base = 0;
 }
 
-static inline void __Speed_Base(void)
+static inline int16_t FXP_Multiply(fixp_t factor, int16_t data)
 {
-    speed_base++; if(speed_base == SPEED_MEASUREMENT_BASE)
+    int32_t data32 = (int32_t)data * factor;
+    data32 >>= 15;
+    return (int16_t)data32;
+}
+
+/* parameter: 'false' - normal run , 'true' - first run */
+static void __Speed_Control(bool state)
+{
+    static uint16_t integrator = 0;
+    
+    if(state == true)
+    {
+        integrator = actual_amplitude;
+        target_speed = REGULATOR_MIN_SPEED/SPEED_MEASUREMENT_CONSTANT;
+    }
+    
+    if((MOTOR_SPEED_REGULATOR_EN == true) && (status_amp_en))
+    {
+        int16_t Ki_err, Kp_err, err;
+        int24_t tmp;
+        tmp = (int24_t)target_speed - (int24_t)measured_speed;
+        err = (int16_t)SATURATE(tmp, -32000, 32000);
+
+        Ki_err = FXP_Multiply(FLOAT_TO_FIXP(REGULATOR_PI_KI), err);
+        Kp_err = FXP_Multiply(FLOAT_TO_FIXP(REGULATOR_PI_KP), err);
+        
+        tmp = (int24_t)Ki_err + (int24_t)integrator;
+        integrator = (uint16_t)SATURATE(tmp, MIN_AMP_GET, MAX_AMP_GET);
+        
+        tmp = (int24_t)Kp_err + (int24_t)integrator;
+        actual_amplitude = (uint16_t)SATURATE(tmp, MIN_AMP_GET, MAX_AMP_GET);
+    }
+}
+
+/* returns 'true' if a new result is available after speed measurement */
+static inline bool __Speed_Base(void)
+{
+    speed_base++;
+    if(speed_base == SPEED_MEASUREMENT_BASE)
     {
         measured_speed = speed_counter;
         __Speed_Clear();
+        return true;
     }
+    else return false;
 }
 
 static inline void __Speed_Count(void)
@@ -113,7 +172,6 @@ static void __ShutOff(void)
         status_amp_en = 0;
         status_running = 0;
         actual_amplitude = 0;
-        ramped_amplitude = 0;
         position = 1;
         __Speed_Reset();
         SECTOR_TIMER_STOP();
@@ -121,34 +179,16 @@ static void __ShutOff(void)
     }
 }
 
-static void __AmpRamp(void)
-{
-    if(status_running == 1)
-    {
-        static uint16_t cnt = 0;
-        cnt++;
-        if(cnt == MOTOR_AMPRAMP_STEP_INTERVAL)
-        {
-            cnt = 0;
-            if(actual_amplitude > target_amplitude)
-            {
-                actual_amplitude --;
-            }
-            else if(actual_amplitude < target_amplitude)
-            {
-                actual_amplitude ++;
-            }
-        }
-    }
-}
-
 static void  __Motor_StallHandler(void)
 {
-    if(status_running == 0)
+    if((status_running == 0) || (STALL_DETECTION_DISABLED == true))
         return;  /* motor already off, nothing to do */
     __ShutOff();
     status_events |= MOTOR_EVENT_STALL;
 }
+
+/* x is a constant between 0 .... 30 degrees */
+static inline uint16_t __Phase_Advance(float x, uint16_t y)    { split24_t ph; ph.W = (uint24_t)(256.0 * (x) / 60.0) * (y); return ph.H; }
 
 static void  __Sector_Changer(void)
 {
@@ -169,8 +209,11 @@ static void  __Sector_Changer(void)
         if(capValue >= limitValue)
         {
             stall_counter++;
-            if(stall_counter == STALL_THRS)
+            if(stall_counter > STALL_DETECTION_THRESHOLD)
+            {
+                timerPeriod = U16_TSECT_OFF;
                 __Motor_StallHandler();
+            }
         }
         else if(stall_counter > 0)
         {
@@ -179,16 +222,23 @@ static void  __Sector_Changer(void)
         uint16_t setValue;
         int24_t deltaValue;
         uint24_t tmp;
-        setValue = (timerPeriod >> 1) + (timerPeriod >> 3);
+        setValue = (timerPeriod >> 1);
+        setValue += __Phase_Advance(MOTOR_PHASE_ADVANCE, timerPeriod);
         deltaValue = (int24_t)capValue - (int24_t)setValue;
+
         tmp = (uint24_t)integrator + (deltaValue >> 8);
         if(tmp > 65535u) integrator = 65535;
         else             integrator = tmp;
+
         tmp = (uint24_t)integrator + (deltaValue >> 2);
         if(tmp > 65535u) timerPeriod = 65535;
         else             timerPeriod = tmp;
+
         if((timerPeriod < CONVERT_ERPM_TO_STMR(MOTOR_MAXIMUM_ERPM)))
+        {
+            timerPeriod = U16_TSECT_OFF;
             __Motor_StallHandler();
+        }
         if(MOTOR_FORCED == false)
             SECTOR_TIMER_PERIOD_SET(timerPeriod);
 
@@ -258,16 +308,19 @@ motor_status_t Motor_StatusGet(void)
 }
 
 
-uint16_t Motor_ErpmGet(void)
+uint32_t Motor_ErpmGet(void)
 {
-    return __Speed_Get();
+    return SPEED_MEASUREMENT_CONSTANT * (uint32_t)__Speed_Get();
 }
 
 
-void Motor_AmplitudeSet(uint16_t amp)
+void Motor_CommandSet(uint16_t ref)
 {
     if(status_amp_en)
-        ATOMIC_COPY(target_amplitude, amp);
+    {
+        if(MOTOR_SPEED_REGULATOR_EN == false) ATOMIC_COPY(target_amplitude, ref);
+        else                                  ATOMIC_COPY(target_speed, ref);
+    }
 }
 
 
@@ -303,6 +356,10 @@ void Motor_Start(uint16_t vbus_adc)
     {
         PRECISE_DELAY_MS(MOTOR_STARTUP_TIME);
         status_amp_en = 1;
+        if(MOTOR_SPEED_REGULATOR_EN == true)
+        {
+            __Speed_Control(true); /* initialize integrator */
+        }
     }
 }
 
@@ -343,6 +400,18 @@ uint16_t Motor_MaxAmpGet(void)
 void  Motor_TimeTick(void)
 {
     if(status_running == 1)
-        __Speed_Base();
-    __AmpRamp();
+    {
+        bool new_speed = __Speed_Base();
+        if(status_amp_en)
+        {
+            if(MOTOR_SPEED_REGULATOR_EN == true)
+            {
+                if(new_speed) __Speed_Control(false);
+            }
+            else
+            {
+                __AmpRamp();
+            }
+        }
+    }
 }

@@ -50,6 +50,7 @@ extern "C" {
 #include "../timer/rtc.h"
 #include "../timer/tcb0.h"
 #include "../timer/tcb1.h"
+#include "../timer/tcf0.h"
 #include "../uart/usart0.h"
 #include "../vref/vref.h"
 #include "../system/interrupt.h"

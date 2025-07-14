@@ -34,23 +34,31 @@ static inline void             AdataSimpleWrite(analog_id_t id, adc_result_t dat
 
 static void _Analog_Handler(void)
 {
-    uint16_t adc = ADC_RESULT_GET();
-
-    if(ADC_IIR_FILTER == true)
-        AdataFilterWrite(index, adc);
-    else
-        AdataSimpleWrite(index, adc);
-    adc = AdataRead(index);
-
-    if(emergency[index].handler != NULL)
+    static uint8_t next_mux = VBUS_ADC_PIN, p_index = 0, pp_index = 0;
+    if(ADC_NO_CONV_PROGRESS())
     {
-        if(adc > emergency[index].threshold)
-            emergency[index].handler(emergency[index].event);
-    }
+        uint16_t adc = ADC_RESULT_GET();
+        ADC_MUX_SET(next_mux);
+        ADC_CONV_START();
+        
+        pp_index = p_index;
+        p_index = index;
+        sequencer_idx++; if(sequencer_idx == ANALOG_SEQUENCER_MAX) sequencer_idx = 0;
+        index = analog_sequencer[sequencer_idx];
+        next_mux = pins_list[index];
 
-    sequencer_idx++; if(sequencer_idx == ANALOG_SEQUENCER_MAX) sequencer_idx = 0;
-    index = analog_sequencer[sequencer_idx];
-    ADC_MUX_SET(pins_list[index]);
+        if(ADC_IIR_FILTER == true)
+            AdataFilterWrite(pp_index, adc);
+        else
+            AdataSimpleWrite(pp_index, adc);
+        adc = AdataRead(pp_index);
+
+        if(emergency[pp_index].handler != NULL)
+        {
+            if(adc > emergency[pp_index].threshold)
+                emergency[pp_index].handler(emergency[pp_index].event);
+        } 
+    }
 }
 
 /********************************/
@@ -61,18 +69,9 @@ void Analog_Initialize(void)
 {
     memset(analog_results, 0, sizeof(analog_results));
     memset(emergency, 0, sizeof(emergency));
-    pins_list[ID_CRT]     = CRT_P_ADC_PIN;
-    pins_list[ID_VBUS]    = VBUS_ADC_PIN;
-    if (VIRTUAL_POTENTIOMETER != 0.00)
-    {
-        AdataInit(ID_POT, PERCENT_TO_ADC(VIRTUAL_POTENTIOMETER));
-        analog_sequencer[ANALOG_SEQUENCER_MAX - 1] = ID_VBUS;
-    }
-    else
-    {
-        pins_list[ID_POT] = POT_ADC_PIN;
-    }
-
+    pins_list[ID_CRT]  = CRT_P_ADC_PIN;
+    pins_list[ID_VBUS] = VBUS_ADC_PIN;
+    pins_list[ID_POT]  = POT_ADC_PIN;
     index = analog_sequencer[0];
     sequencer_idx = 0;
     ADC_CB_REGISTER(_Analog_Handler);

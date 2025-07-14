@@ -61,11 +61,11 @@ void ADC0_Initialize(void)
     ADC0.MUXNEG = (ADC_MUXNEG_GND_gc);               /* MUXNEG (GND) */
     ADC0.COMMAND = (0 << ADC_STCONV_bp)               /* STCONV (disabled) */
 				|(0 << ADC_SPCONV_bp);              /* SPCONV (disabled) */
-    ADC0.EVCTRL = (1 << ADC_STARTEI_bp);             /* STARTEI (enabled) */
+    ADC0.EVCTRL = (0 << ADC_STARTEI_bp);             /* STARTEI (disabled) */
     ADC0.DBGCTRL = (0 << ADC_DBGRUN_bp);              /* DBGRUN (disabled) */
     ADC0.WINHT = 0x0;                               /* WINHT (0x0) */
     ADC0.WINLT = 0x0;                               /* WINLT (0x0) */
-    ADC0.INTCTRL = (1 << ADC_RESRDY_bp)               /* RESRDY (enabled) */
+    ADC0.INTCTRL = (0 << ADC_RESRDY_bp)               /* RESRDY (disabled) */
 				|(0 << ADC_WCMP_bp);                /* WCMP (disabled) */
 
     ADC0.CTRLA = (1 << ADC_ENABLE_bp)               /* ENABLE (enabled) */
@@ -113,16 +113,6 @@ void ADC0_ChannelSelect(adc_channel_t channel)
 void ADC0_ConversionStart(void)
 {
     ADC0.COMMAND |= ADC_STCONV_bm;
-}
-
-void ADC0_ConversionDoneInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_RESRDY_bm;
-}
-
-void ADC0_ConversionDoneInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_RESRDY_bm;
 }
 
 bool ADC0_IsConversionDone(void)
@@ -202,16 +192,6 @@ void ADC0_ThresholdModeSet(adc_threshold_mode_t thresholdMode)
     ADC0.CTRLE = thresholdMode;
 }
 
-void ADC0_ThresholdInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_WCMP_bm;
-}
-
-void ADC0_ThresholdInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_WCMP_bm;
-}
-
 adc_accumulate_t ADC0_AccumulatedResultGet(void)
 {
     return (adc_accumulate_t)(ADC0.RES);
@@ -262,12 +242,10 @@ void ADC0_ThresholdInterruptFlagClear(void)
     ADC0.INTFLAGS = ADC_WCMP_bm;
 }
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-/* cppcheck-suppress misra-c2012-8.6 */
-ISR(ADC0_RESRDY_vect)
+void ADC0_Tasks(void)
 {
+    if (0U != (ADC0.INTFLAGS & ADC_RESRDY_bm))
+    {
     // Clear result ready interrupt flag
     ADC0.INTFLAGS = ADC_RESRDY_bm;
 
@@ -281,11 +259,7 @@ ISR(ADC0_RESRDY_vect)
     }
 }
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-/* cppcheck-suppress misra-c2012-8.6 */
-ISR(ADC0_WCMP_vect)
+    if (0U != (ADC0.INTFLAGS & ADC_WCMP_bm))
 {
     // Clear window comparator interrupt flag
     ADC0.INTFLAGS = ADC_WCMP_bm;
@@ -298,4 +272,5 @@ ISR(ADC0_WCMP_vect)
     {
         // Do nothing
     }
+}
 }

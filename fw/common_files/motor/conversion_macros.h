@@ -93,14 +93,27 @@ typedef union
 	uint32_t W32;
 } split32_t;
 
-#define MAX(A,B)                           (((A)>(B))?(A):(B))
-#define MIN(A,B)                           (((A)<(B))?(A):(B))
-#define SCALE(VAL, IN_MAX, OUT_MAX)        ((uint32_t)( (VAL) * (uint32_t)(OUT_MAX) / (uint32_t)(IN_MAX) + 0.5))
+typedef uint16_t fixp_t;
+
+#define FLOAT_TO_FIXP(FLOAT)               (fixp_t)((FLOAT)*32768.0 + 0.5)
+#define FIXP_TO_FLOAT(FIXP)                ((float)(FIXP)/32768.0)
+
+
+#define MAXIMUM(A,B)                       (((A)>(B))?(A):(B))
+#define MINIMUM(A,B)                       (((A)<(B))?(A):(B))
+#define SATURATE(X, MIN, MAX)              (MINIMUM(MAX,MAXIMUM(MIN,X)))
+
+/* 
+ * {return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;}
+ */
+#define SCALE_ZERO(VAL,         IN_MAX,          OUT_MAX)     ((uint32_t)(VAL) * (uint32_t)(OUT_MAX) / (uint32_t)(IN_MAX))
+#define SCALE_FULL(VAL, IN_MIN, IN_MAX, OUT_MIN, OUT_MAX)    (((uint32_t)(VAL) - (uint32_t)(IN_MIN)) * ((uint32_t)(OUT_MAX) - (uint32_t)(OUT_MIN)) / ((uint32_t)(IN_MAX) - (uint32_t)(IN_MIN)) + (uint32_t)OUT_MIN)
+
 
 #define ATOMIC_COPY(DST_VAR, SRC_VAR)      do{ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {DST_VAR = SRC_VAR;}}while(0)
 
-#define SPEED_MEASUREMENT_CONSTANT         (16UL)
-#define SPEED_MEASUREMENT_BASE             (uint16_t)(10000000.0 / (SW_TIMER_PERIOD * SPEED_MEASUREMENT_CONSTANT))
+#define SPEED_MEASUREMENT_CONSTANT         (64)
+#define SPEED_MEASUREMENT_BASE             (uint16_t)(1000000.0 * 60.0 / (6.0 * SW_TIMER_PERIOD * SPEED_MEASUREMENT_CONSTANT)) /* 60 sec in a minute, 6 sectors per electrical rev, 1,000,000 us in a second */
 
 
 #endif	/* CONVERSION_MACROS_H */

@@ -50,11 +50,11 @@ static void (*DRIVE_H2_InterruptHandler)(void);
 static void (*DRIVE_L2_InterruptHandler)(void);
 static void (*RX0_InterruptHandler)(void);
 static void (*TX0_InterruptHandler)(void);
+static void (*PWM_IN_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
 static void (*DBG_0_InterruptHandler)(void);
 static void (*DBG_1_InterruptHandler)(void);
 static void (*DBG_2_InterruptHandler)(void);
-static void (*DBG_3_InterruptHandler)(void);
 static void (*LED_InterruptHandler)(void);
 
 void PIN_MANAGER_Initialize()
@@ -70,7 +70,7 @@ void PIN_MANAGER_Initialize()
     PORTA.DIR = 0xBF;
     PORTC.DIR = 0x2;
     PORTD.DIR = 0x0;
-    PORTF.DIR = 0x2F;
+    PORTF.DIR = 0x2E;
 
   /* PINxCTRL registers Initialization */
     PORTA.PIN0CTRL = 0x0;
@@ -97,7 +97,7 @@ void PIN_MANAGER_Initialize()
     PORTD.PIN5CTRL = 0x4;
     PORTD.PIN6CTRL = 0x4;
     PORTD.PIN7CTRL = 0x0;
-    PORTF.PIN0CTRL = 0x0;
+    PORTF.PIN0CTRL = 0x1;
     PORTF.PIN1CTRL = 0x0;
     PORTF.PIN2CTRL = 0x0;
     PORTF.PIN3CTRL = 0x0;
@@ -133,11 +133,11 @@ void PIN_MANAGER_Initialize()
     DRIVE_L2_SetInterruptHandler(DRIVE_L2_DefaultInterruptHandler);
     RX0_SetInterruptHandler(RX0_DefaultInterruptHandler);
     TX0_SetInterruptHandler(TX0_DefaultInterruptHandler);
+    PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
     DBG_0_SetInterruptHandler(DBG_0_DefaultInterruptHandler);
     DBG_1_SetInterruptHandler(DBG_1_DefaultInterruptHandler);
     DBG_2_SetInterruptHandler(DBG_2_DefaultInterruptHandler);
-    DBG_3_SetInterruptHandler(DBG_3_DefaultInterruptHandler);
     LED_SetInterruptHandler(LED_DefaultInterruptHandler);
 }
 
@@ -350,6 +350,19 @@ void TX0_DefaultInterruptHandler(void)
     // or set custom function using TX0_SetInterruptHandler()
 }
 /**
+  Allows selecting an interrupt handler for PWM_IN at application runtime
+*/
+void PWM_IN_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    PWM_IN_InterruptHandler = interruptHandler;
+}
+
+void PWM_IN_DefaultInterruptHandler(void)
+{
+    // add your PWM_IN interrupt custom code
+    // or set custom function using PWM_IN_SetInterruptHandler()
+}
+/**
   Allows selecting an interrupt handler for BUTTON at application runtime
 */
 void BUTTON_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -400,19 +413,6 @@ void DBG_2_DefaultInterruptHandler(void)
 {
     // add your DBG_2 interrupt custom code
     // or set custom function using DBG_2_SetInterruptHandler()
-}
-/**
-  Allows selecting an interrupt handler for DBG_3 at application runtime
-*/
-void DBG_3_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    DBG_3_InterruptHandler = interruptHandler;
-}
-
-void DBG_3_DefaultInterruptHandler(void)
-{
-    // add your DBG_3 interrupt custom code
-    // or set custom function using DBG_3_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for LED at application runtime
@@ -515,25 +515,25 @@ ISR(PORTF_PORT_vect)
     {
        VBUS_InterruptHandler(); 
     }
+    if(VPORTF.INTFLAGS & PORT_INT0_bm)
+    {
+       PWM_IN_InterruptHandler(); 
+    }
     if(VPORTF.INTFLAGS & PORT_INT6_bm)
     {
        BUTTON_InterruptHandler(); 
     }
-    if(VPORTF.INTFLAGS & PORT_INT0_bm)
+    if(VPORTF.INTFLAGS & PORT_INT1_bm)
     {
        DBG_0_InterruptHandler(); 
     }
-    if(VPORTF.INTFLAGS & PORT_INT1_bm)
+    if(VPORTF.INTFLAGS & PORT_INT2_bm)
     {
        DBG_1_InterruptHandler(); 
     }
-    if(VPORTF.INTFLAGS & PORT_INT2_bm)
-    {
-       DBG_2_InterruptHandler(); 
-    }
     if(VPORTF.INTFLAGS & PORT_INT3_bm)
     {
-       DBG_3_InterruptHandler(); 
+       DBG_2_InterruptHandler(); 
     }
     if(VPORTF.INTFLAGS & PORT_INT5_bm)
     {

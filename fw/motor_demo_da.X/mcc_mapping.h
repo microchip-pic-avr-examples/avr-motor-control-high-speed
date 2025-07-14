@@ -7,6 +7,9 @@
 #include "mcc_generated_files/system/system.h"
 #include "mcc_generated_files/reset/rstctrl.h"
 
+#define __CPU_STRING__                  "AVR128DA48"
+#define DEBUG_BUFF_SIZE                 1000        /* This has to be an even number */
+
 /* BEMF comparator pins */
 #define CMP_MUX_A    AC_MUXPOS_AINP3_gc // PD6
 #define CMP_MUX_B    AC_MUXPOS_AINP0_gc // PD2
@@ -29,7 +32,7 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define CURRENT_TRIP_LEVEL_SET              AC0_DACRefValueSet
 #define AC_REF_DAC_MAX                      255
 
-#define PWM_PERIOD                 0x133UL
+#define PWM_PERIOD                 307UL
 
 /* pins used for PWM/GPIO motor drive */
 #define DRIVE_LPORT                PORTB
@@ -75,17 +78,24 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define POT_ADC_PIN             ADC_MUXPOS_AIN1_gc  // PD1
 
 /* ADC APIs */
-#define ADC_CONVERSION_START    ADC0_ConversionStart
 #define ADC_MUX_SET             ADC0_ChannelSelect
-#define ADC_IS_DONE             ADC0_IsConversionDone
+#define ADC_CONV_START          ADC0_ConversionStart
 #define ADC_RESULT_GET          ADC0_ConversionResultGet
 #define ADC_RESOLUTION_GET      ADC0_ResolutionGet
-#define ADC_CB_REGISTER         ADC0_ConversionDoneCallbackRegister
+#define ADC_CB_REGISTER         TCA0_OverflowCallbackRegister
+#define ADC_NO_CONV_PROGRESS    ADC0_IsConversionDone
 
 #define System_Reset_Command    RSTCTRL_SoftwareReset
 
 /* Button polarity */
 #define BUTTON_ACTIVE           0
+
+/* PWM Input capture */
+#define PWM_IN_PIN_REGISTER     PWM_IN_SetInterruptHandler
+#define PWM_IN_PIN_READ         PWM_IN_GetValue
+#define PWM_IN_TMR_REGISTER     TCB2_OverflowCallbackRegister
+#define PWM_IN_TMR_CLEAR()      TCB2_CounterSet(0)
+#define PWM_IN_TMR_READ         TCB2_CounterGet
 
 
 #endif /* MCC_MAPPING_H */

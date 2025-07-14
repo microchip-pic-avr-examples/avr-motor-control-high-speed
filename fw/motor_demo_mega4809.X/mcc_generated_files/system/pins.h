@@ -304,6 +304,25 @@
 #define FAULT_INPUT_EnableInterruptForLowLevelSensing() do { PORTC.PIN7CTRL = (PORTC.PIN7CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PC7_SetInterruptHandler FAULT_INPUT_SetInterruptHandler
 
+//get/set PWM_IN aliases
+#define PWM_IN_SetHigh() do { PORTE_OUTSET = 0x8; } while(0)
+#define PWM_IN_SetLow() do { PORTE_OUTCLR = 0x8; } while(0)
+#define PWM_IN_Toggle() do { PORTE_OUTTGL = 0x8; } while(0)
+#define PWM_IN_GetValue() (VPORTE.IN & (0x1 << 3))
+#define PWM_IN_SetDigitalInput() do { PORTE_DIRCLR = 0x8; } while(0)
+#define PWM_IN_SetDigitalOutput() do { PORTE_DIRSET = 0x8; } while(0)
+#define PWM_IN_SetPullUp() do { PORTE_PIN3CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define PWM_IN_ResetPullUp() do { PORTE_PIN3CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define PWM_IN_SetInverted() do { PORTE_PIN3CTRL  |= PORT_INVEN_bm; } while(0)
+#define PWM_IN_ResetInverted() do { PORTE_PIN3CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define PWM_IN_DisableInterruptOnChange() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define PWM_IN_EnableInterruptForBothEdges() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define PWM_IN_EnableInterruptForRisingEdge() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define PWM_IN_EnableInterruptForFallingEdge() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define PWM_IN_DisableDigitalInputBuffer() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define PWM_IN_EnableInterruptForLowLevelSensing() do { PORTE.PIN3CTRL = (PORTE.PIN3CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PE3_SetInterruptHandler PWM_IN_SetInterruptHandler
+
 //get/set BUTTON aliases
 #define BUTTON_SetHigh() do { PORTF_OUTSET = 0x40; } while(0)
 #define BUTTON_SetLow() do { PORTF_OUTCLR = 0x40; } while(0)
@@ -776,6 +795,27 @@ void FAULT_INPUT_DefaultInterruptHandler(void);
  * @return none
  */
 void FAULT_INPUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for PWM_IN pin. 
+ *        This is a predefined interrupt handler to be used together with the PWM_IN_SetInterruptHandler() method.
+ *        This handler is called every time the PWM_IN ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void PWM_IN_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for PWM_IN pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for PWM_IN at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void PWM_IN_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 
 /**
  * @ingroup  pinsdriver

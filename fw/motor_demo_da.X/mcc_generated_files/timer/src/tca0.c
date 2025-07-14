@@ -89,7 +89,7 @@ void TCA0_Initialize(void)
     TCA0.SINGLE.INTCTRL = (0 << TCA_SINGLE_CMP0_bp)   // CMP0 disabled
         | (0 << TCA_SINGLE_CMP1_bp)   // CMP1 disabled
         | (0 << TCA_SINGLE_CMP2_bp)   // CMP2 disabled
-        | (0 << TCA_SINGLE_OVF_bp);  // OVF disabled
+        | (1 << TCA_SINGLE_OVF_bp);  // OVF enabled
 
     TCA0.SINGLE.INTFLAGS = (0 << TCA_SINGLE_CMP0_bp)   // CMP0 disabled
         | (0 << TCA_SINGLE_CMP1_bp)   // CMP1 disabled

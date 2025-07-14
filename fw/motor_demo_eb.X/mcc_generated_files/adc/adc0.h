@@ -315,102 +315,11 @@ void ADC0_InputViaPGADisable(void);
 
 /**
  * @ingroup adc0
- * @brief Sets the Result Ready Interrupt Enable (RESRDY) bit to `1`.
+ * @brief Implements the tasks routine for the polling implementations.
  * @param None.
  * @return None.
 */
-void ADC0_ResultReadyInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Result Ready Interrupt Enable (RESRDY) bit to `0`.
- * @param None.
- * @return None.
-*/
-void ADC0_ResultReadyInterruptDisable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Sample Ready Interrupt Enable (SAMPRDY) bit to `1`.
- * @param None.
- * @return None.
-*/
-void ADC0_ConversionDoneInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Sample Ready Interrupt Enable (SAMPRDY) bit to `0`.
- * @param None.
- * @return None.
-*/
-void ADC0_ConversionDoneInterruptDisable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Window Comparator Interrupt Enable (WCMP) bit to `1`.
- * @param None.
- * @return None.
-*/
-void ADC0_ThresholdInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Window Comparator Interrupt Enable (WCMP) bit to `0`.
- * @param None.
- * @return None.
-*/
-void ADC0_ThresholdInterruptDisable(void);
-
-// RESOVR
-/**
- * @ingroup adc0
- * @brief Sets the Result Overwrite Interrupt Enable (RESOVR) bit to `1`.
- * @param None.
- * @return None.
-*/
-void ADC0_ResultOverwriteInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Result Overwrite Interrupt Enable (RESOVR) bit to `0`.
- * @param None.
- * @return None.
-*/
-void ADC0_ResultOverwriteInterruptDisable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Sample Overwrite Interrupt Enable (SAMPOVR) bit to `1`.
- * @param None.
- * @return None.
-*/
-void ADC0_SampleOverwriteInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Sample Overwrite Interrupt Enable (SAMPOVR) bit to `0`.
- * @param None.
- * @return None.
-*/
-void ADC0_SampleOverwriteInterruptDisable(void);
-
-// TRIGOVR
-/**
- * @ingroup adc0
- * @brief Sets the Trigger Overrun Interrupt Enable (TRIGOVR) bit to `1`.
- * @param None.
- * @return None.
-*/
-void ADC0_TriggerOverrunInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Trigger Overrun Interrupt Enable (TRIGOVR) bit to `0`.
- * @param None.
- * @return None.
-*/
-void ADC0_TriggerOverrunInterruptDisable(void);
-
+void ADC0_Tasks(void);
 
 /**
   * @ingroup adc0

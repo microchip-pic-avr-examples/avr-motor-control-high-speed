@@ -44,8 +44,8 @@ int8_t CPUINT_Initialize()
     //LVL0PRI 0; 
     CPUINT.LVL0PRI = 0x0;
     
-    //LVL1VEC 25; 
-    CPUINT.LVL1VEC = 0x19;
+    //LVL1VEC 13; 
+    CPUINT.LVL1VEC = 0xD;
 
     ENABLE_INTERRUPTS(); 
         

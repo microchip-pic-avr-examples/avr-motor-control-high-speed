@@ -114,9 +114,9 @@ void SwTimer_Tick(void)
 }
 
 
-void         SwTimer_Delay(uint16_t ms)
+void         SwTimer_Delay(uint32_t ticks)
 {
-    while(ms)
+    while(ticks)
     {
         uint8_t ticks_local;
         while(ticks_count == 0);
@@ -124,10 +124,10 @@ void         SwTimer_Delay(uint16_t ms)
         ticks_local = ticks_count;
         ticks_count = 0;
 
-        if(ms > ticks_local)
-            ms -= ticks_local;
+        if(ticks > ticks_local)
+            ticks -= ticks_local;
         else
-            ms = 0;
+            ticks = 0;
         
         uint8_t i;
         for(i = 0; i < main_count; i++)

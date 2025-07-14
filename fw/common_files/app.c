@@ -28,6 +28,8 @@
 #include "button_led.h"
 #include "config.h"
 #include "mcc_mapping.h"
+#include "pwm_in.h"
+
 
 static volatile motor_status_t motor_state, motor_events;
 static volatile button_state_t button_state = BUTTON_IDLE;
@@ -38,24 +40,69 @@ static void PrintEndl(void)
     printf("\n\r");
 }
 
-
 static void Periodic_MainHandler1(void)
 {
-    uint32_t erpm  = SPEED_MEASUREMENT_CONSTANT * Motor_ErpmGet();
+    uint8_t ipwm = 0;
+    uint16_t pwmin_per = PWM_Input_PeriodGet();
+    if(pwmin_per !=0)
+    {
+        uint16_t pwmin_dcy = PWM_Input_DutyGet();
+        uint16_t pwmin_min, pwmin_max;
+        pwmin_min = (PWM_IN_MIN_DCY*pwmin_per/PWM_IN_PERIOD);
+        pwmin_max = (PWM_IN_MAX_DCY*pwmin_per/PWM_IN_PERIOD);
+        pwmin_dcy = SATURATE(pwmin_dcy, pwmin_min, pwmin_max);
+        ipwm = (uint8_t)SCALE_FULL(pwmin_dcy, pwmin_min, pwmin_max, 0, 100);
+    }
+    uint32_t erpm  = Motor_ErpmGet();
     uint16_t amp   = Motor_AmplitudeGet();
     uint8_t  pot   = ADC_TO_PERCENT(Analog_Get(ID_POT)) + 0.5;
     uint32_t vbus  = ADC_TO_VOLTAGE(Analog_Get(ID_VBUS));
     int16_t  crt   = ADC_TO_CURRENT(Analog_Get(ID_CRT));
     int16_t  ibus  = (int16_t)((int32_t)crt * (uint32_t)amp / (uint32_t)Motor_MaxAmpGet());
     char *mstate   = (motor_state == MOTOR_RUNNING)? "run":"off";
-
-    PrintEndl(); printf("Pot:%03u%% Ampl:%05u e-rpm:%06lu Vbus:%06lumV Ibus:%05dmA Imotor:%05dmA Motor:%s", pot, amp, erpm, vbus, ibus, crt, mstate);
+    PrintEndl(); printf("PwmIn:%03u%% Pot:%03u%% Ampl:%05u e-rpm:%06lu Vbus:%06lumV Ibus:%05dmA Imotor:%05dmA Motor:%s", ipwm, pot, amp, erpm, vbus, ibus, crt, mstate);
 }
 
 static void Periodic_MainHandler2(void)
 {
-    uint16_t pot = Analog_Get(ID_POT);
-    Motor_AmplitudeSet(SCALE(pot, Analog_MaxGet(), Motor_MaxAmpGet()));
+    if(MOTOR_SPEED_REGULATOR_EN == true)
+    {
+        uint32_t reference_speed;
+        uint16_t pwmin_per = PWM_Input_PeriodGet();
+        if(pwmin_per != 0)
+        {
+            uint16_t pwmin_dcy = PWM_Input_DutyGet();
+            uint16_t pwmin_min = (PWM_IN_MIN_DCY*pwmin_per/PWM_IN_PERIOD);
+            uint16_t pwmin_max = (PWM_IN_MAX_DCY*pwmin_per/PWM_IN_PERIOD);
+            pwmin_dcy = SATURATE(pwmin_dcy, pwmin_min, pwmin_max);
+            reference_speed = SCALE_FULL(pwmin_dcy, pwmin_min, pwmin_max, REGULATOR_MIN_SPEED, REGULATOR_MAX_SPEED);
+        }
+        else
+        {
+            uint16_t pot = Analog_Get(ID_POT);
+            reference_speed = SCALE_FULL(pot, 0, Analog_MaxGet(), REGULATOR_MIN_SPEED, REGULATOR_MAX_SPEED);
+        }
+        Motor_CommandSet(reference_speed/SPEED_MEASUREMENT_CONSTANT);
+    }
+    else
+    {
+        uint16_t reference_amp;
+        uint16_t pwmin_per = PWM_Input_PeriodGet();
+        if(pwmin_per != 0)
+        {
+            uint16_t pwmin_dcy = PWM_Input_DutyGet();
+            uint16_t pwmin_min = (PWM_IN_MIN_DCY*pwmin_per/PWM_IN_PERIOD);
+            uint16_t pwmin_max = (PWM_IN_MAX_DCY*pwmin_per/PWM_IN_PERIOD);
+            pwmin_dcy = SATURATE(pwmin_dcy, pwmin_min, pwmin_max);
+            reference_amp = SCALE_FULL(pwmin_dcy, pwmin_min, pwmin_max, 0, Motor_MaxAmpGet());
+        }
+        else
+        {
+            uint16_t pot = Analog_Get(ID_POT);
+            reference_amp = SCALE_FULL(pot, 0, Analog_MaxGet(), 0, Motor_MaxAmpGet());
+        }
+        Motor_CommandSet(reference_amp);
+    }
 }
 
 /* this handler is called on interrupt context every 1 ms */
@@ -84,14 +131,14 @@ static void Periodic_IntHandler(void)
 
 void app(void)
 {
-    const char *buildString = "\n\rThis build was compiled at " __DATE__ ", " __TIME__;
-    const char *boardString = "\n\rBoard Configuration: " __BOARD_STRING__;
-    const char *platformString = "\n\rMCU Configuration: " __PLATFORM_STRING__;
+    const char *buildString    = "\n\rThis build was compiled at " __DATE__ ", " __TIME__;
+    const char *platformString = "\n\rMCU Configuration: " __CPU_STRING__;
 
     swtimer_data_t tm1, tm2, ti;
     
     SW_TIMER_CB_REGISTER(SwTimer_Tick);
     Analog_Initialize();
+    PWM_Input_Initialize();
     PRECISE_DELAY_MS(3000);
 
     Motor_Initialize();
@@ -103,7 +150,7 @@ void app(void)
     Analog_EmergencyStop_Register(ID_VBUS, Motor_Fault, VOLTAGE_TO_ADC(ADC_VBUS_TRIP),    MOTOR_FAULT_OVERVOLTAGE);
     Analog_EmergencyStop_Register(ID_CRT,  Motor_Fault, CURRENT_TO_ADC(ADC_CURRENT_TRIP), MOTOR_FAULT_OVERCURRENT);
 
-    PrintEndl(); printf("%s%s%s", buildString, boardString, platformString);
+    PrintEndl(); printf("%s%s", buildString, platformString);
     PrintEndl(); printf("Motor Demo App Started");
     PrintEndl(); printf("Short-press button to start / stop motor");
     PrintEndl(); printf("Long-press button to restart the board any time");

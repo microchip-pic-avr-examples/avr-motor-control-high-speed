@@ -26,7 +26,7 @@ swtimer_id_t SwTimer_IntrAdd(swtimer_data_t *pData, uint16_t ms, swtimer_cb_t cb
 swtimer_id_t SwTimer_MainAdd(swtimer_data_t *pData, uint16_t ms, swtimer_cb_t cb);
 void         SwTimer_Start(swtimer_id_t id);
 void         SwTimer_Stop(swtimer_id_t id);
-void         SwTimer_Delay(uint16_t ms);
+void         SwTimer_Delay(uint32_t ms);
 
 #endif /*  SW_TIMER_H */
 

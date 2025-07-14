@@ -47,6 +47,7 @@ void SYSTEM_Initialize(void)
     TCB0_Initialize();
     TCB1_Initialize();
     TCE0_Initialize();
+    TCF0_Initialize();
     USART0_Initialize();
     VREF_Initialize();
     WEX0_Initialize();

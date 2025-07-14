@@ -48,6 +48,7 @@ static void (*BEMF_C_InterruptHandler)(void);
 static void (*VBUS_InterruptHandler)(void);
 static void (*POT_InterruptHandler)(void);
 static void (*FAULT_INPUT_InterruptHandler)(void);
+static void (*PWM_IN_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
 static void (*DRIVE_L0_InterruptHandler)(void);
 static void (*DRIVE_L1_InterruptHandler)(void);
@@ -113,7 +114,7 @@ void PIN_MANAGER_Initialize()
     PORTE.PIN0CTRL = 0x4;
     PORTE.PIN1CTRL = 0x0;
     PORTE.PIN2CTRL = 0x4;
-    PORTE.PIN3CTRL = 0x0;
+    PORTE.PIN3CTRL = 0x1;
     PORTE.PIN4CTRL = 0x0;
     PORTE.PIN5CTRL = 0x0;
     PORTE.PIN6CTRL = 0x0;
@@ -150,6 +151,7 @@ void PIN_MANAGER_Initialize()
     VBUS_SetInterruptHandler(VBUS_DefaultInterruptHandler);
     POT_SetInterruptHandler(POT_DefaultInterruptHandler);
     FAULT_INPUT_SetInterruptHandler(FAULT_INPUT_DefaultInterruptHandler);
+    PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
     DRIVE_L0_SetInterruptHandler(DRIVE_L0_DefaultInterruptHandler);
     DRIVE_L1_SetInterruptHandler(DRIVE_L1_DefaultInterruptHandler);
@@ -342,6 +344,19 @@ void FAULT_INPUT_DefaultInterruptHandler(void)
 {
     // add your FAULT_INPUT interrupt custom code
     // or set custom function using FAULT_INPUT_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for PWM_IN at application runtime
+*/
+void PWM_IN_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    PWM_IN_InterruptHandler = interruptHandler;
+}
+
+void PWM_IN_DefaultInterruptHandler(void)
+{
+    // add your PWM_IN interrupt custom code
+    // or set custom function using PWM_IN_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for BUTTON at application runtime
@@ -574,6 +589,10 @@ ISR(PORTE_PORT_vect)
     if(VPORTE.INTFLAGS & PORT_INT2_bm)
     {
        POT_InterruptHandler(); 
+    }
+    if(VPORTE.INTFLAGS & PORT_INT3_bm)
+    {
+       PWM_IN_InterruptHandler(); 
     }
     /* Clear interrupt flags */
     VPORTE.INTFLAGS = 0xff;

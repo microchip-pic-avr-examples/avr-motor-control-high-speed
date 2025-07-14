@@ -47,6 +47,7 @@ static void (*VBUS_InterruptHandler)(void);
 static void (*POT_InterruptHandler)(void);
 static void (*BEMF_B_InterruptHandler)(void);
 static void (*BEMF_C_InterruptHandler)(void);
+static void (*PWM_IN_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
 static void (*DBG_2_InterruptHandler)(void);
 static void (*DBG_3_InterruptHandler)(void);
@@ -80,7 +81,7 @@ void PIN_MANAGER_Initialize()
     PORTA.PIN0CTRL = 0x0;
     PORTA.PIN1CTRL = 0x0;
     PORTA.PIN2CTRL = 0x0;
-    PORTA.PIN3CTRL = 0x0;
+    PORTA.PIN3CTRL = 0x1;
     PORTA.PIN4CTRL = 0x0;
     PORTA.PIN5CTRL = 0x0;
     PORTA.PIN6CTRL = 0x0;
@@ -153,6 +154,7 @@ void PIN_MANAGER_Initialize()
     POT_SetInterruptHandler(POT_DefaultInterruptHandler);
     BEMF_B_SetInterruptHandler(BEMF_B_DefaultInterruptHandler);
     BEMF_C_SetInterruptHandler(BEMF_C_DefaultInterruptHandler);
+    PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
     DBG_2_SetInterruptHandler(DBG_2_DefaultInterruptHandler);
     DBG_3_SetInterruptHandler(DBG_3_DefaultInterruptHandler);
@@ -334,6 +336,19 @@ void BEMF_C_DefaultInterruptHandler(void)
     // or set custom function using BEMF_C_SetInterruptHandler()
 }
 /**
+  Allows selecting an interrupt handler for PWM_IN at application runtime
+*/
+void PWM_IN_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    PWM_IN_InterruptHandler = interruptHandler;
+}
+
+void PWM_IN_DefaultInterruptHandler(void)
+{
+    // add your PWM_IN interrupt custom code
+    // or set custom function using PWM_IN_SetInterruptHandler()
+}
+/**
   Allows selecting an interrupt handler for BUTTON at application runtime
 */
 void BUTTON_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -468,6 +483,10 @@ ISR(PORTA_PORT_vect)
     if(VPORTA.INTFLAGS & PORT_INT7_bm)
     {
        EVS_InterruptHandler(); 
+    }
+    if(VPORTA.INTFLAGS & PORT_INT3_bm)
+    {
+       PWM_IN_InterruptHandler(); 
     }
     if(VPORTA.INTFLAGS & PORT_INT4_bm)
     {

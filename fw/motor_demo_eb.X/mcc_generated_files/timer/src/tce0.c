@@ -40,6 +40,12 @@
 
 /**
  * @ingroup tce0
+ * @brief Function pointer to the Overflow (OVF) interrupt callback function.
+ */
+static TCE0_cb_t TCE0_OVF_isr_cb  = NULL;
+
+/**
+ * @ingroup tce0
  * @brief Mirrors the CTRLA.ENABLE bit of the TCE0 module.
  */
 static volatile bool timerActive = false;
@@ -50,16 +56,41 @@ static volatile bool timerActive = false;
  */
 static volatile uint8_t timerMode = TCE_WGMODE_FRQ_gc;
 
+/**
+ * @ingroup tce0
+ * @brief Interrupt Service Routine (ISR) for the Overflow (OVF) interrupt.
+ * @param None.
+ * @return None.
+ */
+ISR(TCE0_OVF_vect)
+{
+    TCE0.INTFLAGS = TCE_OVF_bm;
+
+    if (TCE0_OVF_isr_cb != NULL)
+    {
+        TCE0_OVF_isr_cb();
+    }
+}
+
+
+void TCE0_OverflowCallbackRegister(TCE0_cb_t callback)
+{
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        TCE0_OVF_isr_cb = callback;
+    }
+}
 
 
 void TCE0_Initialize(void)
 {
     timerMode = TCE_WGMODE_DSBOTTOM_gc;
 
+    TCE0_OVF_isr_cb  = NULL;
 
     TCE0.CTRLA = 0x00;
-    // CMP0 disabled; CMP1 disabled; CMP2 disabled; CMP3 disabled; OVF disabled; 
-    TCE0.INTCTRL = 0x0;
+    // CMP0 disabled; CMP1 disabled; CMP2 disabled; CMP3 disabled; OVF enabled; 
+    TCE0.INTCTRL = 0x1;
     // ALUPD disabled; CMP0EN enabled; CMP1EN enabled; CMP2EN enabled; CMP3EN disabled; WGMODE DSBOTTOM; 
     TCE0.CTRLB = 0x77;
     // CMP0OV disabled; CMP0POL disabled; CMP1OV disabled; CMP1POL disabled; CMP2OV disabled; CMP2POL disabled; CMP3OV disabled; CMP3POL disabled; 
@@ -131,6 +162,7 @@ void TCE0_Deinitialize(void)
     TCE0.CMP2      = 0x0000;
     TCE0.CMP3      = 0x0000;
 
+    TCE0_OVF_isr_cb  = NULL;
 
     timerActive = false;
 

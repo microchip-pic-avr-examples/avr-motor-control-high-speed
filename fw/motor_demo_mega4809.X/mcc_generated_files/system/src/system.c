@@ -43,6 +43,7 @@ void SYSTEM_Initialize(void)
     TCA0_Initialize();
     TCB0_Initialize();
     TCB1_Initialize();
+    TCB2_Initialize();
     AC0_Initialize();
     EVSYS_Initialize();
     RTC_Initialize();

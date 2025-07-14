@@ -6,6 +6,9 @@
 
 #include "mcc_generated_files/system/system.h"
 
+#define __CPU_STRING__                  "AVR16EB32"
+#define DEBUG_BUFF_SIZE                 100         /* This has to be an even number */
+
 /* BEMF comparator pins */
 #define CMP_MUX_A    AC_MUXPOS_AINP5_gc // PD4
 #define CMP_MUX_B    AC_MUXPOS_AINP6_gc // PD5
@@ -66,7 +69,7 @@ static void AC0_Invert(bool config) { if(config) AC0.MUXCTRL |=  AC_INVERT_bm; e
 
 /* periodic 1ms software timer */
 #define SW_TIMER_CB_REGISTER       RTC_SetPITIsrCallback
-#define SW_TIMER_PERIOD            (970) /* us */
+#define SW_TIMER_PERIOD            (1260) /* us */
 
 /* ADC pins definitions */
 #define CRT_P_ADC_PIN           ADC_MUXPOS_AIN3_gc  // PD3
@@ -74,12 +77,12 @@ static void AC0_Invert(bool config) { if(config) AC0.MUXCTRL |=  AC_INVERT_bm; e
 #define POT_ADC_PIN             ADC_MUXPOS_AIN1_gc  // PD1
 
 /* ADC APIs */
-#define ADC_CONVERSION_START    ADC0_ConversionStart
 #define ADC_MUX_SET             ADC0_ChannelSelect
-#define ADC_IS_DONE             ADC0_IsConversionDone
+#define ADC_CONV_START          ADC0_ConversionStart
 #define ADC_RESULT_GET          ADC0_ConversionResultGet
 #define ADC_RESOLUTION_GET      ADC0_ResolutionGet
-#define ADC_CB_REGISTER(X)      do{ADC0_ResultReadyCallbackRegister(X); ADC0_ResultReadyInterruptEnable();}while(0)
+#define ADC_CB_REGISTER         TCE0_OverflowCallbackRegister
+#define ADC_NO_CONV_PROGRESS    ADC0_IsConversionDone
 
 
 static void System_Reset_Command(void)  __attribute__ ((unused));
@@ -87,6 +90,13 @@ static void System_Reset_Command(void)  { _PROTECTED_WRITE(RSTCTRL.SWRR, RSTCTRL
 
 /* Button polarity */
 #define BUTTON_ACTIVE           0
+
+/* PWM Input capture */
+#define PWM_IN_PIN_REGISTER     PWM_IN_SetInterruptHandler
+#define PWM_IN_PIN_READ         PWM_IN_GetValue
+#define PWM_IN_TMR_REGISTER     TCF0_OverflowCallbackRegister
+#define PWM_IN_TMR_CLEAR()      TCF0_CounterSet(0)
+#define PWM_IN_TMR_READ         (uint16_t)TCF0_CounterGet
 
 
 #endif /* MCC_MAPPING_H */

@@ -133,22 +133,6 @@ void ADC0_ConversionStart(void);
 
 /**
  * @ingroup adc0
- * @brief Sets the Result Ready Interrupt Enable (RESRDY) bit to `1`.
- * @param None.
- * @return None.
- */
-void ADC0_ConversionDoneInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Result Ready Interrupt Enable (RESRDY) bit to `0`.
- * @param None.
- * @return None.
- */
-void ADC0_ConversionDoneInterruptDisable(void);
-
-/**
- * @ingroup adc0
  * @brief Checks if the ongoing ADC conversion is complete.
  * @param None.
  * @retval True - The conversion is complete
@@ -238,22 +222,6 @@ void ADC0_ThresholdModeSet(adc_threshold_mode_t thresholdMode);
 
 /**
  * @ingroup adc0
- * @brief Sets the Window Comparator Interrupt Enable (WCMP) bit to `1`.
- * @param None.
- * @return None.
- */
-void ADC0_ThresholdInterruptEnable(void);
-
-/**
- * @ingroup adc0
- * @brief Sets the Window Comparator Interrupt Enable (WCMP) bit to `0`.
- * @param None.
- * @return None.
- */
-void ADC0_ThresholdInterruptDisable(void);
-
-/**
- * @ingroup adc0
  * @brief Retrieves the value of the accumulated conversions.
  * @param None.
  * @return adc_accumulate_t - The value of accumulated conversions
@@ -333,5 +301,14 @@ bool ADC0_IsThresholdInterruptFlagSet(void);
  * @return None.
  */
 void ADC0_ThresholdInterruptFlagClear(void);
+
+/**
+ * @ingroup adc0
+ * @brief Implements the Tasks routine for the polling implementation.
+ * @param None.
+ * @return None.
+ * @note Ensure this function is invoked inside the service loop to maintain proper execution flow.
+*/
+void ADC0_Tasks(void);
 
 #endif /* ADC0_H */

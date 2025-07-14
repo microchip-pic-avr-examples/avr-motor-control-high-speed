@@ -70,7 +70,7 @@ void ADC0_Initialize(void)
 				|(ADC_SAMPNUM_NONE_gc);             /* SAMPNUM (No accumulation) */
     ADC0.COMMAND = (0 << ADC_DIFF_bp)                 /* DIFF (disabled) */
 				|(ADC_MODE_SINGLE_12BIT_gc)         /* MODE (SINGLE_12BIT) */
-				|(ADC_START_EVENT_TRIGGER_gc);      /* START (Start when an event is received) */
+				|(ADC_START_IMMEDIATE_gc);          /* START (Start a conversion immediately. This will be set back to STOP when the first conversion is done, unless Free-Running mode is enabled) */
     ADC0.DBGCTRL = (0 << ADC_DBGRUN_bp);              /* DBGRUN (disabled) */
     ADC0.MUXPOS = (ADC_MUXPOS_AIN0_gc)               /* MUXPOS (AIN0) */
 				|(ADC_VIA_DIRECT_gc);               /* VIA (DIRECT) */
@@ -250,164 +250,84 @@ void ADC0_InputViaPGADisable(void)
     ADC0.MUXNEG &= ~ADC_VIA_gm;
 }
 
-void ADC0_ResultReadyInterruptEnable(void)
+void ADC0_Tasks(void)
 {
-    ADC0.INTCTRL |= ADC_RESRDY_bm;
-}
-
-void ADC0_ResultReadyInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_RESRDY_bm;
-}
-
-void ADC0_ConversionDoneInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_SAMPRDY_bm;
-}
-
-void ADC0_ConversionDoneInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_SAMPRDY_bm;
-}
-
-void ADC0_ThresholdInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_WCMP_bm;
-}
-
-void ADC0_ThresholdInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_WCMP_bm;
-}
-
-void ADC0_ResultOverwriteInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_RESOVR_bm;
-}
-
-void ADC0_ResultOverwriteInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_RESOVR_bm;
-}
-
-void ADC0_SampleOverwriteInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_SAMPOVR_bm;
-}
-
-void ADC0_SampleOverwriteInterruptDisable(void)
-{
-   ADC0.INTCTRL &= ~ADC_SAMPOVR_bm;
-}
-
-void ADC0_TriggerOverrunInterruptEnable(void)
-{
-    ADC0.INTCTRL |= ADC_TRIGOVR_bm;
-}
-
-void ADC0_TriggerOverrunInterruptDisable(void)
-{
-    ADC0.INTCTRL &= ~ADC_TRIGOVR_bm;
-}
-
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-/* cppcheck-suppress misra-c2012-8.6 */
-ISR(ADC0_RESRDY_vect)
-{
-    //Check for result ready interrupt flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_RESRDY_bm)) 
+    if (ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_RESRDY_bm))
     {
-        // Clear the RESRDY Flag
         ADC0.INTFLAGS = ADC_RESRDY_bm;
+        
         if (NULL != ADC0_ResultReadyCallback)
         {
             ADC0_ResultReadyCallback();
         }
-    }   
-    //Check for threshold interrupt flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_WCMP_bm))
-    {
-        //Clear the WCMP interrupt flag
-        ADC0.INTFLAGS = ADC_WCMP_bm;
-        if(ADC0_ThresholdCallback != NULL)
+        else
         {
-            ADC0_ThresholdCallback();
+            // do nothing
         }
     }
-    else
+    if (ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_SAMPRDY_bm))
     {
-        // do nothing
-    }
-}
-
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-/* cppcheck-suppress misra-c2012-8.6 */
-ISR(ADC0_SAMPRDY_vect)
-{
-    //Check for sample Ready interrupt flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_SAMPRDY_bm))
-    {    
-        //Clear the SAMPRDY interrupt flag
         ADC0.INTFLAGS = ADC_SAMPRDY_bm;
-        if(NULL != ADC0_ConversionDoneCallback)
+
+        if (NULL != ADC0_ConversionDoneCallback)
         {
             ADC0_ConversionDoneCallback();
         }
+        else
+        {
+            // do nothing
+        }
     }
-    //Check for threshold interrupt flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_WCMP_bm))
+    if (ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_WCMP_bm))
     {
-        //Clear the WCMP interrupt flag
         ADC0.INTFLAGS = ADC_WCMP_bm;
-        if(NULL != ADC0_ThresholdCallback)
+        
+        if (NULL != ADC0_ThresholdCallback)
         {
             ADC0_ThresholdCallback();
         }
-    }
-    else
-    {
-        // do nothing
-    }
-}
-
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-/* cppcheck-suppress misra-c2012-8.6 */
-ISR(ADC0_ERROR_vect)
-{
-    //Check for trigger overrun flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_TRIGOVR_bm))    
-    {
-        //Clear the TRIGOVR interrupt flag
-        ADC0.INTFLAGS = ADC_TRIGOVR_bm;
-        if (NULL != ADC0_TriggerOverrunCallback)
+        else
         {
-            ADC0_TriggerOverrunCallback();
+            // do nothing
         }
     }
-    //Check for sample Overwrite flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_SAMPOVR_bm))
+    if (ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_RESOVR_bm))
     {
-        //Clear the interrupt flag
+        ADC0.INTFLAGS = ADC_RESOVR_bm;
+        
+        if (NULL != ADC0_ResultOverwriteCallback)
+        {
+            ADC0_ResultOverwriteCallback();
+        }
+        else
+        {
+            // do nothing
+        }
+    }
+    if (ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_SAMPOVR_bm))
+    {
         ADC0.INTFLAGS = ADC_SAMPOVR_bm;
+        
         if (NULL != ADC0_SampleOverwriteCallback)
         {
             ADC0_SampleOverwriteCallback();
         }
-    }
-    //Check for result over write flag
-    if(ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_RESOVR_bm))
-    {
-        //Clear the interrupt flag
-        ADC0.INTFLAGS = ADC_RESOVR_bm;
-        if(NULL != ADC0_ResultOverwriteCallback)
+        else
         {
-            ADC0_ResultOverwriteCallback();
+            // do nothing
+        }
+    }
+    if (ADC_BIT_CLEAR != (ADC0.INTFLAGS & ADC_TRIGOVR_bm))
+    {
+        ADC0.INTFLAGS = ADC_TRIGOVR_bm;
+        
+        if (NULL != ADC0_TriggerOverrunCallback)
+        {
+            ADC0_TriggerOverrunCallback();
+        }
+        else
+        {
+            // do nothing
         }
     }
     else
