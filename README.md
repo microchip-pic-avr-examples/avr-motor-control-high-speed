@@ -93,7 +93,7 @@ More details and code examples on the AVR16EB32, AVR128DA48 and ATmega4809 can b
 - [MPLAB® X IDE v6.30 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-x-ide?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EB&utm_content=avr16eb32-bldc-pmsm-motor-control-library-github&utm_bu=MCU08)
 - [AVR-Ex DFP v2.11.221 or newer](https://packs.download.microchip.com/)
 - [AVR-Dx DFP v2.7.321 or newer](https://packs.download.microchip.com/)
-- [AVR-ATmega DFP v3.6.229 or newer](https://packs.download.microchip.com/)
+- [AVR-ATmega DFP v3.6.299 or newer](https://packs.download.microchip.com/)
 - [MPLAB® XC8 compiler v3.10 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_AVR-EB&utm_content=avr16eb32-bldc-pmsm-motor-control-library-github&utm_bu=MCU08)
 - [MPLAB Code Configurator (MCC) v5.8.4 or newer](https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator)
 
