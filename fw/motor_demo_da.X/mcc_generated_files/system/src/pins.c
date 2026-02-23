@@ -12,7 +12,7 @@
 */
 
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -40,13 +40,13 @@ static void (*BEMF_A_InterruptHandler)(void);
 static void (*DRIVE_H0_InterruptHandler)(void);
 static void (*DRIVE_H1_InterruptHandler)(void);
 static void (*DRIVE_H2_InterruptHandler)(void);
-static void (*EVS_InterruptHandler)(void);
 static void (*RXD_InterruptHandler)(void);
 static void (*TXD_InterruptHandler)(void);
 static void (*VBUS_InterruptHandler)(void);
 static void (*POT_InterruptHandler)(void);
 static void (*BEMF_B_InterruptHandler)(void);
 static void (*BEMF_C_InterruptHandler)(void);
+static void (*CRT_REF_InterruptHandler)(void);
 static void (*PWM_IN_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
 static void (*DBG_2_InterruptHandler)(void);
@@ -70,7 +70,7 @@ void PIN_MANAGER_Initialize()
     PORTF.OUT = 0x0;
 
   /* DIR Registers Initialization */
-    PORTA.DIR = 0xB7;
+    PORTA.DIR = 0x37;
     PORTB.DIR = 0x7;
     PORTC.DIR = 0x4D;
     PORTD.DIR = 0x0;
@@ -147,13 +147,13 @@ void PIN_MANAGER_Initialize()
     DRIVE_H0_SetInterruptHandler(DRIVE_H0_DefaultInterruptHandler);
     DRIVE_H1_SetInterruptHandler(DRIVE_H1_DefaultInterruptHandler);
     DRIVE_H2_SetInterruptHandler(DRIVE_H2_DefaultInterruptHandler);
-    EVS_SetInterruptHandler(EVS_DefaultInterruptHandler);
     RXD_SetInterruptHandler(RXD_DefaultInterruptHandler);
     TXD_SetInterruptHandler(TXD_DefaultInterruptHandler);
     VBUS_SetInterruptHandler(VBUS_DefaultInterruptHandler);
     POT_SetInterruptHandler(POT_DefaultInterruptHandler);
     BEMF_B_SetInterruptHandler(BEMF_B_DefaultInterruptHandler);
     BEMF_C_SetInterruptHandler(BEMF_C_DefaultInterruptHandler);
+    CRT_REF_SetInterruptHandler(CRT_REF_DefaultInterruptHandler);
     PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
     DBG_2_SetInterruptHandler(DBG_2_DefaultInterruptHandler);
@@ -245,19 +245,6 @@ void DRIVE_H2_DefaultInterruptHandler(void)
     // or set custom function using DRIVE_H2_SetInterruptHandler()
 }
 /**
-  Allows selecting an interrupt handler for EVS at application runtime
-*/
-void EVS_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    EVS_InterruptHandler = interruptHandler;
-}
-
-void EVS_DefaultInterruptHandler(void)
-{
-    // add your EVS interrupt custom code
-    // or set custom function using EVS_SetInterruptHandler()
-}
-/**
   Allows selecting an interrupt handler for RXD at application runtime
 */
 void RXD_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -334,6 +321,19 @@ void BEMF_C_DefaultInterruptHandler(void)
 {
     // add your BEMF_C interrupt custom code
     // or set custom function using BEMF_C_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for CRT_REF at application runtime
+*/
+void CRT_REF_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    CRT_REF_InterruptHandler = interruptHandler;
+}
+
+void CRT_REF_DefaultInterruptHandler(void)
+{
+    // add your CRT_REF interrupt custom code
+    // or set custom function using CRT_REF_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for PWM_IN at application runtime
@@ -480,10 +480,6 @@ ISR(PORTA_PORT_vect)
     {
        DRIVE_H2_InterruptHandler(); 
     }
-    if(VPORTA.INTFLAGS & PORT_INT7_bm)
-    {
-       EVS_InterruptHandler(); 
-    }
     if(VPORTA.INTFLAGS & PORT_INT3_bm)
     {
        PWM_IN_InterruptHandler(); 
@@ -587,6 +583,10 @@ ISR(PORTE_PORT_vect)
     if(VPORTE.INTFLAGS & PORT_INT2_bm)
     {
        CRT_InterruptHandler(); 
+    }
+    if(VPORTE.INTFLAGS & PORT_INT0_bm)
+    {
+       CRT_REF_InterruptHandler(); 
     }
     /* Clear interrupt flags */
     VPORTE.INTFLAGS = 0xff;

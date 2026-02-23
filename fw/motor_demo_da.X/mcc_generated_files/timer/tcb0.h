@@ -12,7 +12,7 @@
  * @version Package Version 6.0.0
 */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -38,7 +38,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "../system/utils/compiler.h"
-#include "tcb0_deprecated.h"
+//#include "tcb0_deprecated.h"
 
 /**
  * @misradeviation{@advisory,2.5}

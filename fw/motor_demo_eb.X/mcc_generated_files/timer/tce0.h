@@ -7,7 +7,7 @@
  *
  * @version TCE0 Driver Version 1.0.1
  *
- * @copyright © 2025 Microchip Technology Inc. and its subsidiaries.
+ * @copyright © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software
  * and any derivatives exclusively with Microchip products. You're responsible
@@ -84,11 +84,6 @@
 #define TCE0_HZ_TO_CLOCKS_FREQUENCYMODE(HZ, F_CLOCK, TCE_PRESCALER)(uint16_t)((float)(F_CLOCK) / (2 * (float)(HZ) * (float)(TCE_PRESCALER)) - 1)
 
 
-/**
- * @ingroup tce0
- * @brief Pointer to a function to be used as a callback handler when an interrupt event occurs.
- */
-typedef void (* TCE0_cb_t)(void);
 
 /**
  * @ingroup tce0
@@ -101,14 +96,6 @@ typedef enum
 }
 TCE0_status_t;
 
-
-/**
- * @ingroup tce0
- * @brief Sets the Overflow (OVF) interrupt callback for the TCE0 module.
- * @param[in] callback Pointer to custom callback
- * @return None.
- */
-void TCE0_OverflowCallbackRegister(TCE0_cb_t callback);
 
 /**
  * @ingroup tce0

@@ -12,7 +12,7 @@
  * @version Package Version 7.1.0
  */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -221,19 +221,71 @@ void TCA0_ModeSet(TCA_SINGLE_WGMODE_t mode) __attribute__((deprecated("This func
 
 /**
  * @ingroup tca0_normal
- * @brief Enables the TCA0 interrupts.
+ * @brief Clears the TCA0 Overflow interrupt flag.
  * @param None.
  * @return None.
  */
-void TCA0_InterruptEnable(void);
+void TCA0_OverflowStatusClear(void);
 
 /**
  * @ingroup tca0_normal
- * @brief Disables the TCA0 interrupts.
+ * @brief Returns the status of the TCA0 Overflow interrupt flag.
+ * @param None.
+ * @retval True  - Overflow interrupt flag is set
+ * @retval False - Overflow interrupt flag is not set
+ */
+bool TCA0_OverflowStatusGet(void);
+
+/**
+ * @ingroup tca0_normal
+ * @brief Clears the TCA0 Compare 0 interrupt flag.
  * @param None.
  * @return None.
  */
-void TCA0_InterruptDisable(void);
+void TCA0_CMP0MatchStatusClear(void);
+
+/**
+ * @ingroup tca0_normal
+ * @brief Returns the status of the TCA0 Compare 0 interrupt flag.
+ * @param None.
+ * @retval True  - Compare 0 interrupt flag is set
+ * @retval False - Compare 0 interrupt flag is not set
+ */
+bool TCA0_CMP0MatchStatusGet(void);
+
+/**
+ * @ingroup tca0_normal
+ * @brief Clears the TCA0 Compare 1 interrupt flag.
+ * @param None.
+ * @return None.
+ */
+void TCA0_CMP1MatchStatusClear(void);
+
+/**
+ * @ingroup tca0_normal
+ * @brief Returns the status of the TCA0 Compare 1 interrupt flag.
+ * @param None.
+ * @retval True  - Compare 1 interrupt flag is set
+ * @retval False - Compare 1 interrupt flag is not set
+ */
+bool TCA0_CMP1MatchStatusGet(void);
+
+/**
+ * @ingroup tca0_normal
+ * @brief Clears the TCA0 Compare 2 interrupt flag.
+ * @param None.
+ * @return None.
+ */
+void TCA0_CMP2MatchStatusClear(void);
+
+/**
+ * @ingroup tca0_normal
+ * @brief Returns the status of the TCA0 Compare 2 interrupt flag.
+ * @param None.
+ * @retval True  - Compare 2 interrupt flag is set
+ * @retval False - Compare 2 interrupt flag is not set
+ */
+bool TCA0_CMP2MatchStatusGet(void);
 
 /**
  * @ingroup tca0_normal
@@ -268,5 +320,12 @@ void TCA0_Compare1CallbackRegister(TCA0_cb_t CallbackHandler);
  */ 
 void TCA0_Compare2CallbackRegister(TCA0_cb_t CallbackHandler);
 
+/**
+ * @ingroup tca0_normal
+ * @brief Performs tasks to be executed during the timer interrupt events.
+ * @param None.
+ * @return None.
+ */
+void TCA0_Tasks(void);
 
 #endif /* TCA0_H_INCLUDED */

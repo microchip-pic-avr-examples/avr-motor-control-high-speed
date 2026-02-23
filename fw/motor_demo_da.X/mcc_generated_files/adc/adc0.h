@@ -13,7 +13,7 @@
 */
 
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -69,6 +69,12 @@
  * @brief Defines the Custom Name pin mapping for channels in @ref adc_channel_t
  */
 #define BEMF_A ADC0_CHANNEL_AIN6
+
+/**
+ * @ingroup adc0
+ * @brief Defines the Custom Name pin mapping for channels in @ref adc_channel_t
+ */
+#define CRT_REF ADC0_CHANNEL_AIN8
 
 /**
  * @ingroup adc0

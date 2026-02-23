@@ -12,7 +12,7 @@
  * @version Package Version 6.0.0
 */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -150,38 +150,39 @@ uint16_t TCB1_PeriodGet(void);
  */
 uint16_t TCB1_MaxCountGet(void);
 
-/**
- * @ingroup tcb1
- * @brief Enables the capture interrupt for the TCB1.
- * @param None.
- * @return None.
- */
-void TCB1_CAPTInterruptEnable(void);
+
 
 /**
  * @ingroup tcb1
- * @brief Disables the capture interrupt for the TCB1.
+ * @brief Checks the Capture Interrupt flag.
  * @param None.
- * @return None.
+ * @return bool
  */
-void TCB1_CAPTInterruptDisable(void);
+bool TCB1_CaptureStatusGet(void);
 
 /**
  * @ingroup tcb1
- * @brief Enables the overflow interrupt for the TCB1.
+ * @brief Checks the Overflow Interrupt flag.
  * @param None.
- * @return None.
+ * @return bool
  */
-void TCB1_OVFInterruptEnable(void);
+bool TCB1_OverflowStatusGet(void);
 
 /**
  * @ingroup tcb1
- * @brief Disables the overflow interrupt for the TCB1.
+ * @brief Clears the Capture Interrupt flag.
  * @param None.
  * @return None.
  */
-void TCB1_OVFInterruptDisable(void);
+void TCB1_CaptureStatusClear(void);
 
+/**
+ * @ingroup tcb1
+ * @brief Clears the Overflow Interrupt flag.
+ * @param None.
+ * @return None.
+ */
+void TCB1_OverflowStatusClear(void);
 
 /**
  * @ingroup tcb1
@@ -200,6 +201,13 @@ bool TCB1_IsCaptInterruptEnabled(void) __attribute__((deprecated("This function 
 bool TCB1_IsOvfInterruptEnabled(void) __attribute__((deprecated("This function will be deprecated in future")));
 
 
+/**
+ * @ingroup tcb1_normal
+ * @brief Performs the tasks to be executed on timer events.
+ * @param None.
+ * @return None.
+ */
+void TCB1_Tasks(void);
 
 
 #endif /* TCB1_H_INCLUDED */

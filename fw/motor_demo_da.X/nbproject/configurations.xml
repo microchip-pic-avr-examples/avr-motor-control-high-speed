@@ -80,7 +80,7 @@
         <itemPath>../common_files/utils/pwm_in.h</itemPath>
       </logicalFolder>
       <itemPath>mcc_mapping.h</itemPath>
-      <itemPath>config.h</itemPath>
+      <itemPath>../common_files/config.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -163,6 +163,7 @@
         <itemPath>../common_files/utils/dbg_logger.c</itemPath>
         <itemPath>../common_files/utils/sw_timer.c</itemPath>
         <itemPath>../common_files/utils/pwm_in.c</itemPath>
+        <itemPath>../common_files/utils/frac-lib.s</itemPath>
       </logicalFolder>
       <itemPath>../common_files/app.c</itemPath>
       <itemPath>main.c</itemPath>
@@ -182,9 +183,9 @@
         <targetDevice>AVR128DA48</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>nEdbgTool</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>3.00</languageToolchainVersion>
+        <languageToolchainVersion>3.10</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
@@ -426,8 +427,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-5fff"/>
         <property key="poweroptions.powerenable" value="true"/>
-        <property key="programmerToGoFilePath"
-                  value="C:/REPOS/MCU8NPIAPPS/motor-control_f_1.3.0_RC_dsn/mc-library/Test/MC_Atmega4809.X/debug/default/MC_Atmega4809_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -451,9 +450,9 @@
         <targetDevice>AVR128DA48</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>nEdbgTool</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>3.00</languageToolchainVersion>
+        <languageToolchainVersion>3.10</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
@@ -518,8 +517,8 @@
         <property key="optimization-debug" value="false"/>
         <property key="optimization-invariant-enable" value="false"/>
         <property key="optimization-invariant-value" value="16"/>
-        <property key="optimization-level" value="-Os"/>
-        <property key="optimization-speed" value="false"/>
+        <property key="optimization-level" value="-O3"/>
+        <property key="optimization-speed" value="true"/>
         <property key="optimization-stable-enable" value="false"/>
         <property key="preprocess-assembler" value="true"/>
         <property key="short-enums" value="true"/>
@@ -695,8 +694,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-5fff"/>
         <property key="poweroptions.powerenable" value="true"/>
-        <property key="programmerToGoFilePath"
-                  value="C:/REPOS/MCU8NPIAPPS/motor-control_f_1.3.0_RC_dsn/mc-library/Test/MC_Atmega4809.X/debug/default/MC_Atmega4809_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

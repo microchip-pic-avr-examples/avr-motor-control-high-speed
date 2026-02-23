@@ -7,7 +7,7 @@
  *
  * @version WEX0 Driver Version 1.0.1
  *
- * @copyright © 2025 Microchip Technology Inc. and its subsidiaries.
+ * @copyright © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software
  * and any derivatives exclusively with Microchip products. You're responsible
@@ -37,17 +37,48 @@
 #include <util/atomic.h>
 
 
+/**
+ * @ingroup wex0
+ * @brief Pointer to a function to be used as a callback handler when an interrupt event occurs.
+ */
+static WEX0_cb_t WEX0_FAULT_isr_cb = NULL;
+
+/**
+ * @ingroup wex0
+ * @brief Interrupt Service Routine (ISR) for the Fault Interrupt.
+ * @param None.
+ * @return None.
+ */
+ISR(WEX0_FAULTDET_vect)
+{
+    WEX0.INTFLAGS = WEX0.INTFLAGS;
+
+    if (WEX0_FAULT_isr_cb != NULL)
+    {
+        WEX0_FAULT_isr_cb();
+    }
+}
+
+void WEX0_FAULTIsrCallbackRegister(WEX0_cb_t callback)
+{
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        WEX0_FAULT_isr_cb = callback;
+    }
+}
 
 void WEX0_Initialize(void)
 {
+    WEX0_FAULT_isr_cb = NULL;
+
     // DTI0EN true; DTI1EN true; DTI2EN true; DTI3EN false; PGM true; INMX DIRECT; 
     WEX0.CTRLA = 0x87;
     // UPDSRC TCPWM0; 
     WEX0.CTRLB = 0x0;
     // CMD NONE; 
     WEX0.CTRLC = 0x0;
-    // BLANK disabled; FAULTEI disabled; FILTER ZERO; 
-    WEX0.EVCTRLA = 0x0;
+    // BLANK disabled; FAULTEI enabled; FILTER ZERO; 
+    WEX0.EVCTRLA = 0x1;
     // BLANK disabled; FAULTEI disabled; FILTER ZERO; 
     WEX0.EVCTRLB = 0x0;
     // BLANK disabled; FAULTEI disabled; FILTER ZERO; 
@@ -60,8 +91,8 @@ void WEX0_Initialize(void)
     WEX0.FAULTDRV = 0x0;
     // FAULTOUT0 disabled; FAULTOUT1 disabled; FAULTOUT2 disabled; FAULTOUT3 disabled; FAULTOUT4 disabled; FAULTOUT5 disabled; FAULTOUT6 disabled; FAULTOUT7 disabled; 
     WEX0.FAULTOUT = 0x0;
-    // FDACT 0; FDDBD FAULT; FDMODE LATCHED; 
-    WEX0.FAULTCTRL = 0x0;
+    // FDACT 1; FDDBD FAULT; FDMODE LATCHED; 
+    WEX0.FAULTCTRL = 0x1;
     // STATUS
     WEX0.STATUS = 0x0;
     // DTLS 0; 
@@ -70,22 +101,24 @@ void WEX0_Initialize(void)
     WEX0.DTHS = 0x0;
     // SWAP0 false; SWAP1 false; SWAP2 false; SWAP3 false; 
     WEX0.SWAP = 0x0;
-    // PGMOVR0 disabled; PGMOVR1 enabled; PGMOVR2 disabled; PGMOVR3 enabled; PGMOVR4 disabled; PGMOVR5 enabled; PGMOVR6 disabled; PGMOVR7 disabled; 
-    WEX0.PGMOVR = 0x2A;
+    // PGMOVR0 enabled; PGMOVR1 enabled; PGMOVR2 enabled; PGMOVR3 enabled; PGMOVR4 enabled; PGMOVR5 enabled; PGMOVR6 disabled; PGMOVR7 disabled; 
+    WEX0.PGMOVR = 0x3F;
     // PGMOUT0 disabled; PGMOUT1 disabled; PGMOUT2 disabled; PGMOUT3 disabled; PGMOUT4 disabled; PGMOUT5 disabled; PGMOUT6 disabled; PGMOUT7 disabled; 
     WEX0.PGMOUT = 0x0;
     // OUTOVEN0 enabled; OUTOVEN1 enabled; OUTOVEN2 enabled; OUTOVEN3 enabled; OUTOVEN4 enabled; OUTOVEN5 enabled; OUTOVEN6 disabled; OUTOVEN7 disabled; 
     WEX0.OUTOVEN = 0x3F;
     // DTLSBV disabled; DTHSBV disabled; SWAPBV disabled; PGMOVRBV disabled; PGMOUTBV disabled; 
     WEX0.BUFCTRL = 0x0;
-    // FAULTDET disabled; 
-    WEX0.INTCTRL = 0x0;
+    // FAULTDET enabled; 
+    WEX0.INTCTRL = 0x1;
     // FAULTDET disabled; FDFEVA disabled; FDFEVB disabled; FDFEVC disabled; 
     WEX0.INTFLAGS = WEX0.INTFLAGS;
 }
 
 void WEX0_Deinitialize(void)
 {
+    WEX0_FAULT_isr_cb = NULL;
+    
     WEX0.CTRLA     = 0x00;
     WEX0.CTRLB     = 0x00;
     WEX0.CTRLC     = 0x00;

@@ -12,7 +12,7 @@
 */
 
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -171,25 +171,6 @@
 #define BEMF_A_EnableInterruptForLowLevelSensing() do { PORTD.PIN2CTRL = (PORTD.PIN2CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PD2_SetInterruptHandler BEMF_A_SetInterruptHandler
 
-//get/set EVSYS_OUT aliases
-#define EVSYS_OUT_SetHigh() do { PORTA_OUTSET = 0x80; } while(0)
-#define EVSYS_OUT_SetLow() do { PORTA_OUTCLR = 0x80; } while(0)
-#define EVSYS_OUT_Toggle() do { PORTA_OUTTGL = 0x80; } while(0)
-#define EVSYS_OUT_GetValue() (VPORTA.IN & (0x1 << 7))
-#define EVSYS_OUT_SetDigitalInput() do { PORTA_DIRCLR = 0x80; } while(0)
-#define EVSYS_OUT_SetDigitalOutput() do { PORTA_DIRSET = 0x80; } while(0)
-#define EVSYS_OUT_SetPullUp() do { PORTA_PIN7CTRL  |= PORT_PULLUPEN_bm; } while(0)
-#define EVSYS_OUT_ResetPullUp() do { PORTA_PIN7CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
-#define EVSYS_OUT_SetInverted() do { PORTA_PIN7CTRL  |= PORT_INVEN_bm; } while(0)
-#define EVSYS_OUT_ResetInverted() do { PORTA_PIN7CTRL  &= ~PORT_INVEN_bm; } while(0)
-#define EVSYS_OUT_DisableInterruptOnChange() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
-#define EVSYS_OUT_EnableInterruptForBothEdges() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
-#define EVSYS_OUT_EnableInterruptForRisingEdge() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
-#define EVSYS_OUT_EnableInterruptForFallingEdge() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
-#define EVSYS_OUT_DisableDigitalInputBuffer() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
-#define EVSYS_OUT_EnableInterruptForLowLevelSensing() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
-#define PA7_SetInterruptHandler EVSYS_OUT_SetInterruptHandler
-
 //get/set CRT_P aliases
 #define CRT_P_SetHigh() do { PORTD_OUTSET = 0x1; } while(0)
 #define CRT_P_SetLow() do { PORTD_OUTCLR = 0x1; } while(0)
@@ -208,6 +189,25 @@
 #define CRT_P_DisableDigitalInputBuffer() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
 #define CRT_P_EnableInterruptForLowLevelSensing() do { PORTD.PIN0CTRL = (PORTD.PIN0CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PD0_SetInterruptHandler CRT_P_SetInterruptHandler
+
+//get/set CRT_N aliases
+#define CRT_N_SetHigh() do { PORTD_OUTSET = 0x2; } while(0)
+#define CRT_N_SetLow() do { PORTD_OUTCLR = 0x2; } while(0)
+#define CRT_N_Toggle() do { PORTD_OUTTGL = 0x2; } while(0)
+#define CRT_N_GetValue() (VPORTD.IN & (0x1 << 1))
+#define CRT_N_SetDigitalInput() do { PORTD_DIRCLR = 0x2; } while(0)
+#define CRT_N_SetDigitalOutput() do { PORTD_DIRSET = 0x2; } while(0)
+#define CRT_N_SetPullUp() do { PORTD_PIN1CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define CRT_N_ResetPullUp() do { PORTD_PIN1CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define CRT_N_SetInverted() do { PORTD_PIN1CTRL  |= PORT_INVEN_bm; } while(0)
+#define CRT_N_ResetInverted() do { PORTD_PIN1CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define CRT_N_DisableInterruptOnChange() do { PORTD.PIN1CTRL = (PORTD.PIN1CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define CRT_N_EnableInterruptForBothEdges() do { PORTD.PIN1CTRL = (PORTD.PIN1CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define CRT_N_EnableInterruptForRisingEdge() do { PORTD.PIN1CTRL = (PORTD.PIN1CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define CRT_N_EnableInterruptForFallingEdge() do { PORTD.PIN1CTRL = (PORTD.PIN1CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define CRT_N_DisableDigitalInputBuffer() do { PORTD.PIN1CTRL = (PORTD.PIN1CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define CRT_N_EnableInterruptForLowLevelSensing() do { PORTD.PIN1CTRL = (PORTD.PIN1CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PD1_SetInterruptHandler CRT_N_SetInterruptHandler
 
 //get/set BEMF_B aliases
 #define BEMF_B_SetHigh() do { PORTD_OUTSET = 0x10; } while(0)
@@ -651,27 +651,6 @@ void BEMF_A_SetInterruptHandler(void (* interruptHandler)(void)) ;
 
 /**
  * @ingroup  pinsdriver
- * @brief Default Interrupt Handler for EVSYS_OUT pin. 
- *        This is a predefined interrupt handler to be used together with the EVSYS_OUT_SetInterruptHandler() method.
- *        This handler is called every time the EVSYS_OUT ISR is executed. 
- * @pre PIN_MANAGER_Initialize() has been called at least once
- * @param none
- * @return none
- */
-void EVSYS_OUT_DefaultInterruptHandler(void);
-
-/**
- * @ingroup  pinsdriver
- * @brief Interrupt Handler Setter for EVSYS_OUT pin input-sense-config functionality.
- *        Allows selecting an interrupt handler for EVSYS_OUT at application runtime
- * @pre PIN_MANAGER_Initialize() has been called at least once
- * @param InterruptHandler function pointer.
- * @return none
- */
-void EVSYS_OUT_SetInterruptHandler(void (* interruptHandler)(void)) ; 
-
-/**
- * @ingroup  pinsdriver
  * @brief Default Interrupt Handler for CRT_P pin. 
  *        This is a predefined interrupt handler to be used together with the CRT_P_SetInterruptHandler() method.
  *        This handler is called every time the CRT_P ISR is executed. 
@@ -690,6 +669,27 @@ void CRT_P_DefaultInterruptHandler(void);
  * @return none
  */
 void CRT_P_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for CRT_N pin. 
+ *        This is a predefined interrupt handler to be used together with the CRT_N_SetInterruptHandler() method.
+ *        This handler is called every time the CRT_N ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void CRT_N_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for CRT_N pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for CRT_N at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void CRT_N_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 
 /**
  * @ingroup  pinsdriver

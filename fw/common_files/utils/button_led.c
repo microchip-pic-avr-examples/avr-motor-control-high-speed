@@ -1,5 +1,5 @@
 /*
-© [2024] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
  
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -35,12 +35,12 @@ button_state_t ButtonGet(void)
     static bool debounced_state = false;
     static bool long_detected = false;
 
-    bool actual_state = (BUTTON_GetValue() == BUTTON_ACTIVE)?  true : false; /* true=pressed , false=notpressed */
+    bool actual_state = (BUTTON_GetValue() == BUTTON_ACTIVE)?  true : false; /* true = pressed, false = not pressed */
     
     if(debounced_state == true)
     {
         len_counter++;
-        if(len_counter == (BUTTON_TIME_LONG/BUTTON_LED_TIME_STEP))
+        if(len_counter == (uint16_t)(BUTTON_TIME_LONG/BUTTON_LED_TIME_STEP))
         {
             retVal = BUTTON_LONG_PRESS;
             long_detected = true;
@@ -50,7 +50,7 @@ button_state_t ButtonGet(void)
     if(actual_state != debounced_state)
     {
         db_counter++;
-        if(db_counter == (BUTTON_DEBOUNCE_TIME/BUTTON_LED_TIME_STEP))
+        if(db_counter == (uint8_t)(BUTTON_DEBOUNCE_TIME/BUTTON_LED_TIME_STEP))
         {
             debounced_state = actual_state;
             len_counter = 0;
@@ -85,7 +85,7 @@ void LedControl(led_ctrl_t state)
     if(blinking_flag == true)
     {
         counter++;
-        if(counter == (LED_BLINK_DURATION/BUTTON_LED_TIME_STEP))
+        if(counter == (uint16_t)(LED_BLINK_DURATION/BUTTON_LED_TIME_STEP))
         {
             counter = 0;
             if(blinks_counter > 1)

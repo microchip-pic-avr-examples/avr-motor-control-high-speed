@@ -12,7 +12,7 @@
 */
 
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -40,8 +40,8 @@ static void (*CRT_P_InterruptHandler)(void);
 static void (*POT_InterruptHandler)(void);
 static void (*BEMF_A_InterruptHandler)(void);
 static void (*BEMF_C_InterruptHandler)(void);
+static void (*CRT_REF_InterruptHandler)(void);
 static void (*VBUS_InterruptHandler)(void);
-static void (*EVSYS_OUT_InterruptHandler)(void);
 static void (*DRIVE_H0_InterruptHandler)(void);
 static void (*DRIVE_L0_InterruptHandler)(void);
 static void (*DRIVE_H1_InterruptHandler)(void);
@@ -67,7 +67,7 @@ void PIN_MANAGER_Initialize()
     PORTF.OUT = 0x20;
 
   /* DIR Registers Initialization */
-    PORTA.DIR = 0xBF;
+    PORTA.DIR = 0x3F;
     PORTC.DIR = 0x2;
     PORTD.DIR = 0x0;
     PORTF.DIR = 0x2E;
@@ -123,8 +123,8 @@ void PIN_MANAGER_Initialize()
     POT_SetInterruptHandler(POT_DefaultInterruptHandler);
     BEMF_A_SetInterruptHandler(BEMF_A_DefaultInterruptHandler);
     BEMF_C_SetInterruptHandler(BEMF_C_DefaultInterruptHandler);
+    CRT_REF_SetInterruptHandler(CRT_REF_DefaultInterruptHandler);
     VBUS_SetInterruptHandler(VBUS_DefaultInterruptHandler);
-    EVSYS_OUT_SetInterruptHandler(EVSYS_OUT_DefaultInterruptHandler);
     DRIVE_H0_SetInterruptHandler(DRIVE_H0_DefaultInterruptHandler);
     DRIVE_L0_SetInterruptHandler(DRIVE_L0_DefaultInterruptHandler);
     DRIVE_H1_SetInterruptHandler(DRIVE_H1_DefaultInterruptHandler);
@@ -220,6 +220,19 @@ void BEMF_C_DefaultInterruptHandler(void)
     // or set custom function using BEMF_C_SetInterruptHandler()
 }
 /**
+  Allows selecting an interrupt handler for CRT_REF at application runtime
+*/
+void CRT_REF_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    CRT_REF_InterruptHandler = interruptHandler;
+}
+
+void CRT_REF_DefaultInterruptHandler(void)
+{
+    // add your CRT_REF interrupt custom code
+    // or set custom function using CRT_REF_SetInterruptHandler()
+}
+/**
   Allows selecting an interrupt handler for VBUS at application runtime
 */
 void VBUS_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -231,19 +244,6 @@ void VBUS_DefaultInterruptHandler(void)
 {
     // add your VBUS interrupt custom code
     // or set custom function using VBUS_SetInterruptHandler()
-}
-/**
-  Allows selecting an interrupt handler for EVSYS_OUT at application runtime
-*/
-void EVSYS_OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    EVSYS_OUT_InterruptHandler = interruptHandler;
-}
-
-void EVSYS_OUT_DefaultInterruptHandler(void)
-{
-    // add your EVSYS_OUT interrupt custom code
-    // or set custom function using EVSYS_OUT_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for DRIVE_H0 at application runtime
@@ -430,10 +430,6 @@ void LED_DefaultInterruptHandler(void)
 ISR(PORTA_PORT_vect)
 { 
     // Call the interrupt handler for the callback registered at runtime
-    if(VPORTA.INTFLAGS & PORT_INT7_bm)
-    {
-       EVSYS_OUT_InterruptHandler(); 
-    }
     if(VPORTA.INTFLAGS & PORT_INT0_bm)
     {
        DRIVE_H0_InterruptHandler(); 
@@ -503,6 +499,10 @@ ISR(PORTD_PORT_vect)
     if(VPORTD.INTFLAGS & PORT_INT6_bm)
     {
        BEMF_C_InterruptHandler(); 
+    }
+    if(VPORTD.INTFLAGS & PORT_INT7_bm)
+    {
+       CRT_REF_InterruptHandler(); 
     }
     /* Clear interrupt flags */
     VPORTD.INTFLAGS = 0xff;

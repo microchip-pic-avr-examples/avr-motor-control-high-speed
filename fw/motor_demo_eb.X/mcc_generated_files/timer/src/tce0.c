@@ -7,7 +7,7 @@
  *
  * @version TCE0 Driver Version 1.0.1
  *
- * @copyright © 2025 Microchip Technology Inc. and its subsidiaries.
+ * @copyright © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software
  * and any derivatives exclusively with Microchip products. You're responsible
@@ -40,12 +40,6 @@
 
 /**
  * @ingroup tce0
- * @brief Function pointer to the Overflow (OVF) interrupt callback function.
- */
-static TCE0_cb_t TCE0_OVF_isr_cb  = NULL;
-
-/**
- * @ingroup tce0
  * @brief Mirrors the CTRLA.ENABLE bit of the TCE0 module.
  */
 static volatile bool timerActive = false;
@@ -56,43 +50,18 @@ static volatile bool timerActive = false;
  */
 static volatile uint8_t timerMode = TCE_WGMODE_FRQ_gc;
 
-/**
- * @ingroup tce0
- * @brief Interrupt Service Routine (ISR) for the Overflow (OVF) interrupt.
- * @param None.
- * @return None.
- */
-ISR(TCE0_OVF_vect)
-{
-    TCE0.INTFLAGS = TCE_OVF_bm;
-
-    if (TCE0_OVF_isr_cb != NULL)
-    {
-        TCE0_OVF_isr_cb();
-    }
-}
-
-
-void TCE0_OverflowCallbackRegister(TCE0_cb_t callback)
-{
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-    {
-        TCE0_OVF_isr_cb = callback;
-    }
-}
 
 
 void TCE0_Initialize(void)
 {
-    timerMode = TCE_WGMODE_DSBOTTOM_gc;
+    timerMode = TCE_WGMODE_SINGLESLOPE_gc;
 
-    TCE0_OVF_isr_cb  = NULL;
 
     TCE0.CTRLA = 0x00;
-    // CMP0 disabled; CMP1 disabled; CMP2 disabled; CMP3 disabled; OVF enabled; 
-    TCE0.INTCTRL = 0x1;
-    // ALUPD disabled; CMP0EN enabled; CMP1EN enabled; CMP2EN enabled; CMP3EN disabled; WGMODE DSBOTTOM; 
-    TCE0.CTRLB = 0x77;
+    // CMP0 disabled; CMP1 disabled; CMP2 disabled; CMP3 disabled; OVF disabled; 
+    TCE0.INTCTRL = 0x0;
+    // ALUPD disabled; CMP0EN enabled; CMP1EN enabled; CMP2EN enabled; CMP3EN disabled; WGMODE SINGLESLOPE; 
+    TCE0.CTRLB = 0x73;
     // CMP0OV disabled; CMP0POL disabled; CMP1OV disabled; CMP1POL disabled; CMP2OV disabled; CMP2POL disabled; CMP3OV disabled; CMP3POL disabled; 
     TCE0.CTRLC = 0x0;
     // AMPEN disabled; HREN OFF; SCALE NORMAL; SCALEMODE CENTER; 
@@ -120,7 +89,7 @@ void TCE0_Initialize(void)
     // Offset Register
     TCE0.OFFSET = 0x0;
     // Period Register
-    TCE0.PER = 0x100;
+    TCE0.PER = 0x1FF;
     // Capture/Compare 0 Register
     TCE0.CMP0 = 0x0;
     // Capture/Compare 1 Register
@@ -162,7 +131,6 @@ void TCE0_Deinitialize(void)
     TCE0.CMP2      = 0x0000;
     TCE0.CMP3      = 0x0000;
 
-    TCE0_OVF_isr_cb  = NULL;
 
     timerActive = false;
 

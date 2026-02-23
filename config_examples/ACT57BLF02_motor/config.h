@@ -1,24 +1,23 @@
-/* Microchip Technology Inc. and its subsidiaries.  You may use this software 
- * and any derivatives exclusively with Microchip products. 
- * 
- * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS".  NO WARRANTIES, WHETHER 
- * EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
- * WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A 
- * PARTICULAR PURPOSE, OR ITS INTERACTION WITH MICROCHIP PRODUCTS, COMBINATION 
- * WITH ANY OTHER PRODUCTS, OR USE IN ANY APPLICATION. 
- *
- * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
- * INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
- * WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
- * BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.  TO THE 
- * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS 
- * IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF 
- * ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *
- * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE 
- * TERMS. 
- */
-
+/*
+© [2026] Microchip Technology Inc. and its subsidiaries.
+ 
+    Subject to your compliance with these terms, you may use Microchip 
+    software and any derivatives exclusively with Microchip products. 
+    You are responsible for complying with 3rd party license terms  
+    applicable to your use of 3rd party software (including open source  
+    software) that may accompany Microchip software. SOFTWARE IS ?AS IS.? 
+    NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS 
+    SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT,  
+    MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT 
+    WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
+    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY 
+    KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF 
+    MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE 
+    FORESEEABLE. TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP?S 
+    TOTAL LIABILITY ON ALL CLAIMS RELATED TO THE SOFTWARE WILL NOT 
+    EXCEED AMOUNT OF FEES, IF ANY, YOU PAID DIRECTLY TO MICROCHIP FOR 
+    THIS SOFTWARE.
+*/
 
 #ifndef CONFIG_H
 #define	CONFIG_H
@@ -28,40 +27,47 @@
 
 /* PWM-In settings */
 #define PWM_IN_PERIOD                   (20.0)       /* ms */
-#define PWM_IN_MAX_DCY                  ( 1.9)       /* ms */
-#define PWM_IN_MIN_DCY                  ( 0.9)       /* ms */
-
-/* Drive mode settings */
-#define MOTOR_FORCED                    false        /* Setting to 'true' makes the motor run with no BEMF sensing, only blind drive */
+#define PWM_IN_MAX_DCY                  ( 2.0)       /* ms */
+#define PWM_IN_MIN_DCY                  ( 1.0)       /* ms */
 
 /* Board specific settings - MPPB */
 #define CURRENT_SHUNT_RESISTANCE        (0.01)       /* Resistance in ohm of the current shunt */
-#define CURRENT_AMPLIFIER_GAIN          (22.5)
-#define CURRENT_AMPLIFIER_OFFSET        (1650.0)     /* mV - Typical offset is VREF/2 = 1650 mV  */
+#define CURRENT_AMPLIFIER_GAIN          (7.5)
 #define VBUS_DIVIDER                    (16.0)
 #define ANALOG_REFERENCE                (3300.0)     /* mV */
 #define ADC_VBUS_TRIP                   (51000.0)    /* mV - VBUS trip level */
-#define ADC_CURRENT_TRIP                (7000.0)     /* mA - ADC current trip level */
-#define COMPARATOR_CURRENT_TRIP         (7333.0)     /* mA - Comparator trip level - not used on external-comparator configurations */
+#define ADC_CURRENT_TRIP                (10000.0)    /* mA - ADC current trip level */
+#define COMPARATOR_CURRENT_TRIP         (20000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
 #define FAULT_COMPARATOR_EN             true
+#define BOARD_PHASE_RC_DELAY            (10.0)       /* microseconds - RC filter delay */
+#define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
 
 /* Motor-specific settings */
 /* ACT57BLF02:  supply 24V, 3A limit */
 #define MOTOR_PHASE_ADVANCE             (15.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
 #define MOTOR_STARTUP_CURRENT           (12000.0)    /* mA - Initial alignment current pulse may be higher than overcurrent protection */
 #define MOTOR_RPP                       (0.45)       /* ohms - Motor resistance measured phase-to-phase */
-#define MOTOR_AMPRAMP_STEP_INTERVAL     (15)         /* Amplitude ramp step interval: expressed in milliseconds, time passed between two amplitude steps, 10 for aggresive ramp, 100 for soft ramp */
+#define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (10)         /* ms */
-#define MOTOR_MAXIMUM_ERPM              (50000.0)    /* e-RPM */
-#define MOTOR_SPEED_REGULATOR_EN        true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
-#define REGULATOR_MAX_SPEED             (12000.0)    /* e-RPM */
-#define REGULATOR_MIN_SPEED             ( 4000.0)    /* e-RPM */
-#define REGULATOR_PI_KP                 (0.1)        /* PI control loop proportional coefficient */
-#define REGULATOR_PI_KI                 (0.1)        /* PI control loop integral coefficient */
-#define STALL_DETECTION_THRESHOLD       (200)        /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
-#define STALL_DETECTION_DISABLED        false        /* Setting to 'true' disables the stall mechanism, setting to 'false' enables the stall mechanism */
-#define MOTOR_STARTUP_TIME              (1000)       /* ms until POT is used | '-1' means potentiometer is ignored, whether it is real or emulated */
+#define MOTOR_STARTUP_TIME              (1000)       /* ms -  delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
+#define MOTOR_STATRUP_SPEED             (0.0)        /* e-RPM - specify the initial speed for fast motors */
+
+/* Speed regulation specific settings */
+#define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
+#define REGULATOR_MAX_SPEED             (12000.0)    /* e-RPM target speed for 100% command */
+#define REGULATOR_MIN_SPEED             ( 4000.0)    /* e-RPM target speed for   0% command */
+#define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
+#define REGULATOR_PI_KI                 (0.25)       /* PI speed control loop integral coefficient */
+#define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms], this parameter is also used for measurement of speed in open loop, minimum 10ms */
+
+/* Drive Algorithm settings */
+#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive, no rotor synchronization, could overheat the motor */
+#define SINGLE_PULSE_MODE               false        /* Setting to 'true' enables single pulse drive method, setting to 'false' enables the PWM modulation drive method */
+#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> SinglePulse transition */
+#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  SinglePulse -> PWM transition */
+#define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
+#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables stall detection mechanism */
+#define STALL_MAXIMUM_ERPM              (150000.0)   /* e-RPM  - threshold when algorithm might lose synchronization */
+
 
 #endif	/* CONFIG_H */
-
-

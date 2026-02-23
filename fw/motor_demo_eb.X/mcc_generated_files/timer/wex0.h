@@ -7,7 +7,7 @@
  *
  * @version WEX0 Driver Version 1.0.1
  *
- * @copyright © 2025 Microchip Technology Inc. and its subsidiaries.
+ * @copyright © 2026 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software
  * and any derivatives exclusively with Microchip products. You're responsible

@@ -10,7 +10,7 @@
  */
 
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -34,8 +34,8 @@
 
 int8_t EVSYS_Initialize()
 {
-    //CHANNEL0 TCA0_OVF_LUNF; 
-    EVSYS.CHANNEL0 = 0x80;
+    //CHANNEL0 OFF; 
+    EVSYS.CHANNEL0 = 0x0;
     //CHANNEL1 AC1_OUT; 
     EVSYS.CHANNEL1 = 0x21;
     //CHANNEL2 OFF; 
@@ -64,8 +64,8 @@ int8_t EVSYS_Initialize()
     EVSYS.USERCCLLUT3A = 0x0;
     //USER OFF; 
     EVSYS.USERCCLLUT3B = 0x0;
-    //USER CHANNEL1; 
-    EVSYS.USEREVSYSEVOUTA = 0x2;
+    //USER OFF; 
+    EVSYS.USEREVSYSEVOUTA = 0x0;
     //USER OFF; 
     EVSYS.USEREVSYSEVOUTB = 0x0;
     //USER OFF; 

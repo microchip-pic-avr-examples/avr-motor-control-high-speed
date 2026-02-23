@@ -12,7 +12,7 @@
 */
 
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -41,8 +41,8 @@ static void (*RX3_InterruptHandler)(void);
 static void (*TX3_InterruptHandler)(void);
 static void (*BEMF_N_InterruptHandler)(void);
 static void (*BEMF_A_InterruptHandler)(void);
-static void (*EVSYS_OUT_InterruptHandler)(void);
 static void (*CRT_P_InterruptHandler)(void);
+static void (*CRT_N_InterruptHandler)(void);
 static void (*BEMF_B_InterruptHandler)(void);
 static void (*BEMF_C_InterruptHandler)(void);
 static void (*VBUS_InterruptHandler)(void);
@@ -71,7 +71,7 @@ void PIN_MANAGER_Initialize()
     PORTF.OUT = 0x20;
 
   /* DIR Registers Initialization */
-    PORTA.DIR = 0xBF;
+    PORTA.DIR = 0x3F;
     PORTB.DIR = 0x1;
     PORTC.DIR = 0x3C;
     PORTD.DIR = 0x0;
@@ -104,7 +104,7 @@ void PIN_MANAGER_Initialize()
     PORTC.PIN6CTRL = 0x0;
     PORTC.PIN7CTRL = 0x9;
     PORTD.PIN0CTRL = 0x4;
-    PORTD.PIN1CTRL = 0x0;
+    PORTD.PIN1CTRL = 0x4;
     PORTD.PIN2CTRL = 0x4;
     PORTD.PIN3CTRL = 0x0;
     PORTD.PIN4CTRL = 0x4;
@@ -144,8 +144,8 @@ void PIN_MANAGER_Initialize()
     TX3_SetInterruptHandler(TX3_DefaultInterruptHandler);
     BEMF_N_SetInterruptHandler(BEMF_N_DefaultInterruptHandler);
     BEMF_A_SetInterruptHandler(BEMF_A_DefaultInterruptHandler);
-    EVSYS_OUT_SetInterruptHandler(EVSYS_OUT_DefaultInterruptHandler);
     CRT_P_SetInterruptHandler(CRT_P_DefaultInterruptHandler);
+    CRT_N_SetInterruptHandler(CRT_N_DefaultInterruptHandler);
     BEMF_B_SetInterruptHandler(BEMF_B_DefaultInterruptHandler);
     BEMF_C_SetInterruptHandler(BEMF_C_DefaultInterruptHandler);
     VBUS_SetInterruptHandler(VBUS_DefaultInterruptHandler);
@@ -255,19 +255,6 @@ void BEMF_A_DefaultInterruptHandler(void)
     // or set custom function using BEMF_A_SetInterruptHandler()
 }
 /**
-  Allows selecting an interrupt handler for EVSYS_OUT at application runtime
-*/
-void EVSYS_OUT_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    EVSYS_OUT_InterruptHandler = interruptHandler;
-}
-
-void EVSYS_OUT_DefaultInterruptHandler(void)
-{
-    // add your EVSYS_OUT interrupt custom code
-    // or set custom function using EVSYS_OUT_SetInterruptHandler()
-}
-/**
   Allows selecting an interrupt handler for CRT_P at application runtime
 */
 void CRT_P_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -279,6 +266,19 @@ void CRT_P_DefaultInterruptHandler(void)
 {
     // add your CRT_P interrupt custom code
     // or set custom function using CRT_P_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for CRT_N at application runtime
+*/
+void CRT_N_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    CRT_N_InterruptHandler = interruptHandler;
+}
+
+void CRT_N_DefaultInterruptHandler(void)
+{
+    // add your CRT_N interrupt custom code
+    // or set custom function using CRT_N_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for BEMF_B at application runtime
@@ -490,10 +490,6 @@ ISR(PORTA_PORT_vect)
     {
        DRIVE_H2_InterruptHandler(); 
     }
-    if(VPORTA.INTFLAGS & PORT_INT7_bm)
-    {
-       EVSYS_OUT_InterruptHandler(); 
-    }
     if(VPORTA.INTFLAGS & PORT_INT3_bm)
     {
        DRIVE_L0_InterruptHandler(); 
@@ -566,6 +562,10 @@ ISR(PORTD_PORT_vect)
     if(VPORTD.INTFLAGS & PORT_INT0_bm)
     {
        CRT_P_InterruptHandler(); 
+    }
+    if(VPORTD.INTFLAGS & PORT_INT1_bm)
+    {
+       CRT_N_InterruptHandler(); 
     }
     if(VPORTD.INTFLAGS & PORT_INT4_bm)
     {

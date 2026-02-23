@@ -13,7 +13,7 @@
   * @version Package Version 6.0.0
 */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -142,26 +142,27 @@ uint16_t TCB1_MaxCountGet(void)
     return TCB1_MAX_COUNT;
 }
 
-void TCB1_CAPTInterruptEnable(void)
+
+
+bool TCB1_CaptureStatusGet(void)
 {
-    TCB1.INTCTRL |= TCB_CAPT_bm; /* Capture or Timeout: enabled */
+	return TCB1.INTFLAGS & TCB_CAPT_bm;
 }
 
-void TCB1_CAPTInterruptDisable(void)
+bool TCB1_OverflowStatusGet(void)
 {
-    TCB1.INTCTRL &= ~TCB_CAPT_bm; /* Capture or Timeout: disabled */
+	return TCB1.INTFLAGS & TCB_OVF_bm;
 }
 
-void TCB1_OVFInterruptEnable(void)
+void TCB1_CaptureStatusClear(void)
 {
-	TCB1.INTCTRL |= TCB_OVF_bm; /* Overflow Interrupt: enabled */
+    TCB1.INTFLAGS |= TCB_CAPT_bm;
 }
 
-void TCB1_OVFInterruptDisable(void)
+void TCB1_OverflowStatusClear(void)
 {
-	TCB1.INTCTRL &= ~TCB_OVF_bm; /* Overflow Interrupt: disabled */
+	TCB1.INTFLAGS |= TCB_OVF_bm;
 }
-
 
 bool TCB1_IsCaptInterruptEnabled(void)
 {
@@ -198,12 +199,10 @@ static void TCB1_DefaultCaptureCallback(void)
     //Use TCB1_CaptureCallbackRegister function to use Custom ISR
 }
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-ISR(TCB1_INT_vect)
+
+void TCB1_Tasks(void)
 {
-	if (0U != (TCB1.INTFLAGS & TCB_CAPT_bm))
+	if(0U != (TCB1.INTFLAGS & TCB_CAPT_bm))
     {
         if (TCB1_CAPT_isr_cb != NULL)
         {
@@ -211,7 +210,7 @@ ISR(TCB1_INT_vect)
         }
         TCB1.INTFLAGS = TCB_CAPT_bm;
     }
-    if (0U != (TCB1.INTFLAGS & TCB_OVF_bm))
+	if(0U != (TCB1.INTFLAGS & TCB_OVF_bm))
     {
         if (TCB1_OVF_isr_cb != NULL)
         {
@@ -220,4 +219,3 @@ ISR(TCB1_INT_vect)
         TCB1.INTFLAGS = TCB_OVF_bm;
     }
 }
-

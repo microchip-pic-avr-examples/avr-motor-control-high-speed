@@ -12,7 +12,7 @@
  * @version Package Version 7.1.0
  */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -53,7 +53,7 @@ void TCA0_Initialize(void)
         | (1 << TCA_SINGLE_CMP0EN_bp)   // CMP0EN enabled
         | (1 << TCA_SINGLE_CMP1EN_bp)   // CMP1EN enabled
         | (1 << TCA_SINGLE_CMP2EN_bp)   // CMP2EN enabled
-        | (TCA_SINGLE_WGMODE_DSBOTTOM_gc);  // WGMODE DSBOTTOM
+        | (TCA_SINGLE_WGMODE_SINGLESLOPE_gc);  // WGMODE SINGLESLOPE
 
     TCA0.SINGLE.CTRLC = (0 << TCA_SINGLE_CMP0OV_bp)   // CMP0OV disabled
         | (0 << TCA_SINGLE_CMP1OV_bp)   // CMP1OV disabled
@@ -87,14 +87,14 @@ void TCA0_Initialize(void)
     TCA0.SINGLE.INTCTRL = (0 << TCA_SINGLE_CMP0_bp)   // CMP0 disabled
         | (0 << TCA_SINGLE_CMP1_bp)   // CMP1 disabled
         | (0 << TCA_SINGLE_CMP2_bp)   // CMP2 disabled
-        | (1 << TCA_SINGLE_OVF_bp);  // OVF enabled
+        | (0 << TCA_SINGLE_OVF_bp);  // OVF disabled
 
     TCA0.SINGLE.INTFLAGS = (0 << TCA_SINGLE_CMP0_bp)   // CMP0 disabled
         | (0 << TCA_SINGLE_CMP1_bp)   // CMP1 disabled
         | (0 << TCA_SINGLE_CMP2_bp)   // CMP2 disabled
         | (0 << TCA_SINGLE_OVF_bp);  // OVF disabled
 
-    TCA0.SINGLE.PER = 0x100U;  // PER 0x100
+    TCA0.SINGLE.PER = 0x1FFU;  // PER 0x1FF
 
     TCA0.SINGLE.TEMP = 0x0;  // TEMP 0x0
 
@@ -211,68 +211,83 @@ void TCA0_ModeSet(TCA_SINGLE_WGMODE_t mode)
   }
 }
 
-void TCA0_InterruptEnable(void)
+void TCA0_OverflowStatusClear(void)
 {
-    TCA0.SINGLE.INTCTRL = (1 << TCA_SINGLE_CMP0_bp) /* Compare 0 Interrupt: enabled */
-	 				| (1 << TCA_SINGLE_CMP1_bp)     /* Compare 1 Interrupt: enabled */
-	 				| (1 << TCA_SINGLE_CMP2_bp)     /* Compare 2 Interrupt: enabled */
-	 				| (1 << TCA_SINGLE_OVF_bp);     /* Overflow Interrupt: enabled */
+    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm; 
 }
 
-void TCA0_InterruptDisable(void)
+bool TCA0_OverflowStatusGet(void)
 {
-    TCA0.SINGLE.INTCTRL = (0 << TCA_SINGLE_CMP0_bp) /* Compare 0 Interrupt: disabled */
-	 				| (0 << TCA_SINGLE_CMP1_bp)     /* Compare 1 Interrupt: disabled */
-	 				| (0 << TCA_SINGLE_CMP2_bp)     /* Compare 2 Interrupt: disabled */
-	 				| (0 << TCA_SINGLE_OVF_bp);     /* Overflow Interrupt: disabled */
+    return ((TCA0.SINGLE.INTFLAGS & TCA_SINGLE_OVF_bm) > 0U);
 }
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-ISR(TCA0_CMP0_vect)
+void TCA0_CMP0MatchStatusClear(void)
 {
-     if(NULL != TCA0_CMP0Callback)
+    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP0_bm; /* Clear Compare Channel-0 Interrupt Flag */
+}
+
+bool TCA0_CMP0MatchStatusGet(void)
+{
+    return ((TCA0.SINGLE.INTFLAGS & TCA_SINGLE_CMP0_bm) > 0U);
+}
+
+void TCA0_CMP1MatchStatusClear(void)
+{
+    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP1_bm; /* Clear Compare Channel-1 Interrupt Flag */
+}
+
+bool TCA0_CMP1MatchStatusGet(void)
+{
+    return ((TCA0.SINGLE.INTFLAGS & TCA_SINGLE_CMP1_bm) > 0U);
+}
+
+void TCA0_CMP2MatchStatusClear(void)
+{
+    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP2_bm; 
+}
+
+bool TCA0_CMP2MatchStatusGet(void)
+{
+    return ((TCA0.SINGLE.INTFLAGS & TCA_SINGLE_CMP2_bm) > 0U);
+}
+
+void TCA0_Tasks(void)
+{
+    if(0U != (TCA0.SINGLE.INTFLAGS & TCA_SINGLE_OVF_bm))
     {
-        (*TCA0_CMP0Callback)();
+        if(NULL != TCA0_OVFCallback)
+        {
+          (*TCA0_OVFCallback)();
+        }
+        TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;
     }
-    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP0_bm;
-}
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-ISR(TCA0_CMP1_vect)
-{
-    if(NULL != TCA0_CMP1Callback)
+    if(0U != (TCA0.SINGLE.INTFLAGS & TCA_SINGLE_CMP0_bm))
     {
-        (*TCA0_CMP1Callback)();
+        if(NULL != TCA0_CMP0Callback)
+        {
+            (*TCA0_CMP0Callback)();
+        }
+        TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP0_bm;
     }
-    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP1_bm;
-}
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-ISR(TCA0_CMP2_vect)
-{
-    if(NULL != TCA0_CMP2Callback)
+    if(0U != (TCA0.SINGLE.INTFLAGS & TCA_SINGLE_CMP1_bm))
     {
-        (*TCA0_CMP2Callback)();
+        if(NULL != TCA0_CMP1Callback)
+        {
+            (*TCA0_CMP1Callback)();
+        }
+        TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP1_bm;
     }
-    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP2_bm;
-}
 
-/* cppcheck-suppress misra-c2012-2.7 */
-/* cppcheck-suppress misra-c2012-8.2 */
-/* cppcheck-suppress misra-c2012-8.4 */
-ISR(TCA0_OVF_vect)
-{
-    if(NULL != TCA0_OVFCallback)
+    if(0U != (TCA0.SINGLE.INTFLAGS & TCA_SINGLE_CMP2_bm))
     {
-         (*TCA0_OVFCallback)();
+        if(NULL != TCA0_CMP2Callback)
+        {
+            (*TCA0_CMP2Callback)();
+        }
+        TCA0.SINGLE.INTFLAGS = TCA_SINGLE_CMP2_bm;
     }
-    TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;
 }
 
 void TCA0_OverflowCallbackRegister(TCA0_cb_t CallbackHandler)

@@ -1,3 +1,24 @@
+/*
+© [2026] Microchip Technology Inc. and its subsidiaries.
+ 
+    Subject to your compliance with these terms, you may use Microchip 
+    software and any derivatives exclusively with Microchip products. 
+    You are responsible for complying with 3rd party license terms  
+    applicable to your use of 3rd party software (including open source  
+    software) that may accompany Microchip software. SOFTWARE IS ?AS IS.? 
+    NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS 
+    SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT,  
+    MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT 
+    WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
+    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY 
+    KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF 
+    MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE 
+    FORESEEABLE. TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP?S 
+    TOTAL LIABILITY ON ALL CLAIMS RELATED TO THE SOFTWARE WILL NOT 
+    EXCEED AMOUNT OF FEES, IF ANY, YOU PAID DIRECTLY TO MICROCHIP FOR 
+    THIS SOFTWARE.
+*/
+
 #ifndef MCC_MAPPING_H
 #define MCC_MAPPING_H
 
@@ -8,7 +29,7 @@
 #include "mcc_generated_files/reset/rstctrl.h"
 
 #define __CPU_STRING__                  "AVR128DA48"
-#define DEBUG_BUFF_SIZE                 1000        /* This has to be an even number */
+#define DEBUG_BUFF_SIZE                 12000        /* This has to be an even number */
 
 /* BEMF comparator pins */
 #define CMP_MUX_A    AC_MUXPOS_AINP3_gc // PD6
@@ -32,23 +53,31 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define CURRENT_TRIP_LEVEL_SET              AC0_DACRefValueSet
 #define AC_REF_DAC_MAX                      255
 
-#define PWM_PERIOD                 307UL
+#define PWM_PERIOD                 613UL
 
 /* pins used for PWM/GPIO motor drive */
 #define DRIVE_LPORT                PORTB
-#define DRIVE_AH                   PIN3_bm  // dummy pin
-#define DRIVE_BH                   PIN4_bm  // dummy pin
-#define DRIVE_CH                   PIN5_bm  // dummy pin
+#define DRIVE_AH                   TCA_SINGLE_CMP0EN_bm
+#define DRIVE_BH                   TCA_SINGLE_CMP1EN_bm
+#define DRIVE_CH                   TCA_SINGLE_CMP2EN_bm
 #define DRIVE_AL                   PIN0_bm
 #define DRIVE_BL                   PIN1_bm
 #define DRIVE_CL                   PIN2_bm
-
-#define DRIVE_LOW(X)               do{DRIVE_LPORT.OUT = (X);}while(0) /* affects the unused 2 bits of the port */
+#define DRIVE_HIGH_MASK            (TCA_SINGLE_CMP0EN_bm | TCA_SINGLE_CMP1EN_bm | TCA_SINGLE_CMP2EN_bm)
+#define DRIVE_PINS(X, Y)           do{uint8_t temp = (TCA0.SINGLE.CTRLB & ~DRIVE_HIGH_MASK) | ((X) & DRIVE_HIGH_MASK);\
+                                   TCA0.SINGLE.CTRLB = temp;\
+                                   DRIVE_LPORT.OUT = (Y);\
+                                   }while(0)
 
 /* timer used to generate PWM and sample comparator */
-#define PWM_TIMER_DCY_SET_A        TCA0_Compare0BufferSet
-#define PWM_TIMER_DCY_SET_B        TCA0_Compare1BufferSet
-#define PWM_TIMER_DCY_SET_C        TCA0_Compare2BufferSet
+#define PWM_TIMER_DCY_SET(X)       do{\
+                                   TCA0.SINGLE.CMP0BUF = (X);\
+                                   TCA0.SINGLE.CMP1BUF = (X);\
+                                   TCA0.SINGLE.CMP2BUF = (X);\
+                                   }while(0)
+#define PWM_TIMER_PERIOD_SET       TCA0_PeriodSet
+#define PWM_TIMER_PERIOD_GET       TCA0_PeriodGet
+#define PWM_CNT_RESET()            do{TCA0.SINGLE.CTRLESET = TCA_SINGLE_CMD_RESTART_gc; }while(0)
 
 /* timer used to change sector */
 #define SECTOR_TIMER_CB_REGISTER   TCB0_CaptureCallbackRegister
@@ -74,6 +103,7 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 
 /* ADC pins definitions */
 #define CRT_P_ADC_PIN           ADC_MUXPOS_AIN10_gc // PE2
+#define CRT_N_ADC_PIN           ADC_MUXPOS_AIN8_gc  // PE0
 #define VBUS_ADC_PIN            ADC_MUXPOS_AIN0_gc  // PD0
 #define POT_ADC_PIN             ADC_MUXPOS_AIN1_gc  // PD1
 
@@ -82,7 +112,6 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define ADC_CONV_START          ADC0_ConversionStart
 #define ADC_RESULT_GET          ADC0_ConversionResultGet
 #define ADC_RESOLUTION_GET      ADC0_ResolutionGet
-#define ADC_CB_REGISTER         TCA0_OverflowCallbackRegister
 #define ADC_NO_CONV_PROGRESS    ADC0_IsConversionDone
 
 #define System_Reset_Command    RSTCTRL_SoftwareReset

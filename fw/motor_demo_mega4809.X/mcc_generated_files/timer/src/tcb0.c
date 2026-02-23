@@ -13,7 +13,7 @@
   * @version Package Version 6.0.0
 */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -46,7 +46,7 @@ void TCB0_Initialize(void)
 {
     TCB0.CTRLA &= ~TCB_ENABLE_bm; /* Stop Timer */
 
-    TCB0.CTRLB = (0 << TCB_ASYNC_bp)   // ASYNC disabled
+    TCB0.CTRLB = (1 << TCB_ASYNC_bp)   // ASYNC enabled
         | (0 << TCB_CCMPEN_bp)   // CCMPEN disabled
         | (0 << TCB_CCMPINIT_bp)   // CCMPINIT disabled
         | (TCB_CNTMODE_INT_gc);  // CNTMODE INT
@@ -68,7 +68,7 @@ void TCB0_Initialize(void)
 
     TCB0.INTCTRL = (1 << TCB_CAPT_bp);  // CAPT enabled
 
-    TCB0.CTRLA = (TCB_CLKSEL_CLKDIV1_gc)   // CLKSEL CLKDIV1
+    TCB0.CTRLA = (TCB_CLKSEL_CLKTCA_gc)   // CLKSEL CLKTCA
         | (1 << TCB_ENABLE_bp)   // ENABLE enabled
         | (0 << TCB_RUNSTDBY_bp)   // RUNSTDBY disabled
         | (0 << TCB_SYNCUPD_bp);  // SYNCUPD disabled

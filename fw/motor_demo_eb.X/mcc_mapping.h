@@ -1,3 +1,24 @@
+/*
+© [2026] Microchip Technology Inc. and its subsidiaries.
+ 
+    Subject to your compliance with these terms, you may use Microchip 
+    software and any derivatives exclusively with Microchip products. 
+    You are responsible for complying with 3rd party license terms  
+    applicable to your use of 3rd party software (including open source  
+    software) that may accompany Microchip software. SOFTWARE IS ?AS IS.? 
+    NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS 
+    SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT,  
+    MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT 
+    WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
+    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY 
+    KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF 
+    MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE 
+    FORESEEABLE. TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP?S 
+    TOTAL LIABILITY ON ALL CLAIMS RELATED TO THE SOFTWARE WILL NOT 
+    EXCEED AMOUNT OF FEES, IF ANY, YOU PAID DIRECTLY TO MICROCHIP FOR 
+    THIS SOFTWARE.
+*/
+
 #ifndef MCC_MAPPING_H
 #define MCC_MAPPING_H
 
@@ -22,16 +43,16 @@ static void AC0_Invert(bool config) { if(config) AC0.MUXCTRL |=  AC_INVERT_bm; e
 #define COMP_INVERT                AC0_Invert
 
 /* external/internal comparator - fault trip */
-#define FAULT_CONTROL                       AC1.INTCTRL
-#define FAULT_DISABLE                       0
-#define CURRENT_TRIP_SetInterruptHandler    AC1_CallbackRegister
-#define COMP_EDGE_RISING                    (AC_INTMODE_NORMAL_POSEDGE_gc | AC_CMP_bm) 
-#define COMP_EDGE_FALLING                   (AC_INTMODE_NORMAL_NEGEDGE_gc | AC_CMP_bm)
+#define FAULT_CONTROL                       WEX0.FAULTCTRL
+#define FAULT_DISABLE                       (WEX_FDDBD_bm | WEX_FDACT_NONE_gc)
+#define CURRENT_TRIP_SetInterruptHandler(X) do{WEX0_SoftwareCommand(WEX_CMD_FAULTCLR_gc); WEX0_FaultDetectionAction(WEX_FDACT_LOW_gc); WEX0_FAULTIsrCallbackRegister(X);}while(0)
+#define COMP_EDGE_RISING                    (WEX_FDDBD_bm | WEX_FDACT_NONE_gc)
+#define COMP_EDGE_FALLING                   (WEX_FDDBD_bm | WEX_FDACT_NONE_gc)
 #define FAULT_COMPARATOR_EDGE               true /* true - on rising edge  | false - on falling edge */
 #define CURRENT_TRIP_LEVEL_SET              AC1_DACRefValueSet
 #define AC_REF_DAC_MAX                      255
 
-#define PWM_PERIOD                 256UL
+#define PWM_PERIOD                 511UL
 
 /* pins used for PWM/GPIO motor drive */
 #define DRIVE_LPORT
@@ -41,13 +62,17 @@ static void AC0_Invert(bool config) { if(config) AC0.MUXCTRL |=  AC_INVERT_bm; e
 #define DRIVE_AL                   WEX_PGMOUT1_bm
 #define DRIVE_BL                   WEX_PGMOUT3_bm
 #define DRIVE_CL                   WEX_PGMOUT5_bm
-
-#define DRIVE_LOW(X)               WEX0_PatternGenerationOutputSet(X) /* affects the unused 2 bits of the port */
+#define DRIVE_PINS(X, Y)           do{WEX0.PGMOVR = 0xFF & ~(X); WEX0.PGMOUT = Y;}while(0)
 
 /* timer used to generate PWM and sample comparator */
-#define PWM_TIMER_DCY_SET_A        TCE0_PWM_BufferedDutyCycle0Set
-#define PWM_TIMER_DCY_SET_B        TCE0_PWM_BufferedDutyCycle1Set
-#define PWM_TIMER_DCY_SET_C        TCE0_PWM_BufferedDutyCycle2Set
+#define PWM_TIMER_DCY_SET(X)       do{\
+                                      TCE0.CMP0BUF = (X);\
+                                      TCE0.CMP1BUF = (X);\
+                                      TCE0.CMP2BUF = (X);\
+                                   }while(0)
+#define PWM_TIMER_PERIOD_SET       TCE0_PeriodSet
+#define PWM_TIMER_PERIOD_GET       TCE0_PeriodGet
+#define PWM_CNT_RESET()            do{TCE0.CTRLESET = TCE_CMD_RESTART_gc; }while(0)
 
 /* timer used to change sector */
 #define SECTOR_TIMER_CB_REGISTER   TCB0_CaptureCallbackRegister
@@ -73,6 +98,7 @@ static void AC0_Invert(bool config) { if(config) AC0.MUXCTRL |=  AC_INVERT_bm; e
 
 /* ADC pins definitions */
 #define CRT_P_ADC_PIN           ADC_MUXPOS_AIN3_gc  // PD3
+#define CRT_N_ADC_PIN           ADC_MUXPOS_AIN7_gc  // PD7
 #define VBUS_ADC_PIN            ADC_MUXPOS_AIN20_gc // PF4
 #define POT_ADC_PIN             ADC_MUXPOS_AIN1_gc  // PD1
 
@@ -81,7 +107,6 @@ static void AC0_Invert(bool config) { if(config) AC0.MUXCTRL |=  AC_INVERT_bm; e
 #define ADC_CONV_START          ADC0_ConversionStart
 #define ADC_RESULT_GET          ADC0_ConversionResultGet
 #define ADC_RESOLUTION_GET      ADC0_ResolutionGet
-#define ADC_CB_REGISTER         TCE0_OverflowCallbackRegister
 #define ADC_NO_CONV_PROGRESS    ADC0_IsConversionDone
 
 

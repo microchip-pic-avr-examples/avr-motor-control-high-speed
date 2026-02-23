@@ -12,7 +12,7 @@
  * @version Package Version 7.1.0
 */
 /*
-© [2025] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -59,18 +59,60 @@
 #define TCA0_Write TCA0_PeriodSet
 /**
  * @ingroup tca0_normal
- * @brief Defines the Custom Name for the \ref TCA0_InterruptEnable API. 
- *        The TCA0_EnableInterrupt will be deprecated in the future release. Use TCA0_InterruptEnable instead.
+ * @brief Defines the Custom Name for the \ref TCA0_OverflowStatusClear API. 
+ *        The TCA0_ClearOverflowInterruptFlag will be deprecated in the future release. Use TCA0_OverflowStatusClear instead.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define TCA0_EnableInterrupt TCA0_InterruptEnable
+#define TCA0_ClearOverflowInterruptFlag TCA0_OverflowStatusClear
 /**
  * @ingroup tca0_normal
- * @brief Defines the Custom Name for the \ref TCA0_InterruptDisable API. 
- *        The TCA0_DisableInterrupt will be deprecated in the future release. Use TCA0_InterruptDisable instead.
+ * @brief Defines the Custom Name for the \ref TCA0_OverflowStatusGet API. 
+ *        The TCA0_IsOverflowInterruptFlagSet will be deprecated in the future release. Use TCA0_OverflowStatusGet instead.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define TCA0_DisableInterrupt TCA0_InterruptDisable
+#define TCA0_IsOverflowInterruptFlagSet TCA0_OverflowStatusGet
+/**
+ * @ingroup tca0_normal
+ * @brief Defines the Custom Name for the \ref TCA0_CMP0MatchStatusClear API. 
+ *        The TCA0_ClearCMP0InterruptFlag will be deprecated in the future release. Use TCA0_CMP0MatchStatusClear instead.
+ */
+/* cppcheck-suppress misra-c2012-2.5 */  
+#define TCA0_ClearCMP0InterruptFlag TCA0_CMP0MatchStatusClear
+/**
+ * @ingroup tca0_normal
+ * @brief Defines the Custom Name for the \ref TCA0_CMP0MatchStatusGet API. 
+ *        The TCA0_IsCMP0InterruptFlagSet will be deprecated in the future release. Use TCA0_CMP0MatchStatusGet instead.
+ */
+/* cppcheck-suppress misra-c2012-2.5 */  
+#define TCA0_IsCMP0InterruptFlagSet TCA0_CMP0MatchStatusGet
+/**
+ * @ingroup tca0_normal
+ * @brief Defines the Custom Name for the \ref TCA0_CMP1MatchStatusClear API. 
+ *        The TCA0_ClearCMP1InterruptFlag will be deprecated in the future release. Use TCA0_CMP1MatchStatusClear instead.
+ */
+/* cppcheck-suppress misra-c2012-2.5 */  
+#define TCA0_ClearCMP1InterruptFlag TCA0_CMP1MatchStatusClear
+/**
+ * @ingroup tca0_normal
+ * @brief Defines the Custom Name for the \ref TCA0_CMP1MatchStatusGet API. 
+ *        The TCA0_IsCMP1InterruptFlagSet will be deprecated in the future release. Use TCA0_CMP1MatchStatusGet instead.
+ */
+/* cppcheck-suppress misra-c2012-2.5 */  
+#define TCA0_IsCMP1InterruptFlagSet TCA0_CMP1MatchStatusGet
+/**
+ * @ingroup tca0_normal
+ * @brief Defines the Custom Name for the \ref TCA0_CMP2MatchStatusClear API. 
+ *        The TCA0_ClearCMP2InterruptFlag will be deprecated in the future release. Use TCA0_CMP2MatchStatusClear instead.
+ */
+/* cppcheck-suppress misra-c2012-2.5 */  
+#define TCA0_ClearCMP2InterruptFlag TCA0_CMP2MatchStatusClear
+/**
+ * @ingroup tca0_normal
+ * @brief Defines the Custom Name for the \ref TCA0_CMP2MatchStatusGet API. 
+ *        The TCA0_IsCMP2InterruptFlagSet will be deprecated in the future release. Use TCA0_CMP2MatchStatusGet instead.
+ */
+/* cppcheck-suppress misra-c2012-2.5 */ 
+#define TCA0_IsCMP2InterruptFlagSet TCA0_CMP2MatchStatusGet
 /**
  * @ingroup tca0_normal
  * @brief Defines the Custom Name for the \ref TCA0_FrequencySet API. 
