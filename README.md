@@ -562,6 +562,7 @@ Drive sequence legend:
 <br> This is the default drive mode. In this mode, the sector timer has a variable period based on the speed of the motor, and the PWM timer has a fixed period of 25.6 μs (~40 kHz switching frequency). In each sector, there are multiple periods of the PWM timer. By using this mode, high electrical speeds can be achieved (<200,000 electrical RPM). However, this mode is not useful anymore at very high speeds (>200,000 Electrical RPM), due to switching losses and limited resolution of the PWM timer using a fixed period. The solution is to switch to the Single Pulse mode when a threshold speed is achieved.
 
 <h4> PWM Mode Drive Signals </h4>
+
 <br><img src="images/drive_sequence_pwm.png">
 
 #### Single Pulse Mode
@@ -572,6 +573,7 @@ Drive sequence legend:
 <br>Single Pulse mode has two advantages that allow it to reach higher speeds than PWM modes. The first one is that there are significantly less switching losses compared to PWM mode, as there is only one big `ON` time and one big  `OFF` time in one electrical period of six sectors, for each phase. The second advantage is the increased timer resolution provided by a variable period. This is observable at very high speeds, because in the PWM mode there can be sectors with different numbers of PWM timer periods. In Single Pulse mode, the sectors are equal even at very high speeds, because there is just one big `ON` time instead of multiple 'ON' times, as seen in PWM mode.
 
 <h4> Single Pulse Mode Drive Signals </h4>
+
 <br><img src="images/drive_sequence_sp.png">
 
 #### Switching Between PWM and Single Pulse
@@ -579,6 +581,7 @@ Drive sequence legend:
 <br> The Single Pulse mode has certain advantages compared to PWM mode, in the context of high speed values. At lower speeds, the PWM mode is much more reliable. Most motors cannot even be started using Single Pulse mode, because of the very fast rise of the current through the windings. The working principle is to spin the motor in PWM mode until it reaches the maximum possible speed (<200,000 electrical RPM), and then switch to Single Pulse mode to reach extreme speeds (>200,000 electrical RPM).
 
 <h4>PWM Mode to Single Pulse Mode Overview </h4>
+
 <br><img src="images/pwm_to_sp_cross.png">
 
 <br> It can be observed that the duty cycle (75% in this example) is kept the same after switching from one mode to the other, but it is scaled to the new period of the PWM timer.
@@ -644,23 +647,19 @@ Oscilloscope traces:
 |:-------------------:|:----------------:|:-----------------------:|:--------------:|:--------:|
 |     **PWM**         |     16           |     0.68                |  15            | 112,000  |
 
-<img src="images/capture_pwm_mode.png">
-
-<br>
+<br><img src="images/capture_pwm_mode.png">
 
 |      Mode           |Supply Voltage [V]| Current Consumption [A] | Duty Cycle [%] | e-RPM    |
 |:-------------------:|:----------------:|:-----------------------:|:--------------:|:--------:|
 |   **Single Pulse**  |     16           |     2.00                |  38            | 250,000  |
 
-<img src="images/capture_sp_mode.png">
-
-<br>
+<br><img src="images/capture_sp_mode.png">
 
 |      Mode           |Supply Voltage [V]| Current Consumption [A] | Duty Cycle [%] | e-RPM    |
 |:-------------------:|:----------------:|:-----------------------:|:--------------:|:--------:|
 |    **Full Drive**   |     16           |     2.40                |  100           | 280,000  |
 
-<img src="images/capture_full_drive.png">
+<br><img src="images/capture_full_drive.png">
 
 
 <br>Results obtained with various motors used in this project:
