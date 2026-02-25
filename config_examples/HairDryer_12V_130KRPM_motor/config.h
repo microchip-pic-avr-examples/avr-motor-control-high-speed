@@ -43,14 +43,14 @@
 #define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
 
 /* Motor-specific settings */
-/* Hair Dryer Motor:  supply 12V, 15A limit */
+/* A2207-2500KV:  supply 16V, 3A limit */
 #define MOTOR_PHASE_ADVANCE             (15.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
 #define MOTOR_STARTUP_CURRENT           (20000.0)    /* mA - Initial alignment current pulse may be higher than overcurrent protection */
 #define MOTOR_RPP                       (0.15)       /* ohms - Motor resistance measured phase-to-phase */
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (5)          /* ms */
-#define MOTOR_STARTUP_TIME              (250)        /* ms -  delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (15000.0)    /* e-RPM - specify the initial speed for fast motors */
+#define MOTOR_STARTUP_TIME              (250)        /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
+#define MOTOR_STATRUP_SPEED             (15000.0)    /* e-RPM - Specify the initial speed for fast motors */
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
@@ -58,16 +58,16 @@
 #define REGULATOR_MIN_SPEED             (20000.0)    /* e-RPM target speed for   0% command */
 #define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
 #define REGULATOR_PI_KI                 (0.1)        /* PI speed control loop integral coefficient */
-#define REGULATOR_PI_DT                 (20.0)       /* PI time step size [ms], this parameter is also used for measurement of speed in open loop, minimum 10ms */
+#define REGULATOR_PI_DT                 (20.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop—minimum 10 ms */
 
 /* Drive Algorithm settings */
-#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive, no rotor synchronization, could overheat the motor */
-#define SINGLE_PULSE_MODE               true         /* Setting to 'true' enables single pulse drive method, setting to 'false' enables the PWM modulation drive method */
-#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> SinglePulse transition */
-#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  SinglePulse -> PWM transition */
+#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
+#define SINGLE_PULSE_MODE               true         /* Setting to 'true' enables the single pulse drive method, while setting to 'false' enables the PWM modulation drive method */
+#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> Single Pulse transition */
+#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
-#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM  - threshold when algorithm might lose synchronization */
+#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
+#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
 
 
 #endif	/* CONFIG_H */

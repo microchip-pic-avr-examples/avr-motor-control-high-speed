@@ -1,5 +1,19 @@
 [![MCHP](images/microchip.png)](https://www.microchip.com)
 
+## Motor Control With AVR®
+
+This repository features a Motor Control application designed for high-speed Trapezoidal Sensorless control, which includes three implementations based on the AVR family: AVR16EB32, AVR128DA48, and ATmega4809 devices. Check the [*Release Notes*](#release-notes) section to see the available functionality of the current release. The aim of this application is to maintain stability during a high count of electrical rotations per minute (>200,000 electrical RPM) by using a simplified Proportional-Integral (PI) algorithm. All three code examples have the same functionality; the only difference is the used device.
+
+- <b>AVR EB</b> has two new peripherals, the Timer Counter type E (TCE) and Waveform Extension (WEX), that have new hardware capabilities designed to handle functions typically managed by software in motor control, as described in [Getting Started with the TCE and WEX](https://onlinedocs.microchip.com/oxy/GUID-8FB8D192-E8C9-4748-B991-D4D842E01591-en-US-1/index.html) and in the [AVR® EB Data Sheet](https://www.microchip.com/en-us/product/avr16eb32#document-table)
+
+- <b>AVR DA</b> provides increased memory, higher CPU frequency and additional pins, as described in the [AVR® DA Data Sheet](https://www.microchip.com/en-us/product/avr128da48#document-table)
+
+- <b>ATmega</b> incorporates features from both AVR EB and AVR DA families, offering a well-balanced combination of hardware capabilities, memory, and pin count, as described in the [AVR® ATmega Data Sheet](https://www.microchip.com/en-us/product/atmega4809#document-table)
+  
+- The application is designed to obtain a trapezoidal (6-step block commutation) with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs).
+
+- The sensorless feedback and synchronization are achieved using the Zero-Cross Detections (ZCDs) corresponding to the Back-Electromotive Forces (BEMFs) of each of the three phases of the motor. The BEMFs are captured using hardware peripherals, thus improving the accuracy of zero-cross detections at high speeds. The motor synchronization is achieved using a Proportional-Integral (PI) algorithm, that calculates the error between the measured ZCD and the ideal ZCD.
+
 <h2> Table of Contents </h2>
 
 - [Motor Control With AVR®](#motor-control-with-avr®)
@@ -30,38 +44,24 @@
   - [Motor Drive Sequence](#motor-drive-sequence)
     - [PWM Mode](#pwm-mode)
     - [Single Pulse Mode](#single-pulse-mode)
-    - [Switch Between PWM And Single Pulse](#switch-between-pwm-and-single-pulse)
+    - [Switching Between PWM and Single Pulse](#switching-between-pwm-and-single-pulse)
   - [Motor Feedback Sensing](#motor-feedback-sensing)
   - [Motor Synchronization Algorithm](#motor-synchronization-algorithm)
   - [Motor Speed Regulator Algorithm](#motor-speed-regulator-algorithm)
 - [Results](#results)
 - [Summary](#summary)
 
-## Motor Control With AVR®
-
-This repository contains a Motor Control application focused on extreme-speed Trapezoidal Sensorless control, using three implementations of the AVR family: AVR16EB32, AVR128DA48 and ATmega4809 devices. Check the [*Release Notes*](#release-notes) section to see the available functionality of the current release. The aim of this application is keeping stability at the high count of electrical rotations per minute (> 200,000 Electrical RPM), using a simplified Proportional-Integral (PI) algorithm. All the three code examples have the same functionality; the only difference is the used device.
-
-- <b>AVR EB</b> has two new peripherals, the Timer Counter type E (TCE) and a Waveform Extension (WEX), that have new hardware capabilities meant to take over software functions usually used in motor control, as described in [Getting Started with the TCE and WEX](https://onlinedocs.microchip.com/oxy/GUID-8FB8D192-E8C9-4748-B991-D4D842E01591-en-US-1/index.html) and in the [AVR® EB Data Sheet](https://www.microchip.com/en-us/product/avr16eb32#document-table)
-
-- <b>AVR DA</b> offers more memory and a bit more CPU frequency and pins, as described in the [AVR® DA Data Sheet](https://www.microchip.com/en-us/product/avr128da48#document-table)
-
-- <b>ATmega</b> incorporates features from both AVR EB and AVR DA families, offering a well-balanced combination of hardware capabilities, memory, and pin count, as described in the [AVR® ATmega Data Sheet](https://www.microchip.com/en-us/product/atmega4809#document-table)
-  
-- The application's functionality is to obtain a trapezoidal (6-step block commutation) with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs)
-
-- The Sensorless feedback and synchronization are achieved using the Zero-Cross Detections (ZCDs) of Back-Electromotive Forces (BEMFs) of each of the three phases of the motor. The BEMFs are captured using hardware peripherals, thus improving the accuracy of zero-cross detections at high speeds. The motor synchronization is achieved using a Proportional-Integral (PI) algorithm, that calculates the error between the measured ZCD and the ideal ZCD.
-
 ## Release Notes
 
 Current version 1.2.0 features:
 
-- Crossing from PWM drive mode to Single Pulse drive mode with adjustable speed thresholds
+- Crossing from the Pulse-Width Modulation (PWM) drive mode to Single Pulse drive mode with adjustable speed thresholds
 
 Version 1.1.0 features:
 
 - Adjustable phase advance
 - Speed regulator with adjustable Kp and Ki parameters for Closed-Loop control
-- Pulse-Width Modulation (PWM) input for compatibility with radio-controlled receivers
+- PWM input for compatibility with radio-controlled receivers
 - Removed virtual potentiometer feature
 
 Version 1.0.0 features:
@@ -72,9 +72,9 @@ Version 1.0.0 features:
 - BEMF sensing
 - Start ramp
 - Proportional-Integral (PI) algorithm with fixed parameters for Open-Loop synchronization
-- Fault support for Hardware Peak Overcurrent Protection (Peak OCP), Software Average Overcurrent Protection (Avg OCP), Overvoltage Protection (OVP) and Stall Detection
+- Fault support for hardware Peak Overcurrent Protection (Peak OCP), software Average Overcurrent Protection (Avg OCP), Overvoltage Protection (OVP) and Stall Detection
 - Current, Voltage Bus and Potentiometer analog measurements at run time
-- Potentiometer emulation in percentage, configurable from configuration file
+- Potentiometer emulation in percentage, configurable from the configuration file
 - Switching frequency at 40 kHz
 
 ## Related Documentation
@@ -107,8 +107,9 @@ More details and code examples on the AVR16EB32, AVR128DA48 and ATmega4809 can b
 - [AVR DA Curiosity Nano Adaptor to MPPB](#curiosity-nano---mppb-pin-mapping), made with wires
 - [AVR ATmega Curiosity Nano Adaptor to MPPB](#curiosity-nano---mppb-pin-mapping), made with wires
 - A Voltage power supply (6-55V and 10A limit, depending on the motor used)
-- At least one BLDC Motor. For development and testing of this demo the following motors were used:
+- At least one BLDC motor. For the development and testing of this demo, the following motors were used:
   - ACT42BLF01
+  - ACT57BLF02
   - SZSPEED 2207 KV 2500
   - Hacker A10 KV 2900
   - A2212 KV 2200
@@ -122,7 +123,7 @@ More details and code examples on the AVR16EB32, AVR128DA48 and ATmega4809 can b
 
 ### Physical Setup
 
-The AVR16EB32, AVR128DA48 or ATmega4809 Curiosity Nano Development boards are used along with the MPPB, AVR EB, AVR DA or ATmega CNANO to MPPB adapter board, the BLDC Motor and a Voltage power supply.
+The AVR16EB32, AVR128DA48 or ATmega4809 Curiosity Nano Development boards are used along with the MPPB, AVR EB, AVR DA or ATmega CNANO to MPPB adapter board, the BLDC motor and a voltage power supply.
 
 <br>Connection steps:
 
@@ -182,22 +183,22 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 
 ### Necessary Hardware Tweaks
 
-<br> This demo requires adding three SMD capacitors of 1 nF each with the size of 0402 on the MPPB board, one for each motor phases. Also, the capacitor for the motor neutral filter must be replaced with one of 3.3 nF with the same size, 0402, as explained below.
+<br> This demo requires adding three SMD capacitors of 1 nF each with the size of 0402 on the MPPB board, one for each motor phases. Also, the capacitor for the motor neutral filter must be replaced with a 3.3 nF one of the same size, as explained below.
 
-<br> Because this demo counts on capturing the BEMF using a hardware capture mechanism of a timer, the captured signals need filtering to remove false zero-cross detection. The easiest method to do this is by using a RC low-pass filter. The MPPB board has placeholder pads for the capacitors that need to be added. The capacitor for virtual neutral point is already in place, but needs to be replaced with a 3.3 nF capacitor, and the capacitor values for phases A, B and C must have the value of 1 nF (three times smaller than the one from virtual neutral). With these capacitor values, the resulted RC filters will add a 10 µs delay to the zero-cross detection. The resulted RC filters are good enough for noise filtering and not adding a big delay, thus allowing for spinning the motor at very high electrical RPM.
+<br> Because this demo counts on capturing the BEMF using the hardware capture mechanism of a timer, the captured signals need filtering to remove false Zero-Cross Detection (ZCD). The easiest method to do this is by using a RC low-pass filter. The MPPB board has placeholder pads for the capacitors that need to be added. The capacitor for virtual neutral point is already in place, but needs to be replaced with a 3.3 nF capacitor, and the capacitor values for phases A, B and C must have the value of 1 nF (three times smaller than the one from virtual neutral). With these capacitor values, the resulted RC filters will add a 10 µs delay to the zero-cross detection. The resulted RC filters are sufficient for noise filtering and do not add a big delay, thus allowing the motor to spin at very high electrical RPMs.
 
-<h3> Capacitors location marked with green rectangles </h3>
+<h4> Capacitors location marked with green rectangles </h4>
 
 <br><br><img src="images/rc_caps_add.png">
 
-<h3> Capacitors location zoomed in</h3>
+<h4> Capacitors location zoomed in </h4>
 
 <br><br><img src="images/hardware_rc_zoomed.png">
 
 ### Configuration Settings
 
-<br>These are a set of configuration settings, apart from the default values, needed to run the demo in the Trapezoidal Sensorless mode with the ACT42BLF01 motor and SZSPEED 2207 2500KV drone motor.
-<br>In the configuration file [`config.h`](#configurable-parameters) edit the settings according to the usage scenario. 
+<br>The following are configuration settings which, apart from the default values, are needed to run the demo in the Trapezoidal Sensorless mode with the ACT42BLF01 motor and SZSPEED 2207 2500KV drone motor.
+<br>Edit the settings in the configuration file [`config.h`](#configurable-parameters) according to the usage scenario.
 
 <br><h3> Configuration Settings for the ACT42BLF01 Motor </h3>
 
@@ -230,8 +231,8 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define MOTOR_RPP                       (2.6)        /* ohms - Motor resistance measured phase-to-phase */
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (10)         /* ms */
-#define MOTOR_STARTUP_TIME              (1000)       /* ms -  delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (0.0)        /* e-RPM - specify the initial speed for fast motors */
+#define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
+#define MOTOR_STATRUP_SPEED             (0.0)        /* e-RPM - Specify the initial speed for fast motors */
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
@@ -239,16 +240,16 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define REGULATOR_MIN_SPEED             ( 4000.0)    /* e-RPM target speed for   0% command */
 #define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
 #define REGULATOR_PI_KI                 (1.0)        /* PI speed control loop integral coefficient */
-#define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms], this parameter is also used for measurement of speed in open loop, minimum 10ms */
+#define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop—minimum 10 ms */
 
 /* Drive Algorithm settings */
-#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive, no rotor synchronization, could overheat the motor */
-#define SINGLE_PULSE_MODE               false        /* Setting to 'true' enables single pulse drive method, setting to 'false' enables the PWM modulation drive method */
-#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> SinglePulse transition */
-#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  SinglePulse -> PWM transition */
+#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
+#define SINGLE_PULSE_MODE               false        /* Setting to 'true' enables the single pulse drive method, while setting to 'false' enables the PWM modulation drive method */
+#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> Single Pulse transition */
+#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
-#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM  - threshold when algorithm might lose synchronization */
+#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
+#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when algorithm might lose synchronization */
 ```
 
 <br><h3> Configuration Settings for the SZSPEED 2207 2500KV Drone Motor </h3>
@@ -282,8 +283,8 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define MOTOR_RPP                       (0.1)        /* ohms - Motor resistance measured phase-to-phase */
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (5)          /* ms */
-#define MOTOR_STARTUP_TIME              (1000)       /* ms -  delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (25000.0)    /* e-RPM - specify the initial speed for fast motors */
+#define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
+#define MOTOR_STATRUP_SPEED             (25000.0)    /* e-RPM - Specify the initial speed for fast motors */
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
@@ -291,16 +292,16 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define REGULATOR_MIN_SPEED             (50000.0)    /* e-RPM target speed for   0% command */
 #define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
 #define REGULATOR_PI_KI                 (0.1)        /* PI speed control loop integral coefficient */
-#define REGULATOR_PI_DT                 (20.0)       /* PI time step size [ms], this parameter is also used for measurement of speed in open loop, minimum 10ms */
+#define REGULATOR_PI_DT                 (20.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop—minimum 10 ms */
 
 /* Drive Algorithm settings */
-#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive, no rotor synchronization, could overheat the motor */
-#define SINGLE_PULSE_MODE               true         /* Setting to 'true' enables single pulse drive method, setting to 'false' enables the PWM modulation drive method */
-#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> SinglePulse transition */
-#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  SinglePulse -> PWM transition */
+#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
+#define SINGLE_PULSE_MODE               true         /* Setting to 'true' enables the single pulse drive method, while setting to 'false' enables the PWM modulation drive method */
+#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> Single Pulse transition */
+#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
-#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (50000000.0) /* e-RPM  - threshold when algorithm might lose synchronization */
+#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
+#define STALL_MAXIMUM_ERPM              (50000000.0) /* e-RPM - Threshold when the algorithm might lose synchronization */
 ```
 
 <br><b>Note:</b> In the `config_examples` folder there are `config.h` example files, one for each motor used in testing this demo. Copy the variant of the `config.h` file corresponding to the desired motor and place it in `fw/common_files`. The copied configuration file will overwrite the old one.</br>
@@ -314,15 +315,15 @@ The spinning direction depends on the wiring of the phases.
 
 ### Tunning Guide
 
-After following all the steps from [Quick Start Guide](#quick-start-guide) and the motor is not yet spining, or an error message is displayed in the console, these are some useful steps to try to tune the application for a new motor:
+If the motor is not yet spining after following all the steps from [Quick Start Guide](#quick-start-guide), or an error message is displayed in the console, these are some useful steps to tune the application for a new motor:
 
 1. Measure the phase-to-phase resistance between any two wires of the motor. Put this value in `MOTOR_RPP`, from the `config.h` file.
 2. Disable the speed regulator by setting `REGULATOR_SPEED_EN` to `false`.
 3. The initial value for `MOTOR_STARTUP_CURRENT` can be close to the rated current of the motor.
 4. If the motor is not spinning after the first two steps and reprogramming, set `MOTOR_STARTUP_TIME` to `-1` and `DRIVE_FORCED` to `true`, to put the motor in Forced Commutation mode. Try to increase `MOTOR_STARTUP_CURRENT` by 0.5A and reprogram until the motor starts spinning. After the motor is spinning in Forced mode without vibrations, set `MOTOR_STARTUP_TIME` to the initial value and `MOTOR_FORCED` back to `false`.
 5. `MOTOR_ALIGNMENT_DURATION` can also be adjusted. For example, for a drone motor with low inductance, the alignment period is much smaller compared to a motor with high inductance. Try to increase or decrease the duration with steps not greater than 10 ms at a time.
-6. `MOTOR_OPEN_LOOP_RAMP` can also be adjusted. This parameter establishes how aggresive the ramp-up process is. Higher values of this parameter means more aggresive ramp. For a motor with low inductance and high nominal speed, the ramp can be more aggresive compared to a motor with higher inductance and lower nominal speed. The safe and minimum value of this parameter is 0.00004.
-7. After getting the motor spinning, set back the parameter `REGULATOR_SPEED_EN` to `true`.
+6. `MOTOR_OPEN_LOOP_RAMP` can also be adjusted. This parameter establishes how aggresive the ramp-up process is. Higher values of this parameter translate into a more aggresive ramp. For a motor with low inductance and high nominal speed, the ramp can be more aggresive compared to a motor with higher inductance and lower nominal speed. The safe and minimum value of this parameter is 0.00004.
+7. After getting the motor to spin, set the`REGULATOR_SPEED_EN` parameter back to `true`.
 8. For stability, ensure that `REGULATOR_MIN_SPEED` is high enough to run the motor stable (10% of nominal speed) and `REGULATOR_MAX_SPEED` does not exceed the maximum rated speed at the supplied voltage.
 
 ### Programming the AVR®
@@ -355,7 +356,7 @@ After following all the steps from [Quick Start Guide](#quick-start-guide) and t
 ### PWM Input Interface
 <br>The MPPB hardware and the software application support interfacing with a PWM Remote Controller (PWM-RC).
 <br>The application measures both signal from the PWM-RC and on-board potentiometer, but the PWM-RC has priority over the potentiometer in controlling the motor.
-<br>If the PWM-RC/PWM-IN signal is not detected, then on-board potentiometer is used for control.
+<br>If the PWM-RC/PWM-IN signal is not detected, then the on-board potentiometer is used for control.
 <br><img src="images/pwm_in.png">
 
 ## Software Description
@@ -462,13 +463,13 @@ The parameters from the `config.h` file used to customize the application are th
 
 <br><b> Analog Module Settings </b>
 
-<br>• <b>`ADC_IIR_FILTER`</b> - Enables or disables a smoothing filter for analog measurements: potentiometer, voltage bus and current. This filter is used only for displaying values, not by fault or other mechanism that requires a fast response.
+<br>• <b>`ADC_IIR_FILTER`</b> - Enables or disables a smoothing filter for analog measurements: potentiometer, voltage bus and current. This filter is used only for displaying values, and not by fault or any other mechanism that requires a fast response.
 
 <br><b> PWM Input Settings </b>
 
-<br>• <b>`PWM_IN_PERIOD`</b> - Represents the period of the PWM input signal, compatible with radio-controlled receivers, that can be used to set the speed reference in Closed-Loop, or the PWM amplitude reference in Open-Loop. The standard value of this parameter in 20 milliseconds.
-<br>• <b>`PWM_IN_MAX_DCY`</b> - Represents the maximum `ON` time of the PWM input signal and is equivalent to setting the maximum reference. The standard value of this parameter is 2 milliseconds, but it can be tuned accordingly to eventual tolerances.
-<br>• <b>`PWM_IN_MIN_DCY`</b> - Represents the minimum `ON` time of the PWM input signal and is equivalent to setting the minimum reference. The standard value of this parameter is 1 millisecond, but it can be tuned accordingly to eventual tolerances.
+<br>• <b>`PWM_IN_PERIOD`</b> - Represents the period of the PWM input signal, compatible with radio-controlled receivers, that can be used to set the speed reference in Closed-Loop, or the PWM amplitude reference in Open-Loop. The standard value of this parameter in 20 ms.
+<br>• <b>`PWM_IN_MAX_DCY`</b> - Represents the maximum `ON` time of the PWM input signal and is equivalent to setting the maximum reference. The standard value of this parameter is 2 ms, but it can be tuned accordingly to eventual tolerances.
+<br>• <b>`PWM_IN_MIN_DCY`</b> - Represents the minimum `ON` time of the PWM input signal and is equivalent to setting the minimum reference. The standard value of this parameter is 1 ms, but it can be tuned accordingly to eventual tolerances.
 
 <br><b> Power Board Settigs </b>
 
@@ -479,40 +480,40 @@ The parameters from the `config.h` file used to customize the application are th
 <br>• <b>`ADC_VBUS_TRIP`</b> - Sets the ADC trip level in case of an overvoltage protection, expressed in millivolts
 <br>• <b>`ADC_CURRENT_TRIP`</b> - Sets the ADC trip level in case of an average overcurrent protection, expressed in milliamperes
 <br>• <b>`COMPARATOR_CURRENT_TRIP`</b> - Sets the internal comparator's trip level in case of a peak overcurrent protection. This parameter does not have any effect for the external comparator configuration, specifically for the ATmega4809 configuration.
-<br>• <b>`FAULT_COMPARATOR_EN`</b> - Enables or disables the comparator used for current trip. For AVR16EB32 and AVR128DA48, this mechanism is implemented using an internal comparator. For ATmega4809, the support is implemented for an external comparator, which must be added to use it.
-<br>• <b>`BOARD_PHASE_RC_DELAY`</b> - Delay added to BEMF zero-cross detection by the RC filter present on the power board
-<br>• <b>`BOARD_MOSFET_RDSON`</b> - The drain-source on-resistance value of the transistors present on the power board. This value is acquired from the transistor's datasheet.
+<br>• <b>`FAULT_COMPARATOR_EN`</b> - Enables or disables the comparator used for current trip. For AVR16EB32 and AVR128DA48, this mechanism is implemented using an internal comparator. For ATmega4809, the support is implemented using an external comparator, which must be added separately to utilize this feature.
+<br>• <b>`BOARD_PHASE_RC_DELAY`</b> - Delay added to the BEMF Zero-Cross Detection (ZCD) by the RC filter present on the power board
+<br>• <b>`BOARD_MOSFET_RDSON`</b> - The drain-source on-resistance value of the transistors present on the power board. This value is acquired from the transistor's data sheet.
 
 <br><b> Motor Settings </b>
 
 <br>• <b>`MOTOR_PHASE_ADVANCE`</b> - Sets the value of the phase drive advance, and takes values between `0` and `30` electrical degrees. This parameter is used to improve the motor efficiency and performance at higher speeds by advancing the phase of the applied voltage relative to the BEMF of the motor, effectively shifting the timing of the current flow. Tune this according to the motor used.
 <br>• <b>`MOTOR_STARTUP_CURRENT`</b> - The amount of current supplied to the motor phases during the start-up phase, given in amperes
 <br>• <b>`MOTOR_RPP`</b> - Motor resistance measured phase-to-phase
-<br>• <b>`MOTOR_OPEN_LOOP_RAMP`</b> - Amplitude increase rate; the higher the number, the ramp is more aggresive
+<br>• <b>`MOTOR_OPEN_LOOP_RAMP`</b> - Amplitude increase rate; the higher the number, the more aggresive the ramp
 <br>• <b>`MOTOR_ALIGNMENT_DURATION`</b> - Initial alignment duration before start-up
-<br>• <b>`MOTOR_STARTUP_TIME`</b> - This is the waiting time until the value from the `Motor_CommandSet()` is used to set the amplitude or reference speed. If this parameter is set to '-1', then the value written by `Motor_CommandSet()` is ignored.
-<br>• <b>`MOTOR_STATRUP_SPEED`</b> - Sets the initial speed for start-up. Usually this is set to `0`, but fast motors with low inductance need a bigger initial speed, in the range of thousands of electrical RPM.
+<br>• <b>`MOTOR_STARTUP_TIME`</b> - Represents the waiting time until the value from the `Motor_CommandSet()` is used to set the amplitude or reference speed. If this parameter is set to '-1', then the value written by `Motor_CommandSet()` is ignored.
+<br>• <b>`MOTOR_STARTUP_SPEED`</b> - Sets the initial speed for start-up. Usually this is set to 0, but fast motors with low inductance need a bigger initial speed, in the range of thousands of electrical RPM.
 
 <br><b> Speed Regulator Settings </b>
 
 <br>• <b>`MOTOR_SPEED_REGULATOR_EN`</b> - Enables or disables the Closed Loop speed regulator
 <br>• <b>`REGULATOR_MAX_SPEED`</b> - Sets the maximum speed for the speed regulator
 <br>• <b>`REGULATOR_MIN_SPEED`</b> - Sets the minimum speed for the speed regulator
-<br>• <b>`REGULATOR_PI_KP`</b> - Proportional term constant parameter used by the speed regulator. It can have values between `0.0` and `1.0`. Tune this according to the motor used.
-<br>• <b>`REGULATOR_PI_KI`</b> - Integral term constant parameter used by the speed regulator. It can have values between `0.0` and `1.0`. Tune this according to the motor used.
-<br>• <b>`REGULATOR_PI_DT`</b> - Represents the time step or sample interval between consecutive speed controller calculations, with a resolution of 1 millisecond step increment. The smaller this value, the faster the regulator loop is called. Setting this to a very short period (smaller than 10 milliseconds) may cause oscillations and sistem instability.
+<br>• <b>`REGULATOR_PI_KP`</b> - Proportional term constant parameter used by the speed regulator. It can have values between 0.0 and 1.0. Tune this according to the motor being used.
+<br>• <b>`REGULATOR_PI_KI`</b> - Integral term constant parameter used by the speed regulator. It can have values between 0.0 and 1.0. Tune this according to the motor being used.
+<br>• <b>`REGULATOR_PI_DT`</b> - Represents the time step or sample interval between consecutive speed controller calculations, with a resolution of 1 ms step increment. The smaller this value, the faster the regulator loop is called. Setting this to a very short period (smaller than 10 ms) may cause oscillations and system instability.
 
 <br><b> Drive Algorithm Settings </b>
 
 <br>• <b>`DRIVE_FORCED`</b> - Setting this parameter to `true` enables only forced commutation. Setting it to `false` enables motor synchronization.
-<br>• <b>`SINGLE_PULSE_MODE`</b> - Enables or disables Single Pulse mode at runtime
+<br>• <b>`SINGLE_PULSE_MODE`</b> - Enables or disables Single Pulse mode at run time
 <br>• <b>`PWM_TO_SP_THRESHOLD`</b> - Threshold speed value for switching from PWM mode to Single Pulse mode
 <br>• <b>`SP_TO_PWM_THRESHOLD`</b> - Threshold speed value for switching from Single Pulse mode to PWM mode
-<br>• <b>`STALL_DETECTION_THRESHOLD`</b> - The number of reached stall conditions until the motor is stopped. It can take values between `0` and `255`.
+<br>• <b>`STALL_DETECTION_THRESHOLD`</b> - The number of reached stall conditions until the motor is stopped. It can take values between 0 and 255.
 <br>• <b>`STALL_DETECTION_ENABLED`</b> - Enables or disables the stall detection mechanism
-<br>• <b>`STALL_MAXIMUM_ERPM`</b> - Limit speed value of the motor given in electrical RPM, when the algorithm might lose synchronization
+<br>• <b>`STALL_MAXIMUM_ERPM`</b> - Speed value limit of the motor given in electrical RPM, when the algorithm might lose synchronization
 
-<br> With the initial values, the motor will operate, although performance may not be optimal. However, these settings provide a good starting point for further tuning to meet the requirements of a custom application.
+<br> If the initial values are maintained, the motor will operate but performance may not be optimal. However, these settings above provide a good starting point for further tuning to meet the requirements of a custom application.
 
 ### Application Interrupt Window Time
 
@@ -520,24 +521,24 @@ The parameters from the `config.h` file used to customize the application are th
 
 Interrupts (ISRs) used by the application:
 
-1. Sector timer interrupt - variable period, dependent on the RPM of the motor (handles drive, BEMF feedback measurement and motor synchronization)
-2. Software timer interrupt - 1ms period (handles speed regulator, open loop controller, analog measurements, button and LED states).
-3. Software timer in main loop - 50 ms period (handles reference commands scaling, amplitude in open loop and speed in closed loop, received from the potentiometer or external PWM input).
+1. Sector timer interrupt - Variable period, dependent on the RPM of the motor (handles drive, BEMF feedback measurement and motor synchronization)
+2. Software timer interrupt - 1 ms period (handles speed regulator, open loop controller, analog measurements, button and LED states)
+3. Software timer in main loop - 50 ms period (handles reference commands scaling, amplitude in open loop and speed in closed loop, received from the potentiometer or external PWM input)
 
-The duration of each ISR or loop in the aplication can be observed in the table below:
+The table below presents the duration of each ISR or loop in the aplication:
 
-| MCU & XC8 OPTIONS | Sector Timer ISR [μs] | 1 ms ISR [μs] | 50 ms Software Timer [μs] | Speed Regulator Loop [μs]   |
-|:-----------------:|:---------------------:|:-------------:|:-------------------------:|:---------------------------:|
-|AVR16EB32 FREE     |    22.5               |   21.5        |   45                      |   5.5                       |
-|AVR16EB32 PRO      |    20.5               |   17          |   36                      |   5                         |
-|ATMEGA4809 FREE    |    22.5               |   21.5        |   45                      |   5.5                       |
-|ATMEGA4809 PRO     |    20.5               |   17          |   35                      |   5                         |
-|AVR128DA48 FREE    |    19                 |   17          |   38                      |   4                         |
-|AVR128DA48 PRO     |    17                 |   14          |   30                      |   4                         |
+| MCU and XC8 Options | Sector Timer ISR [μs] | 1 ms ISR [μs] | 50 ms Software Timer [μs] | Speed Regulator Loop [μs]   |
+|:-------------------:|:---------------------:|:-------------:|:-------------------------:|:---------------------------:|
+|AVR16EB32 FREE       |    22.5               |   21.5        |   45                      |   5.5                       |
+|AVR16EB32 PRO        |    20.5               |   17          |   36                      |   5                         |
+|ATMEGA4809 FREE      |    22.5               |   21.5        |   45                      |   5.5                       |
+|ATMEGA4809 PRO       |    20.5               |   17          |   35                      |   5                         |
+|AVR128DA48 FREE      |    19                 |   17          |   38                      |   4                         |
+|AVR128DA48 PRO       |    17                 |   14          |   30                      |   4                         |
 
-`FREE` refers to the default  optimization `XC8` compiler version, available without license. `PRO` refers to the speed optimized `XC8` compiler version, available with license.
+FREE refers to the default optimization of the XC8 compiler version, available without license. PRO refers to the speed-optimized XC8 compiler version, available with license.
 
-<br> <b>Note:</b> The Sector timer interrupt has a higher priority and will preempt running other interrupts increasing their overall execution time, or will delay other interrupts. One sector duration represents one sixth of one electrical revolution. The duration of one electrical revolution is inverse proportional with the rotational speed, expressed in revolutions per second. 
+<br> <b>Note:</b> The Sector timer interrupt has a higher priority and will preempt running other interrupts, increasing their overall execution time, or will delay other interrupts. One sector duration represents one sixth of one electrical revolution. The duration of one electrical revolution is inverse proportional with the rotational speed, expressed in revolutions per second. 
 
 ### Motor Drive Sequence
 
@@ -552,32 +553,32 @@ Drive sequence legend:
 |   S5   |    Low   |   High   |   Low    |   Low    |   PWM    |   Low    |   Low Driven  |  Floating     |  PWM Driven   |
 |   S6   |    Low   |   High   |   PWM    |   Low    |   Low    |   Low    |   Low Driven  |  PWM Driven   |  Floating     |
 
-<br>Drive AH, BH and CH pins are waveform output (WO) pins, that are controlled by a timer and change their duty cycle based on the control algorithm.
-<br>Drive AL, BL and CL are general purpose input/output (GPIO) pins, that change their state based on the current sector.
-<br>The drive sequence is the same in both PWM mode and Single Pulse mode, the difference consists in the way the AH, BH and CH signals are generated using the PWM timer.
+<br>Drive AH, BH and CH pins are Waveform Output (WO) pins, that are controlled by a timer and change their duty cycle based on the control algorithm.
+<br>Drive AL, BL and CL are General Purpose Input/Output (GPIO) pins, that change their state based on the current sector.
+<br>The drive sequence is the same in both PWM mode and Single Pulse mode, the difference consisting in the way the AH, BH and CH signals are generated using the PWM timer.
 
 #### PWM Mode
 
-<br> This is the default drive mode. In this mode the sector timer has a variable period based on the speed of the motor and the PWM timer has a fixed period of 25.6 μs (~ 40 kHz switching frequency). In each sector there are multiple periods of the PWM timer. Using this mode high electrical speeds can be achieved (< 200,000 Electrical RPM). However, at very high speeds (> 200,000 Electrical RPM) due to switching losses and limited resolution of the PWM timer using a fixed period, this mode is not useful anymore. The solution is to switch to the Single Pulse mode when a threshold speed is achieved.
+<br> This is the default drive mode. In this mode, the sector timer has a variable period based on the speed of the motor, and the PWM timer has a fixed period of 25.6 μs (~40 kHz switching frequency). In each sector, there are multiple periods of the PWM timer. By using this mode, high electrical speeds can be achieved (<200,000 electrical RPM). However, this mode is not useful anymore at very high speeds (>200,000 Electrical RPM), due to switching losses and limited resolution of the PWM timer using a fixed period. The solution is to switch to the Single Pulse mode when a threshold speed is achieved.
 
 <h4> PWM Mode Drive Signals </h4>
 <br><img src="images/drive_sequence_pwm.png">
 
 #### Single Pulse Mode
 
-<br>This mode must be activated using `SINGLE_PULSE_MODE` and setting values to `PWM_TO_SP_THRESHOLD` and `SP_TO_PWM_THRESHOLD` in `config.h` file before runtime.
-<br>`PWM_TO_SP_THRESHOLD` and `SP_TO_PWM_THRESHOLD` represents the speed limits when the switch from one mode to the other happens. It can be observed that there is a difference between the two values, to avoid unwanted switches between the two modes, so a hysteresis mechanism is added.
-<br>The reccomandation is to switch to Single Pulse mode, when the speed reaches a values big enough that there are fewer than five PWM timer periods per one sector. On the same principle it is recomanded to switch back to PWM mode when there are seven or more PWM timer periods per one sector.
-<br>Single pulse mode has two advantages that allow it to reach higher speeds than PWM modes. The first one is that there are much fewer switching losses compared to PWM mode. There is just one big `ON` time and one big  `OFF` time in one electrical period of six sectors, for each phase. The second advantage is the increased timer resolution by having a variable period. This is observed at very high speeds, beacuse in PWM mode there can be sectors with different numbers of PWM timer periods. In Single Pulse mode, even at very high speeds the sectors are equal, because there is just one big `ON` time istead of multiple 'ON' times, as it is in PWM mode.
+<br>This mode must be activated by using `SINGLE_PULSE_MODE` and setting values to `PWM_TO_SP_THRESHOLD` and `SP_TO_PWM_THRESHOLD` in the `config.h` file before run time.
+<br>`PWM_TO_SP_THRESHOLD` and `SP_TO_PWM_THRESHOLD` represent the speed limits when the switch from one mode to the other occurs. Note that there is a difference between the two values. To avoid unwanted switches between the two modes, a hysteresis mechanism has been implemented.
+<br>It is recommended to switch to Single Pulse mode when the speed reaches a value big enough that there are fewer than five PWM timer periods per one sector. Similarly, switch back to PWM mode when there are seven or more PWM timer periods per one sector.
+<br>Single Pulse mode has two advantages that allow it to reach higher speeds than PWM modes. The first one is that there are significantly less switching losses compared to PWM mode, as there is only one big `ON` time and one big  `OFF` time in one electrical period of six sectors, for each phase. The second advantage is the increased timer resolution provided by a variable period. This is observable at very high speeds, because in the PWM mode there can be sectors with different numbers of PWM timer periods. In Single Pulse mode, the sectors are equal even at very high speeds, because there is just one big `ON` time instead of multiple 'ON' times, as seen in PWM mode.
 
 <h4> Single Pulse Mode Drive Signals </h4>
 <br><img src="images/drive_sequence_sp.png">
 
-#### Switch Between PWM And Single Pulse
+#### Switching Between PWM and Single Pulse
 
-<br> The Single Pulse has some advantages compared to PWM mode, but that only applies at very high speeds. At lower speeds PWM mode is much more reliable. Most motors can not even be started using Single Pulse mode, because of the very fast rise of the current through the windings. The working principle is to spin the motor in PWM mode until it reaches the maximum possible speed (< 200,000 Electrical RPM), and then swicth to Single Pulse mode to reach extreme speeds (>200,000 Electrical RPM).
+<br> The Single Pulse mode has certain advantages compared to PWM mode, in the context of high speed values. At lower speeds, the PWM mode is much more reliable. Most motors cannot even be started using Single Pulse mode, because of the very fast rise of the current through the windings. The working principle is to spin the motor in PWM mode until it reaches the maximum possible speed (<200,000 electrical RPM), and then switch to Single Pulse mode to reach extreme speeds (>200,000 electrical RPM).
 
-<h4>PWM Mode To Single Pulse Mode Overview </h4>
+<h4>PWM Mode to Single Pulse Mode Overview </h4>
 <br><img src="images/pwm_to_sp_cross.png">
 
 <br> It can be observed that the duty cycle (75% in this example) is kept the same after switching from one mode to the other, but it is scaled to the new period of the PWM timer.
@@ -590,9 +591,9 @@ Drive sequence legend:
 
 <br><img src="images/phase_voltage_current.png">
 
-<br> For sensorless feedback, the values for the BEMF signals for each motor phase are sampled with the Analog Comparator (AC) peripheral. During each sector, one of the three motor phases will be in Floating state, from where the BEMF can be read. All the PWM driving signals from that motor phase must be synchronously logically low `0`, the coil is not driven and the signal measured after all the propagation delays is the motor’s BEMF.
+<br> For sensorless feedback, the values for the BEMF signals for each motor phase are sampled with the Analog Comparator (AC) peripheral. During each sector, one of the three motor phases will be in the Floating state, from where the BEMF can be read. All the PWM driving signals from that motor phase must be synchronously logically low ‘`0`’, the coil is not driven, and the signal measured after all the propagation delays is the motor’s BEMF.
 
-<br> The Analog Comparator is connected to the divided motor's phase signals at the positive input using a multiplexed input selection to switch from one motor phase to another and acquire the necessary data. The AC is connected to the motor, summing neutral at the negative input. The neutral is reconstructed using hardware components in a resistor star configuration. The signals are divided to be in the range of 0 to 3.3V, to be readable by the microcontroller (MCU). The values for the voltage dividers used in this application are the ones present on the MPPB.
+<br> The Analog Comparator is connected to the divided motor phase signals at its positive input. A multiplexed input selection is used to switch between motor phases, enabling the acquisition of the required data. The AC is connected to the motor, summing neutral at the negative input. The neutral is reconstructed using hardware components in a resistor star configuration. The signals are divided to be in the range of 0 to 3.3V, to be readable by the microcontroller (MCU). The values for the voltage dividers used in this application are the ones present on the MPPB.
 
 <h4> BEMF Sensing Overview </h4>
 
@@ -604,15 +605,15 @@ Drive sequence legend:
 
 ### Motor Synchronization Algorithm
 
-<br> Synchronization is achieved using a simplified Proportional Integral Derivative (PID) algorithm that calculates the error between the ideal zero-cross of BEMF, which is always set to half of the timer's period, and the actual zero-cross, that is acquired using a timer's hardware capture mechanism. The algorithm only has the proportional and the integral terms, but no derivative. The algorithm also uses phase advance ranging between `0` and `30` electrical degrees, that is added to the ```setValue```, which is half of the period, because the goal is to have the zero-cross of the BEMF to fall exactly in the middle of the sector, after `30` electrical degrees.
+<br> Synchronization is achieved using a simplified Proportional Integral Derivative (PID) algorithm that calculates the error between the ideal zero cross of BEMF, which is always set to half of the timer's period, and the actual zero cross, acquired using a timer's hardware capture mechanism. The algorithm only has the proportional and the integral terms, but no derivative. It also uses a phase advance ranging between 0 and 30 electrical degrees, which is added to ```setValue``` — representing half of the period — because the goal is to have the zero cross of the BEMF fall exactly in the middle of the sector, after 30 electrical degrees.
 <br>The advantage of this algorithm is that it is based on bit-shifting operations, and it does not add much CPU overload and interrupt time to process all the data. Using this algorithm greatly reduces the speed oscillations.
 
 <h4> Synchronization Algorithm Timing </h4>
 
 <br><img src="images/synchronization_pi_timing.png">
 
-Above is an example where `MOTOR_PHASE_ADVANCE` is set to `7.5` electrical degrees (`0.5` represents half of the sector, meaning `30` electrical degrees, and `0.125` represents the phase advance of `7.5` electrical degrees, summing a total of `0.625` or `37.5` electrical degrees, the set point when the zero-cross is detected).
-<br><b>Note:</b> The zero-cross detection is also affected by the RC constant, which is 10 μs. In this case, the zero-cross of BEMF is detected after `37.5` electrical degrees translated in time, based of sector's length, plus the RC delay.
+Above is an example where `MOTOR_PHASE_ADVANCE` is set to 7.5 electrical degrees (0.5 represents half of the sector, meaning 30 electrical degrees, and 0.125 represents the phase advance of 7.5 electrical degrees, summing up to a total of 0.625 or 37.5 electrical degrees, the set point when the zero cross is detected).
+<br><b>Note:</b> The Zero-Cross Detection (ZCD) is also affected by the RC constant, which is 10 μs. In this case, the zero cross of BEMF is detected after 37.5 electrical degrees translated in time, based on the length of the sector, as well as the RC delay.
 
 <h4> Synchronization Algorithm Chart </h4>
 
@@ -620,13 +621,13 @@ Above is an example where `MOTOR_PHASE_ADVANCE` is set to `7.5` electrical degre
 
 <h4> Phase Advance </h4>
 
-In order to have the best efficiency, the BEMF signals must be in phase with the current signals for each motor phase. Due to the motor’s inductance, at high RPM, the electrical time constant of the motor windings cause a delay in current buildup, causing the current signals to lag the voltage BEMF signals, so phase advance is used for switching the driving sequence in advance. Because the voltage is switched in advance, the current has time to reach the maximum point until the signal from BEMF has a transition that marks a sector change.
+For best efficiency, the BEMF signals must be in phase with the current signals for each motor phase. Due to the inductance of the motor and in the context of high RPM, the electrical time constant of the motor windings creates a delay in current buildup, causing the current signals to lag the voltage BEMF signals. Thus, phase advance is used for switching the driving sequence in advance. By switching the voltage in advance, the current has time to reach the maximum point before the BEMF signal transitions, which indicates a sector change.
 
 <br><img src="images/phase_advance.png">
 
 ### Motor Speed Regulator Algorithm
 
-<br> Speed regulation in Closed-Loop is achieved using a simplified PID algorithm that calculates the error between the target speed and measured speed. The algorithm only has the proportional and the integral terms, but no derivative. The target speed value is in the range between `REGULATOR_MIN_SPEED` and `REGULATOR_MAX_SPEED`. The measured speed is acquired by counting the sector change events during a fixed period of time. The values of `REGULATOR_PI_KP` and `REGULATOR_PI_KI` constants can be tuned to achieve a desired behaviour, depending on the motor used. The values of the two constants must be positive.
+<br> Speed regulation in Closed-Loop is achieved using a simplified PID algorithm that calculates the error between the target speed and measured speed. The algorithm only has the proportional and the integral terms, but no derivative. The target speed value is in the range between `REGULATOR_MIN_SPEED` and `REGULATOR_MAX_SPEED`. The measured speed is acquired by counting the sector change events during a fixed period of time. The values of `REGULATOR_PI_KP` and `REGULATOR_PI_KI` constants can be tuned to achieve a desired behaviour, depending on the specific motor being used. The values of the two constants must be positive.
 
 <h4> Speed Regulator Algorithm Chart </h4>
 
@@ -634,7 +635,7 @@ In order to have the best efficiency, the BEMF signals must be in phase with the
 
 ## Results
 
-Below are some captures of A2207 KV2500 drone motor, in PWM mode, Single Pulse mode and at full drive (maximum speed achieved at 100% duty cycle).<br>
+The images below present captures of the A2207 KV2500 drone motor, in PWM mode, Single Pulse mode and at full drive (maximum speed achieved at 100% duty cycle).<br>
 Oscilloscope traces: 
   * Ch 1 (Blue Trace)  Phase A Current - current probe direction from the motor towards the board
   * Ch 2 (Cyan Trace)  Phase A Voltage - referenced to ground
@@ -664,14 +665,14 @@ Oscilloscope traces:
 
 <br>Results obtained with various motors used in this project:
 
-| Motor      | Brief Specifications        | Supply Voltage [V] | Current Consumption [A] | e-RPM                    |
-|:----------:|:---------------------------:|:------------------:|:-----------------------:|:------------------------:|
-|ACT42BLF01  | 24V / 1.9A / 4pp* / 4kRPM   |    24              |      0.20  (no load)    |       15,000             |
-|ACT57BLF02  | 24V / 7.8A / 4pp / 3kRPM    |    24              |      0.50  (no load)    |       12,000             |
-|Hair Dryer  | 12V / 150W / 1pp / 130kRPM  |    12              |     11.0 (own fan)      |      120,000             |
-|A2207 KV2500| 16.8V / 7pp / 42kRPM        |    16              |      2.2 (no load)      |      250,000             |
-|A2212 KV2200| 12V / 6pp / 26kRPM          |    12              |      2.5 (no load)      |      180,000             |
-|A10 KV2900  | 8.4V / 6pp / 23kRPM         |     9              |      1.5 (no load)      |      140,000             |
+| Motor      | Brief Specifications            | Supply Voltage [V] | Current Consumption [A] | e-RPM                    |
+|:----------:|:-------------------------------:|:------------------:|:-----------------------:|:------------------------:|
+|ACT42BLF01  | 24 V / 1.9 A / 4 pp* / 4 kRPM   |    24              |      0.20  (no load)    |       15,000             |
+|ACT57BLF02  | 24 V / 7.8 A / 4 pp / 3 kRPM    |    24              |      0.50  (no load)    |       12,000             |
+|Hair Dryer  | 12 V / 150 W / 1 pp / 130 kRPM  |    12              |     11.0 (own fan)      |      120,000             |
+|A2207 KV2500| 16.8 V / 7 pp / 42 kRPM         |    16              |      2.2 (no load)      |      250,000             |
+|A2212 KV2200| 12 V / 6 pp / 26 kRPM           |    12              |      2.5 (no load)      |      180,000             |
+|A10 KV2900  | 8.4 V / 6 pp / 23 kRPM          |     9              |      1.5 (no load)      |      140,000             |
 
 **Note:** *pp - pole pairs
 
