@@ -43,7 +43,7 @@
 #define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
 
 /* Motor-specific settings */
-/* A2207-2500KV:  supply 16V, 3A limit */
+/* Hair Dryer Motor:  supply 12V, 15A limit */
 #define MOTOR_PHASE_ADVANCE             (15.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
 #define MOTOR_STARTUP_CURRENT           (20000.0)    /* mA - Initial alignment current pulse may be higher than overcurrent protection */
 #define MOTOR_RPP                       (0.15)       /* ohms - Motor resistance measured phase-to-phase */

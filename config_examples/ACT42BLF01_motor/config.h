@@ -55,7 +55,7 @@
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
 #define REGULATOR_MAX_SPEED             (15000.0)    /* e-RPM target speed for 100% command */
-#define REGULATOR_MIN_SPEED             ( 4000.0)    /* e-RPM target speed for   0% command */
+#define REGULATOR_MIN_SPEED             (4000.0)     /* e-RPM target speed for   0% command */
 #define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
 #define REGULATOR_PI_KI                 (1.0)        /* PI speed control loop integral coefficient */
 #define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop—minimum 10 ms */
@@ -67,7 +67,7 @@
 #define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when algorithm might lose synchronization */
+#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
 
 
 #endif	/* CONFIG_H */
