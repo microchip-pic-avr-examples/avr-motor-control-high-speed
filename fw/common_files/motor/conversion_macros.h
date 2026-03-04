@@ -31,6 +31,7 @@
 #define ADC_MAX_SCALE                     (float)(Analog_Max())
 #define DAC_MAX_SCALE                     AC_REF_DAC_MAX
 #define CURRENT_AMPLIFIER_OFFSET          (ANALOG_REFERENCE / 2)
+#define SECTORS_NUMBER                    (ONE_PHASE_MODE ? 4.0 : 6.0)
 
 /* potentiometer conversion formulas to/from percents */
 #define ADC_TO_PERCENT(X)                 (((float)(X) + 0.5) * 100.0 / (ADC_MAX_SCALE + 1))
@@ -48,9 +49,9 @@
 #define ACREF_TO_CURRENT(X)               ( ((float)(X) * ANALOG_REFERENCE / DAC_MAX_SCALE - CURRENT_AMPLIFIER_OFFSET) / (CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE) )
 #define CURRENT_TO_ACREF(X)               (uint8_t)( ((float)(X) * CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE + CURRENT_AMPLIFIER_OFFSET) * DAC_MAX_SCALE / ANALOG_REFERENCE + 0.5)
 
-/* conversion macros from/into float e-rpm value into/from 16-bit sector timer value (60 sec in a minute, 6 sectors per rev) */
-#define CONVERT_ERPM_TO_STMR(ERPM)        (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY) / (6.0 * (ERPM)) - 0.5)
-#define CONVERT_STMR_TO_ERPM(STMR)                  (60.0 * (SECTOR_TIMER_FREQUENCY) / (6.0 * ((STMR) + 1)))
+/* conversion macros from/into float e-rpm value into/from 16-bit sector timer value (60 sec in a minute, 4/6 sectors per rev) */
+#define CONVERT_ERPM_TO_STMR(ERPM)        (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY) / (SECTORS_NUMBER * (ERPM)) - 0.5)
+#define CONVERT_STMR_TO_ERPM(STMR)                  (60.0 * (SECTOR_TIMER_FREQUENCY) / (SECTORS_NUMBER * ((STMR) + 1)))
 
 /* conversion macros from/into microseconds into/from clocks count */
 #define CONVERT_US_TO_CLKS(US)            (uint16_t)((US) * (F_CPU) / 1000000.0 + 0.5)
@@ -131,7 +132,7 @@ typedef uint16_t fixp16_t;
 
 /* the speed is measured as a multiple of this constant, higher value determines less precision but more measurements per second */
 #define SPEED_MEASUREMENT_FACTOR           (10000.0/(REGULATOR_PI_DT))
-#define SPEED_MEASUREMENT_BASE             (uint16_t)(1000000.0 * 60.0 / (6.0 * SW_TIMER_PERIOD * SPEED_MEASUREMENT_FACTOR)) /* 60 sec in a minute, 6 sectors per electrical rev, 1,000,000 us in a second */
+#define SPEED_MEASUREMENT_BASE             (uint16_t)(1000000.0 * 60.0 / (SECTORS_NUMBER * SW_TIMER_PERIOD * SPEED_MEASUREMENT_FACTOR)) /* 60 sec in a minute, 4/6 sectors per electrical rev, 1,000,000 us in a second */
 
 
 #endif	/* CONVERSION_MACROS_H */

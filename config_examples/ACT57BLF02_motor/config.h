@@ -58,7 +58,7 @@
 #define REGULATOR_MIN_SPEED             (4000.0)     /* e-RPM target speed for   0% command */
 #define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
 #define REGULATOR_PI_KI                 (0.25)       /* PI speed control loop integral coefficient */
-#define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop—minimum 10 ms */
+#define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop — minimum 10 ms */
 
 /* Drive Algorithm settings */
 #define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
@@ -68,6 +68,7 @@
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
 #define STALL_MAXIMUM_ERPM              (150000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 
 
 #endif	/* CONFIG_H */

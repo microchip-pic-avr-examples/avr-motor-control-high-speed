@@ -10,7 +10,7 @@ This repository features a Motor Control application designed for high-speed Tra
 
 - <b>ATmega</b> incorporates features from both AVR EB and AVR DA families, offering a well-balanced combination of hardware capabilities, memory, and pin count, as described in the [AVR® ATmega Data Sheet](https://www.microchip.com/en-us/product/atmega4809#document-table)
   
-- The application is designed to obtain a trapezoidal (6-step block commutation) with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs).
+- The application is designed to obtain a trapezoidal drive with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs). Also, single-phase / one-phase shaded-pole motors are supported.
 
 - The sensorless feedback and synchronization are achieved using the Zero-Cross Detections (ZCDs) corresponding to the Back-Electromotive Forces (BEMFs) of each of the three phases of the motor. The BEMFs are captured using hardware peripherals, thus improving the accuracy of zero-cross detections at high speeds. The motor synchronization is achieved using a Proportional-Integral (PI) algorithm, that calculates the error between the measured ZCD and the ideal ZCD.
 
@@ -53,7 +53,11 @@ This repository features a Motor Control application designed for high-speed Tra
 
 ## Release Notes
 
-Current version 1.2.0 features:
+Current version 1.3.0 features:
+
+- Support for one-phase (single-phase) BLDC and PMSM shaded-pole motors
+
+Version 1.2.0 features:
 
 - Crossing from the Pulse-Width Modulation (PWM) drive mode to Single Pulse drive mode with adjustable speed thresholds
 
@@ -114,6 +118,8 @@ More details and code examples on the AVR16EB32, AVR128DA48 and ATmega4809 can b
   - Hacker A10 KV 2900
   - A2212 KV 2200
   - 130K RPM 12V low cost hair-dryer motor
+  - 110K RPM 220V low cost hair-dryer motor
+  - 110K RPM 220V Dyson V9 hair-dryer one-phase motor
 
 ## Solution Diagram
 
@@ -135,7 +141,9 @@ The AVR16EB32, AVR128DA48 or ATmega4809 Curiosity Nano Development boards are us
 
 <h4> Example Setup: </h4>
 
-<br><img src="images/full_setup.png">
+|          Three Phase Motors                                            |            One Phase Motors                                                |
+|:----------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
+| <img src="images/full_setup.png" height = "520" width = "1000">         | <img src="images/full_setup_1ph.png" height = "520" width = "1000">         |
 
 ### Curiosity Nano - MPPB Pin Mapping
 
@@ -197,7 +205,7 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 
 ### Configuration Settings
 
-<br>The following are configuration settings which, apart from the default values, are needed to run the demo in the Trapezoidal Sensorless mode with the ACT42BLF01 motor and SZSPEED 2207 2500KV drone motor.
+<br>The following are configuration settings which, apart from the default values, are needed to run the demo in the Trapezoidal Sensorless mode with the ACT42BLF01 motor, SZSPEED 2207 2500KV drone motor and Dyson V9 one-phase hair dryer motor.
 <br>Edit the settings in the configuration file [`config.h`](#configurable-parameters) according to the usage scenario.
 
 <br><h3> Configuration Settings for the ACT42BLF01 Motor </h3>
@@ -250,6 +258,7 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
 #define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 ```
 
 <br><h3> Configuration Settings for the SZSPEED 2207 2500KV Drone Motor </h3>
@@ -302,6 +311,60 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
 #define STALL_MAXIMUM_ERPM              (50000000.0) /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
+```
+
+<br><h3> Configuration Settings for the Dyson V9 Hair Dryer One-Phase Motor </h3>
+
+```c
+
+/* Analog module settings */
+#define ADC_IIR_FILTER                  true         /* Smoothing filter on ADC functions: POT, VBUS, current */
+
+/* PWM-In settings */
+#define PWM_IN_PERIOD                   (20.0)       /* ms */
+#define PWM_IN_MAX_DCY                  ( 2.0)       /* ms */
+#define PWM_IN_MIN_DCY                  ( 1.0)       /* ms */
+
+/* Board specific settings - MPPB */
+#define CURRENT_SHUNT_RESISTANCE        (0.01)       /* Resistance in ohm of the current shunt */
+#define CURRENT_AMPLIFIER_GAIN          (7.5)
+#define VBUS_DIVIDER                    (16.0)
+#define ANALOG_REFERENCE                (3300.0)     /* mV */
+#define ADC_VBUS_TRIP                   (51000.0)    /* mV - VBUS trip level */
+#define ADC_CURRENT_TRIP                (15000.0)    /* mA - ADC current trip level */
+#define COMPARATOR_CURRENT_TRIP         (20000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
+#define FAULT_COMPARATOR_EN             false
+#define BOARD_PHASE_RC_DELAY            (10.0)       /* microseconds - RC filter delay */
+#define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
+
+/* Motor-specific settings */
+/* 220V AC 120W 110000RPM Dyson V9:  supply 50V, 1.5A limit */
+#define MOTOR_PHASE_ADVANCE             (10.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
+#define MOTOR_STARTUP_CURRENT           (3900.0)     /* mA - Initial alignment current pulse may be higher than overcurrent protection */
+#define MOTOR_RPP                       (10.0)       /* ohms - Motor resistance measured phase-to-phase */
+#define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
+#define MOTOR_ALIGNMENT_DURATION        (5)          /* ms */
+#define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
+#define MOTOR_STATRUP_SPEED             (7500.0)     /* e-RPM - Specify the initial speed for fast motors */
+
+/* Speed regulation specific settings */
+#define REGULATOR_SPEED_EN              false        /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
+#define REGULATOR_MAX_SPEED             (250000.0)   /* e-RPM target speed for 100% command */
+#define REGULATOR_MIN_SPEED             (50000.0)    /* e-RPM target speed for   0% command */
+#define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
+#define REGULATOR_PI_KI                 (0.1)        /* PI speed control loop integral coefficient */
+#define REGULATOR_PI_DT                 (200.0)      /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop—minimum 10 ms */
+
+/* Drive Algorithm settings */
+#define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
+#define SINGLE_PULSE_MODE               true         /* Setting to 'true' enables the single pulse drive method, while setting to 'false' enables the PWM modulation drive method */
+#define PWM_TO_SP_THRESHOLD             (100000.0)   /* e-RPM  PWM -> Single Pulse transition */
+#define SP_TO_PWM_THRESHOLD             (80000.0)    /* e-RPM  Single Pulse -> PWM transition */
+#define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
+#define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
+#define STALL_MAXIMUM_ERPM              (150000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define ONE_PHASE_MODE                  true         /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 ```
 
 <br><b>Note:</b> In the `config_examples` folder there are `config.h` example files, one for each motor used in testing this demo. Copy the variant of the `config.h` file corresponding to the desired motor and place it in `fw/common_files`. The copied configuration file will overwrite the old one.</br>
@@ -336,7 +399,7 @@ If the motor is not yet spining after following all the steps from [Quick Start 
 
 <br><img src="images/set_main_project.png">
 
-4. Edit the [`config.h`](#configurable-parameters) file, found in `motor_demo_eb.X`, `motor_demo_da.X` or `motor_demo_mega4809.X`, with the utilized motor parameters and drive options. See [Configuration Settings](#configuration-settings) for examples.
+4. Edit the [`config.h`](#configurable-parameters) file, found in `common_files` folder, with the utilized motor parameters and drive options. See [Configuration Settings](#configuration-settings) for examples.
 
 5. Build the `motor_demo_eb.X`, `motor_demo_da.X` or `motor_demo_mega4809.X` project by clicking **Clean and Build Project**.
 
@@ -512,6 +575,7 @@ The parameters from the `config.h` file used to customize the application are th
 <br>• <b>`STALL_DETECTION_THRESHOLD`</b> - The number of reached stall conditions until the motor is stopped. It can take values between 0 and 255.
 <br>• <b>`STALL_DETECTION_ENABLED`</b> - Enables or disables the stall detection mechanism
 <br>• <b>`STALL_MAXIMUM_ERPM`</b> - Speed value limit of the motor given in electrical RPM, when the algorithm might lose synchronization
+<br>• <b>`ONE_PHASE_MODE`</b> - Enables or disables One Phase mode at run time
 
 <br> If the initial values are maintained, the motor will operate but performance may not be optimal. However, these settings above provide a good starting point for further tuning to meet the requirements of a custom application.
 
@@ -542,7 +606,7 @@ FREE refers to the default optimization of the XC8 compiler version, available w
 
 ### Motor Drive Sequence
 
-Drive sequence legend:
+Drive sequence legend for three-phase motors:
 
 | Sector | Drive AH | Drive AL | Drive BH | Drive BL | Drive CH | Drive CL | Motor Phase A | Motor Phase B | Motor Phase C |
 |:------:|:--------:|:--------:|:--------:|:--------:|:--------:|:--------:|:-------------:|:-------------:|:-------------:|
@@ -552,6 +616,15 @@ Drive sequence legend:
 |   S4   |    Low   |   Low    |   Low    |   High   |   PWM    |   Low    |   Floating    |  Low Driven   |  PWM Driven   |
 |   S5   |    Low   |   High   |   Low    |   Low    |   PWM    |   Low    |   Low Driven  |  Floating     |  PWM Driven   |
 |   S6   |    Low   |   High   |   PWM    |   Low    |   Low    |   Low    |   Low Driven  |  PWM Driven   |  Floating     |
+
+<br>Drive sequence legend for one-phase motors:
+
+| Sector | Drive AH | Drive AL | Drive BH | Drive BL | Motor Phase A | Motor Phase B |
+|:------:|:--------:|:--------:|:--------:|:--------:|:-------------:|:-------------:|
+|   S1   |    Low   |   Low    |   Low    |   Low    |   Floating    |  Floating     |
+|   S2   |    PWM   |   Low    |   Low    |   High   |   PWM Driven  |  Low Driven   |
+|   S3   |    Low   |   Low    |   Low    |   Low    |   Floating    |  Floating     |
+|   S4   |    Low   |   High   |   PWM    |   Low    |   Low Driven  |  PWM Driven   |
 
 <br>Drive AH, BH and CH pins are Waveform Output (WO) pins, that are controlled by a timer and change their duty cycle based on the control algorithm.
 <br>Drive AL, BL and CL are General Purpose Input/Output (GPIO) pins, that change their state based on the current sector.
@@ -563,7 +636,9 @@ Drive sequence legend:
 
 <h4> PWM Mode Drive Signals </h4>
 
-<br><img src="images/drive_sequence_pwm.png">
+|          Three Phase Motors                                            |            One Phase Motors                                                |
+|:----------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
+| <img src="images/drive_sequence_pwm.png" height = "550" width = "800"> | <img src="images/drive_sequence_pwm_1ph.png" height = "550" width = "800"> |
 
 #### Single Pulse Mode
 
@@ -574,7 +649,9 @@ Drive sequence legend:
 
 <h4> Single Pulse Mode Drive Signals </h4>
 
-<br><img src="images/drive_sequence_sp.png">
+|          Three Phase Motors                                            |            One Phase Motors                                                |
+|:----------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
+| <img src="images/drive_sequence_sp.png" height = "550" width = "800">  | <img src="images/drive_sequence_sp_1ph.png" height = "550" width = "800">  |
 
 #### Switching Between PWM and Single Pulse
 
@@ -582,7 +659,9 @@ Drive sequence legend:
 
 <h4>PWM Mode to Single Pulse Mode Overview </h4>
 
-<br><img src="images/pwm_to_sp_cross.png">
+|          Three Phase Motors                                             |            One Phase Motors                                                 |
+|:-----------------------------------------------------------------------:|:---------------------------------------------------------------------------:|
+| <img src="images/pwm_to_sp_cross.png" height = "500" width = "1000">    | <img src="images/pwm_to_sp_cross_1ph.png" height = "500" width = "1000">    |
 
 <br> It can be observed that the duty cycle (75% in this example) is kept the same after switching from one mode to the other, but it is scaled to the new period of the PWM timer.
 
@@ -604,7 +683,9 @@ Drive sequence legend:
 
 <h4> Sector Commutation Overview</h4>
 
-<br><img src="images/commutation.png">
+|          Three Phase Motors                                            |            One Phase Motors                                                |
+|:----------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
+| <img src="images/commutation.png" height = "300" width = "800">        | <img src="images/commutation_1ph.png" height = "300" width = "800">        |
 
 ### Motor Synchronization Algorithm
 
@@ -615,8 +696,7 @@ Drive sequence legend:
 
 <br><img src="images/synchronization_pi_timing.png">
 
-Above is an example where `MOTOR_PHASE_ADVANCE` is set to 7.5 electrical degrees (0.5 represents half of the sector, meaning 30 electrical degrees, and 0.125 represents the phase advance of 7.5 electrical degrees, summing up to a total of 0.625 or 37.5 electrical degrees, the set point when the zero cross is detected).
-<br><b>Note:</b> The Zero-Cross Detection (ZCD) is also affected by the RC constant, which is 10 μs. In this case, the zero cross of BEMF is detected after 37.5 electrical degrees translated in time, based on the length of the sector, as well as the RC delay.
+<br><b>Note:</b> The Zero-Cross Detection (ZCD) is also affected by the RC constant, which is 10 μs. The zero cross of BEMF is detected after 30 electrical degrees plus phase advance plus RC constant, translated in time, based on the length of the sector, as well as the RC delay.
 
 <h4> Synchronization Algorithm Chart </h4>
 
@@ -661,20 +741,21 @@ Oscilloscope traces:
 
 <br><img src="images/capture_full_drive.png">
 
-
 <br>Results obtained with various motors used in this project:
 
-| Motor      | Brief Specifications            | Supply Voltage [V] | Current Consumption [A] | e-RPM                    |
-|:----------:|:-------------------------------:|:------------------:|:-----------------------:|:------------------------:|
-|ACT42BLF01  | 24 V / 1.9 A / 4 pp* / 4 kRPM   |    24              |      0.20  (no load)    |       15,000             |
-|ACT57BLF02  | 24 V / 7.8 A / 4 pp / 3 kRPM    |    24              |      0.50  (no load)    |       12,000             |
-|Hair Dryer  | 12 V / 150 W / 1 pp / 130 kRPM  |    12              |     11.0 (own fan)      |      120,000             |
-|A2207 KV2500| 16.8 V / 7 pp / 42 kRPM         |    16              |      2.2 (no load)      |      250,000             |
-|A2212 KV2200| 12 V / 6 pp / 26 kRPM           |    12              |      2.5 (no load)      |      180,000             |
-|A10 KV2900  | 8.4 V / 6 pp / 23 kRPM          |     9              |      1.5 (no load)      |      140,000             |
+| Motor                 | Brief Specifications            | Supply Voltage [V] | Current Consumption [A] | e-RPM                    | Type    |
+|:---------------------:|:-------------------------------:|:------------------:|:-----------------------:|:------------------------:|:-------:|
+|ACT42BLF01             | 24 V / 1.9 A / 4 pp* / 4 kRPM   |    24              |      0.20  (no load)    |       15,000             | 3 phase |
+|ACT57BLF02             | 24 V / 7.8 A / 4 pp / 3 kRPM    |    24              |      0.50  (no load)    |       12,000             | 3 phase |
+|Hair Dryer             | 12 V / 150 W / 1 pp / 130 kRPM  |    12              |      11.0  (own fan)    |      120,000             | 3 phase |
+|A2207 KV2500           | 16.8 V / 7 pp / 42 kRPM         |    16              |      2.2   (no load)    |      250,000             | 3 phase |
+|A2212 KV2200           | 12 V / 6 pp / 26 kRPM           |    12              |      2.5   (no load)    |      180,000             | 3 phase |
+|A10 KV2900             | 8.4 V / 6 pp / 23 kRPM          |     9              |      1.5   (no load)    |      140,000             | 3 phase |
+|Hair Dryer             | 220 V / 100 W / 1 pp / 110 kRPM |    50              |      0.07  (own fan)    |       25,000             | 3 phase |
+|Hair Dryer Dyson V9    | 220 V / 120 W / 2 pp / 110 kRPM |    50              |      0.12  (own fan)    |       80,000             | 1 phase |
 
 **Note:** *pp - pole pairs
 
 ## Summary
 
-<br>This project provides support for spinning a BLDC/PMSM motor using the Trapezoidal Drive method and feedback from the BEMF ZCD to achieve motor synchronization in an Open-Loop configuration and speed control in Closed-Loop configuration. The control algorithm is straightforward and robust and it can be implemented on a variety of low-end MCUs that have a few timer capabilities, such as an analog comparator and an ADC.
+<br>This project provides support for spinning a BLDC/PMSM motor using the Trapezoidal Drive method and feedback from the BEMF ZCD to achieve motor synchronization in an Open-Loop configuration and speed control in Closed-Loop configuration. The control algorithm is straightforward and robust and it can be implemented on a variety of low-end MCUs that have a few timer capabilities, an analog comparator and an ADC.

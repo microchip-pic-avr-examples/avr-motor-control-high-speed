@@ -36,29 +36,29 @@
 #define VBUS_DIVIDER                    (16.0)
 #define ANALOG_REFERENCE                (3300.0)     /* mV */
 #define ADC_VBUS_TRIP                   (51000.0)    /* mV - VBUS trip level */
-#define ADC_CURRENT_TRIP                (7000.0)     /* mA - ADC current trip level */
+#define ADC_CURRENT_TRIP                (15000.0)    /* mA - ADC current trip level */
 #define COMPARATOR_CURRENT_TRIP         (20000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
-#define FAULT_COMPARATOR_EN             true
+#define FAULT_COMPARATOR_EN             false
 #define BOARD_PHASE_RC_DELAY            (10.0)       /* microseconds - RC filter delay */
 #define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
 
 /* Motor-specific settings */
-/* ACT42BLF01:  supply 24V, 3A limit */
-#define MOTOR_PHASE_ADVANCE             (10.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
-#define MOTOR_STARTUP_CURRENT           (2500.0)     /* mA - Initial alignment current pulse may be higher than overcurrent protection */
-#define MOTOR_RPP                       (2.6)        /* ohms - Motor resistance measured phase-to-phase */
+/* 220V AC 100W 110000RPM:  supply 50V, 1.5A limit */
+#define MOTOR_PHASE_ADVANCE             (5.0)        /* Phase advance 0.0 ... 30.0 electrical degrees */
+#define MOTOR_STARTUP_CURRENT           (800.0)      /* mA - Initial alignment current pulse may be higher than overcurrent protection */
+#define MOTOR_RPP                       (50.0)       /* ohms - Motor resistance measured phase-to-phase */
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
-#define MOTOR_ALIGNMENT_DURATION        (10)         /* ms */
+#define MOTOR_ALIGNMENT_DURATION        (5)          /* ms */
 #define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (0.0)        /* e-RPM - Specify the initial speed for fast motors */
+#define MOTOR_STATRUP_SPEED             (5000.0)     /* e-RPM - Specify the initial speed for fast motors */
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
-#define REGULATOR_MAX_SPEED             (15000.0)    /* e-RPM target speed for 100% command */
-#define REGULATOR_MIN_SPEED             (4000.0)     /* e-RPM target speed for   0% command */
+#define REGULATOR_MAX_SPEED             (25000.0)    /* e-RPM target speed for 100% command */
+#define REGULATOR_MIN_SPEED             (10000.0)    /* e-RPM target speed for   0% command */
 #define REGULATOR_PI_KP                 (1.0)        /* PI speed control loop proportional coefficient */
-#define REGULATOR_PI_KI                 (1.0)        /* PI speed control loop integral coefficient */
-#define REGULATOR_PI_DT                 (50.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop — minimum 10 ms */
+#define REGULATOR_PI_KI                 (0.5)        /* PI speed control loop integral coefficient */
+#define REGULATOR_PI_DT                 (20.0)       /* PI time step size [ms]; this parameter is also used for measurement of speed in open loop — minimum 10 ms */
 
 /* Drive Algorithm settings */
 #define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
