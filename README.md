@@ -10,7 +10,7 @@ This repository features a Motor Control application designed for high-speed Tra
 
 - <b>ATmega</b> incorporates features from both AVR EB and AVR DA families, offering a well-balanced combination of hardware capabilities, memory, and pin count, as described in the [AVR® ATmega Data Sheet](https://www.microchip.com/en-us/product/atmega4809#document-table)
   
-- The application is designed to obtain a trapezoidal drive with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs). Also, single-phase / one-phase shaded-pole motors are supported.
+- The application is designed to obtain a trapezoidal drive with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs). Also, single-phase/one-phase shaded-pole motors are supported.
 
 - The sensorless feedback and synchronization are achieved using the Zero-Cross Detections (ZCDs) corresponding to the Back-Electromotive Forces (BEMFs) of each of the three phases of the motor. The BEMFs are captured using hardware peripherals, thus improving the accuracy of zero-cross detections at high speeds. The motor synchronization is achieved using a Proportional-Integral (PI) algorithm, that calculates the error between the measured ZCD and the ideal ZCD.
 
