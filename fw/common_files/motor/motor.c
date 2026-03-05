@@ -41,8 +41,8 @@
 #define CMP_MUX_TABLE           (ONE_PHASE_MODE ? cmp_mux_table_sp : cmp_mux_table)
 #define MAX_POSITION            (ONE_PHASE_MODE ? 5 : 7)
 #define PERIOD_SHIFT            (ONE_PHASE_MODE ? 0 : 1)
-#define SINGLE_PHASE_CONDITION  (ONE_PHASE_MODE ? (position & 1) : true)
-#define CMP_INV_MASK            (ONE_PHASE_MODE ? false : (position & 1))     
+#define ONE_PHASE_CONDITION     (ONE_PHASE_MODE ? (position & 1) : true)
+#define CMP_INV_MASK            (ONE_PHASE_MODE ? 0 : (position & 1))
 
 typedef enum {
     PWM_MODE,
@@ -295,7 +295,7 @@ static void  __Sector_Changer(void)
         COMP_INVERT(CMP_INV_MASK);  /* comparator's output is inverted alternatively */
         position++; if(position == MAX_POSITION) position = 1;
 
-        if((DRIVE_FORCED == false) && (SINGLE_PHASE_CONDITION))
+        if((DRIVE_FORCED == false) && (ONE_PHASE_CONDITION))
         {
             uint16_t setValue = __Phase_Advance(MOTOR_PHASE_ADVANCE + 30.0, timerPeriod) + CONVERT_US_TO_CLKS(BOARD_PHASE_RC_DELAY);
             int24_t deltaValue = (int24_t)capValue - (int24_t)setValue;
