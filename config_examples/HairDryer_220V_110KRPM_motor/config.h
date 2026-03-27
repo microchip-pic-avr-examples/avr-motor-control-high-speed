@@ -50,7 +50,10 @@
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (5)          /* ms */
 #define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (5000.0)     /* e-RPM - Specify the initial speed for fast motors */
+#define MOTOR_STATRUP_SPEED             (5000.0)     /* e-RPM - Specify the initial speed - minimum value is 120 e-RPM*/
+#define HALL_ENABLED                    false        /* Setting to 'true' enables the Hall synchronization, while setting to 'false' enables the BEMF synchronization */
+#define HALL_MISALIGNMENT               (0.0)        /* Hall misalignment 0.0 ... 30.0 electrical degrees */
+#define HALL_INVERTED                   false        /* Sets the Hall pins polarity - 'true' for sensors active in '0' and 'false' for sensors active in '1' */ 
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */

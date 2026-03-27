@@ -38,7 +38,7 @@
 #define ADC_VBUS_TRIP                   (51000.0)    /* mV - VBUS trip level */
 #define ADC_CURRENT_TRIP                (7000.0)     /* mA - ADC current trip level */
 #define COMPARATOR_CURRENT_TRIP         (20000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
-#define FAULT_COMPARATOR_EN             true
+#define FAULT_COMPARATOR_EN             false
 #define BOARD_PHASE_RC_DELAY            (10.0)       /* microseconds - RC filter delay */
 #define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
 
@@ -50,7 +50,10 @@
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (10)         /* ms */
 #define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (0.0)        /* e-RPM - Specify the initial speed for fast motors */
+#define MOTOR_STATRUP_SPEED             (4000.0)     /* e-RPM - Specify the initial speed - minimum value is 120 e-RPM*/
+#define HALL_ENABLED                    false        /* Setting to 'true' enables the Hall synchronization, while setting to 'false' enables the BEMF synchronization */
+#define HALL_MISALIGNMENT               (10.0)       /* Hall misalignment 0.0 ... 30.0 electrical degrees */
+#define HALL_INVERTED                   false        /* Sets the Hall pins polarity - 'true' for sensors active in '0' and 'false' for sensors active in '1' */ 
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
@@ -67,7 +70,7 @@
 #define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define STALL_MAXIMUM_ERPM              (100000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
 #define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 
 

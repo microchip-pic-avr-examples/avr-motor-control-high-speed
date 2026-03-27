@@ -51,10 +51,10 @@ static void (*DRIVE_L2_InterruptHandler)(void);
 static void (*RX0_InterruptHandler)(void);
 static void (*TX0_InterruptHandler)(void);
 static void (*PWM_IN_InterruptHandler)(void);
+static void (*HALL_A_InterruptHandler)(void);
+static void (*HALL_B_InterruptHandler)(void);
+static void (*HALL_C_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
-static void (*DBG_0_InterruptHandler)(void);
-static void (*DBG_1_InterruptHandler)(void);
-static void (*DBG_2_InterruptHandler)(void);
 static void (*LED_InterruptHandler)(void);
 
 void PIN_MANAGER_Initialize()
@@ -70,7 +70,7 @@ void PIN_MANAGER_Initialize()
     PORTA.DIR = 0x3F;
     PORTC.DIR = 0x2;
     PORTD.DIR = 0x0;
-    PORTF.DIR = 0x2E;
+    PORTF.DIR = 0x20;
 
   /* PINxCTRL registers Initialization */
     PORTA.PIN0CTRL = 0x0;
@@ -134,10 +134,10 @@ void PIN_MANAGER_Initialize()
     RX0_SetInterruptHandler(RX0_DefaultInterruptHandler);
     TX0_SetInterruptHandler(TX0_DefaultInterruptHandler);
     PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
+    HALL_A_SetInterruptHandler(HALL_A_DefaultInterruptHandler);
+    HALL_B_SetInterruptHandler(HALL_B_DefaultInterruptHandler);
+    HALL_C_SetInterruptHandler(HALL_C_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
-    DBG_0_SetInterruptHandler(DBG_0_DefaultInterruptHandler);
-    DBG_1_SetInterruptHandler(DBG_1_DefaultInterruptHandler);
-    DBG_2_SetInterruptHandler(DBG_2_DefaultInterruptHandler);
     LED_SetInterruptHandler(LED_DefaultInterruptHandler);
 }
 
@@ -363,6 +363,45 @@ void PWM_IN_DefaultInterruptHandler(void)
     // or set custom function using PWM_IN_SetInterruptHandler()
 }
 /**
+  Allows selecting an interrupt handler for HALL_A at application runtime
+*/
+void HALL_A_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_A_InterruptHandler = interruptHandler;
+}
+
+void HALL_A_DefaultInterruptHandler(void)
+{
+    // add your HALL_A interrupt custom code
+    // or set custom function using HALL_A_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_B at application runtime
+*/
+void HALL_B_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_B_InterruptHandler = interruptHandler;
+}
+
+void HALL_B_DefaultInterruptHandler(void)
+{
+    // add your HALL_B interrupt custom code
+    // or set custom function using HALL_B_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_C at application runtime
+*/
+void HALL_C_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_C_InterruptHandler = interruptHandler;
+}
+
+void HALL_C_DefaultInterruptHandler(void)
+{
+    // add your HALL_C interrupt custom code
+    // or set custom function using HALL_C_SetInterruptHandler()
+}
+/**
   Allows selecting an interrupt handler for BUTTON at application runtime
 */
 void BUTTON_SetInterruptHandler(void (* interruptHandler)(void)) 
@@ -374,45 +413,6 @@ void BUTTON_DefaultInterruptHandler(void)
 {
     // add your BUTTON interrupt custom code
     // or set custom function using BUTTON_SetInterruptHandler()
-}
-/**
-  Allows selecting an interrupt handler for DBG_0 at application runtime
-*/
-void DBG_0_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    DBG_0_InterruptHandler = interruptHandler;
-}
-
-void DBG_0_DefaultInterruptHandler(void)
-{
-    // add your DBG_0 interrupt custom code
-    // or set custom function using DBG_0_SetInterruptHandler()
-}
-/**
-  Allows selecting an interrupt handler for DBG_1 at application runtime
-*/
-void DBG_1_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    DBG_1_InterruptHandler = interruptHandler;
-}
-
-void DBG_1_DefaultInterruptHandler(void)
-{
-    // add your DBG_1 interrupt custom code
-    // or set custom function using DBG_1_SetInterruptHandler()
-}
-/**
-  Allows selecting an interrupt handler for DBG_2 at application runtime
-*/
-void DBG_2_SetInterruptHandler(void (* interruptHandler)(void)) 
-{
-    DBG_2_InterruptHandler = interruptHandler;
-}
-
-void DBG_2_DefaultInterruptHandler(void)
-{
-    // add your DBG_2 interrupt custom code
-    // or set custom function using DBG_2_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for LED at application runtime
@@ -519,21 +519,21 @@ ISR(PORTF_PORT_vect)
     {
        PWM_IN_InterruptHandler(); 
     }
-    if(VPORTF.INTFLAGS & PORT_INT6_bm)
-    {
-       BUTTON_InterruptHandler(); 
-    }
     if(VPORTF.INTFLAGS & PORT_INT1_bm)
     {
-       DBG_0_InterruptHandler(); 
+       HALL_A_InterruptHandler(); 
     }
     if(VPORTF.INTFLAGS & PORT_INT2_bm)
     {
-       DBG_1_InterruptHandler(); 
+       HALL_B_InterruptHandler(); 
     }
     if(VPORTF.INTFLAGS & PORT_INT3_bm)
     {
-       DBG_2_InterruptHandler(); 
+       HALL_C_InterruptHandler(); 
+    }
+    if(VPORTF.INTFLAGS & PORT_INT6_bm)
+    {
+       BUTTON_InterruptHandler(); 
     }
     if(VPORTF.INTFLAGS & PORT_INT5_bm)
     {

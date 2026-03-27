@@ -50,8 +50,8 @@
 #define CURRENT_TO_ACREF(X)               (uint8_t)( ((float)(X) * CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE + CURRENT_AMPLIFIER_OFFSET) * DAC_MAX_SCALE / ANALOG_REFERENCE + 0.5)
 
 /* conversion macros from/into float e-rpm value into/from 16-bit sector timer value (60 sec in a minute, 4/6 sectors per rev) */
-#define CONVERT_ERPM_TO_STMR(ERPM)        (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY) / (SECTORS_NUMBER * (ERPM)) - 0.5)
-#define CONVERT_STMR_TO_ERPM(STMR)                  (60.0 * (SECTOR_TIMER_FREQUENCY) / (SECTORS_NUMBER * ((STMR) + 1)))
+#define CONVERT_ERPM_TO_STMR(ERPM, DIV)   (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV)) / (SECTORS_NUMBER * (float)(ERPM)) - 0.5) // DIV = 1 or DIV_LOW_SPEED from mcc_mapping.h, corresponding to 24M/20M or 40 kHz
+#define CONVERT_STMR_TO_ERPM(STMR, DIV)   (60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV)) / (SECTORS_NUMBER * ((float)(STMR) + 1)))
 
 /* conversion macros from/into microseconds into/from clocks count */
 #define CONVERT_US_TO_CLKS(US)            (uint16_t)((US) * (F_CPU) / 1000000.0 + 0.5)
@@ -74,10 +74,10 @@ typedef union
 {
     struct
     {
-        uint8_t   L;
-        uint16_t  H;
+        uint8_t   L8;
+        uint16_t  H16;
     };
-    uint24_t  W;
+    uint24_t  W24;
 } split24_t;
 
 typedef union

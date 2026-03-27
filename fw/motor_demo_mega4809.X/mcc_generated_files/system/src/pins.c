@@ -49,6 +49,9 @@ static void (*VBUS_InterruptHandler)(void);
 static void (*POT_InterruptHandler)(void);
 static void (*FAULT_INPUT_InterruptHandler)(void);
 static void (*PWM_IN_InterruptHandler)(void);
+static void (*HALL_A_InterruptHandler)(void);
+static void (*HALL_B_InterruptHandler)(void);
+static void (*HALL_C_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
 static void (*DRIVE_L0_InterruptHandler)(void);
 static void (*DRIVE_L1_InterruptHandler)(void);
@@ -152,6 +155,9 @@ void PIN_MANAGER_Initialize()
     POT_SetInterruptHandler(POT_DefaultInterruptHandler);
     FAULT_INPUT_SetInterruptHandler(FAULT_INPUT_DefaultInterruptHandler);
     PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
+    HALL_A_SetInterruptHandler(HALL_A_DefaultInterruptHandler);
+    HALL_B_SetInterruptHandler(HALL_B_DefaultInterruptHandler);
+    HALL_C_SetInterruptHandler(HALL_C_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
     DRIVE_L0_SetInterruptHandler(DRIVE_L0_DefaultInterruptHandler);
     DRIVE_L1_SetInterruptHandler(DRIVE_L1_DefaultInterruptHandler);
@@ -357,6 +363,45 @@ void PWM_IN_DefaultInterruptHandler(void)
 {
     // add your PWM_IN interrupt custom code
     // or set custom function using PWM_IN_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_A at application runtime
+*/
+void HALL_A_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_A_InterruptHandler = interruptHandler;
+}
+
+void HALL_A_DefaultInterruptHandler(void)
+{
+    // add your HALL_A interrupt custom code
+    // or set custom function using HALL_A_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_B at application runtime
+*/
+void HALL_B_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_B_InterruptHandler = interruptHandler;
+}
+
+void HALL_B_DefaultInterruptHandler(void)
+{
+    // add your HALL_B interrupt custom code
+    // or set custom function using HALL_B_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_C at application runtime
+*/
+void HALL_C_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_C_InterruptHandler = interruptHandler;
+}
+
+void HALL_C_DefaultInterruptHandler(void)
+{
+    // add your HALL_C interrupt custom code
+    // or set custom function using HALL_C_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for BUTTON at application runtime
@@ -601,6 +646,18 @@ ISR(PORTE_PORT_vect)
 ISR(PORTF_PORT_vect)
 { 
     // Call the interrupt handler for the callback registered at runtime
+    if(VPORTF.INTFLAGS & PORT_INT2_bm)
+    {
+       HALL_A_InterruptHandler(); 
+    }
+    if(VPORTF.INTFLAGS & PORT_INT3_bm)
+    {
+       HALL_B_InterruptHandler(); 
+    }
+    if(VPORTF.INTFLAGS & PORT_INT4_bm)
+    {
+       HALL_C_InterruptHandler(); 
+    }
     if(VPORTF.INTFLAGS & PORT_INT6_bm)
     {
        BUTTON_InterruptHandler(); 

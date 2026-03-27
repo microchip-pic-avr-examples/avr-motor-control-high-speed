@@ -152,6 +152,25 @@
 #define DRIVE_H2_EnableInterruptForLowLevelSensing() do { PORTA.PIN2CTRL = (PORTA.PIN2CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PA2_SetInterruptHandler DRIVE_H2_SetInterruptHandler
 
+//get/set EVS aliases
+#define EVS_SetHigh() do { PORTA_OUTSET = 0x80; } while(0)
+#define EVS_SetLow() do { PORTA_OUTCLR = 0x80; } while(0)
+#define EVS_Toggle() do { PORTA_OUTTGL = 0x80; } while(0)
+#define EVS_GetValue() (VPORTA.IN & (0x1 << 7))
+#define EVS_SetDigitalInput() do { PORTA_DIRCLR = 0x80; } while(0)
+#define EVS_SetDigitalOutput() do { PORTA_DIRSET = 0x80; } while(0)
+#define EVS_SetPullUp() do { PORTA_PIN7CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define EVS_ResetPullUp() do { PORTA_PIN7CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define EVS_SetInverted() do { PORTA_PIN7CTRL  |= PORT_INVEN_bm; } while(0)
+#define EVS_ResetInverted() do { PORTA_PIN7CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define EVS_DisableInterruptOnChange() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define EVS_EnableInterruptForBothEdges() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define EVS_EnableInterruptForRisingEdge() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define EVS_EnableInterruptForFallingEdge() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define EVS_DisableDigitalInputBuffer() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define EVS_EnableInterruptForLowLevelSensing() do { PORTA.PIN7CTRL = (PORTA.PIN7CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PA7_SetInterruptHandler EVS_SetInterruptHandler
+
 //get/set RXD aliases
 #define RXD_SetHigh() do { PORTC_OUTSET = 0x2; } while(0)
 #define RXD_SetLow() do { PORTC_OUTCLR = 0x2; } while(0)
@@ -322,6 +341,63 @@
 #define BUTTON_DisableDigitalInputBuffer() do { PORTC.PIN7CTRL = (PORTC.PIN7CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
 #define BUTTON_EnableInterruptForLowLevelSensing() do { PORTC.PIN7CTRL = (PORTC.PIN7CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
 #define PC7_SetInterruptHandler BUTTON_SetInterruptHandler
+
+//get/set HALL_A aliases
+#define HALL_A_SetHigh() do { PORTF_OUTSET = 0x4; } while(0)
+#define HALL_A_SetLow() do { PORTF_OUTCLR = 0x4; } while(0)
+#define HALL_A_Toggle() do { PORTF_OUTTGL = 0x4; } while(0)
+#define HALL_A_GetValue() (VPORTF.IN & (0x1 << 2))
+#define HALL_A_SetDigitalInput() do { PORTF_DIRCLR = 0x4; } while(0)
+#define HALL_A_SetDigitalOutput() do { PORTF_DIRSET = 0x4; } while(0)
+#define HALL_A_SetPullUp() do { PORTF_PIN2CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define HALL_A_ResetPullUp() do { PORTF_PIN2CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define HALL_A_SetInverted() do { PORTF_PIN2CTRL  |= PORT_INVEN_bm; } while(0)
+#define HALL_A_ResetInverted() do { PORTF_PIN2CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define HALL_A_DisableInterruptOnChange() do { PORTF.PIN2CTRL = (PORTF.PIN2CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define HALL_A_EnableInterruptForBothEdges() do { PORTF.PIN2CTRL = (PORTF.PIN2CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define HALL_A_EnableInterruptForRisingEdge() do { PORTF.PIN2CTRL = (PORTF.PIN2CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define HALL_A_EnableInterruptForFallingEdge() do { PORTF.PIN2CTRL = (PORTF.PIN2CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define HALL_A_DisableDigitalInputBuffer() do { PORTF.PIN2CTRL = (PORTF.PIN2CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define HALL_A_EnableInterruptForLowLevelSensing() do { PORTF.PIN2CTRL = (PORTF.PIN2CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PF2_SetInterruptHandler HALL_A_SetInterruptHandler
+
+//get/set HALL_B aliases
+#define HALL_B_SetHigh() do { PORTF_OUTSET = 0x8; } while(0)
+#define HALL_B_SetLow() do { PORTF_OUTCLR = 0x8; } while(0)
+#define HALL_B_Toggle() do { PORTF_OUTTGL = 0x8; } while(0)
+#define HALL_B_GetValue() (VPORTF.IN & (0x1 << 3))
+#define HALL_B_SetDigitalInput() do { PORTF_DIRCLR = 0x8; } while(0)
+#define HALL_B_SetDigitalOutput() do { PORTF_DIRSET = 0x8; } while(0)
+#define HALL_B_SetPullUp() do { PORTF_PIN3CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define HALL_B_ResetPullUp() do { PORTF_PIN3CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define HALL_B_SetInverted() do { PORTF_PIN3CTRL  |= PORT_INVEN_bm; } while(0)
+#define HALL_B_ResetInverted() do { PORTF_PIN3CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define HALL_B_DisableInterruptOnChange() do { PORTF.PIN3CTRL = (PORTF.PIN3CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define HALL_B_EnableInterruptForBothEdges() do { PORTF.PIN3CTRL = (PORTF.PIN3CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define HALL_B_EnableInterruptForRisingEdge() do { PORTF.PIN3CTRL = (PORTF.PIN3CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define HALL_B_EnableInterruptForFallingEdge() do { PORTF.PIN3CTRL = (PORTF.PIN3CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define HALL_B_DisableDigitalInputBuffer() do { PORTF.PIN3CTRL = (PORTF.PIN3CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define HALL_B_EnableInterruptForLowLevelSensing() do { PORTF.PIN3CTRL = (PORTF.PIN3CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PF3_SetInterruptHandler HALL_B_SetInterruptHandler
+
+//get/set HALL_C aliases
+#define HALL_C_SetHigh() do { PORTF_OUTSET = 0x10; } while(0)
+#define HALL_C_SetLow() do { PORTF_OUTCLR = 0x10; } while(0)
+#define HALL_C_Toggle() do { PORTF_OUTTGL = 0x10; } while(0)
+#define HALL_C_GetValue() (VPORTF.IN & (0x1 << 4))
+#define HALL_C_SetDigitalInput() do { PORTF_DIRCLR = 0x10; } while(0)
+#define HALL_C_SetDigitalOutput() do { PORTF_DIRSET = 0x10; } while(0)
+#define HALL_C_SetPullUp() do { PORTF_PIN4CTRL  |= PORT_PULLUPEN_bm; } while(0)
+#define HALL_C_ResetPullUp() do { PORTF_PIN4CTRL  &= ~PORT_PULLUPEN_bm; } while(0)
+#define HALL_C_SetInverted() do { PORTF_PIN4CTRL  |= PORT_INVEN_bm; } while(0)
+#define HALL_C_ResetInverted() do { PORTF_PIN4CTRL  &= ~PORT_INVEN_bm; } while(0)
+#define HALL_C_DisableInterruptOnChange() do { PORTF.PIN4CTRL = (PORTF.PIN4CTRL & ~PORT_ISC_gm) | 0x0 ; } while(0)
+#define HALL_C_EnableInterruptForBothEdges() do { PORTF.PIN4CTRL = (PORTF.PIN4CTRL & ~PORT_ISC_gm) | 0x1 ; } while(0)
+#define HALL_C_EnableInterruptForRisingEdge() do { PORTF.PIN4CTRL = (PORTF.PIN4CTRL & ~PORT_ISC_gm) | 0x2 ; } while(0)
+#define HALL_C_EnableInterruptForFallingEdge() do { PORTF.PIN4CTRL = (PORTF.PIN4CTRL & ~PORT_ISC_gm) | 0x3 ; } while(0)
+#define HALL_C_DisableDigitalInputBuffer() do { PORTF.PIN4CTRL = (PORTF.PIN4CTRL & ~PORT_ISC_gm) | 0x4 ; } while(0)
+#define HALL_C_EnableInterruptForLowLevelSensing() do { PORTF.PIN4CTRL = (PORTF.PIN4CTRL & ~PORT_ISC_gm) | 0x5 ; } while(0)
+#define PF4_SetInterruptHandler HALL_C_SetInterruptHandler
 
 //get/set DBG_2 aliases
 #define DBG_2_SetHigh() do { PORTA_OUTSET = 0x10; } while(0)
@@ -611,6 +687,27 @@ void DRIVE_H2_SetInterruptHandler(void (* interruptHandler)(void)) ;
 
 /**
  * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for EVS pin. 
+ *        This is a predefined interrupt handler to be used together with the EVS_SetInterruptHandler() method.
+ *        This handler is called every time the EVS ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void EVS_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for EVS pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for EVS at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void EVS_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
  * @brief Default Interrupt Handler for RXD pin. 
  *        This is a predefined interrupt handler to be used together with the RXD_SetInterruptHandler() method.
  *        This handler is called every time the RXD ISR is executed. 
@@ -797,6 +894,69 @@ void BUTTON_DefaultInterruptHandler(void);
  * @return none
  */
 void BUTTON_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for HALL_A pin. 
+ *        This is a predefined interrupt handler to be used together with the HALL_A_SetInterruptHandler() method.
+ *        This handler is called every time the HALL_A ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void HALL_A_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for HALL_A pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for HALL_A at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void HALL_A_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for HALL_B pin. 
+ *        This is a predefined interrupt handler to be used together with the HALL_B_SetInterruptHandler() method.
+ *        This handler is called every time the HALL_B ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void HALL_B_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for HALL_B pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for HALL_B at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void HALL_B_SetInterruptHandler(void (* interruptHandler)(void)) ; 
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Default Interrupt Handler for HALL_C pin. 
+ *        This is a predefined interrupt handler to be used together with the HALL_C_SetInterruptHandler() method.
+ *        This handler is called every time the HALL_C ISR is executed. 
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param none
+ * @return none
+ */
+void HALL_C_DefaultInterruptHandler(void);
+
+/**
+ * @ingroup  pinsdriver
+ * @brief Interrupt Handler Setter for HALL_C pin input-sense-config functionality.
+ *        Allows selecting an interrupt handler for HALL_C at application runtime
+ * @pre PIN_MANAGER_Initialize() has been called at least once
+ * @param InterruptHandler function pointer.
+ * @return none
+ */
+void HALL_C_SetInterruptHandler(void (* interruptHandler)(void)) ; 
 
 /**
  * @ingroup  pinsdriver

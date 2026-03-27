@@ -55,7 +55,7 @@ void TCB0_Initialize(void)
 
     TCB0.DBGCTRL = (0 << TCB_DBGRUN_bp);  // DBGRUN disabled
 
-    TCB0.EVCTRL = (0 << TCB_CAPTEI_bp)   // CAPTEI disabled
+    TCB0.EVCTRL = (1 << TCB_CAPTEI_bp)   // CAPTEI enabled
         | (0 << TCB_EDGE_bp)   // EDGE disabled
         | (0 << TCB_FILTER_bp);  // FILTER disabled
 

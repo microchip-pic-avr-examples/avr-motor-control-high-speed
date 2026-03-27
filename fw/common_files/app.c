@@ -30,7 +30,6 @@
 #include "mcc_mapping.h"
 #include "pwm_in.h"
 
-
 static volatile motor_status_t motor_state, motor_events;
 static volatile button_state_t button_state = BUTTON_IDLE;
 static volatile led_ctrl_t     led_state = LED_OFF;

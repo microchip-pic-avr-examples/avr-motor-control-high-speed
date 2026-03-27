@@ -53,7 +53,9 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define CURRENT_TRIP_LEVEL_SET              AC0_DACRefValueSet
 #define AC_REF_DAC_MAX                      255
 
-#define PWM_PERIOD                 613UL
+#define PWM_PERIOD                 511UL
+#define DIV_SHIFT                  9    // 511 = 2 ** 9 - 1
+#define DIV_LOW_SPEED              512UL
 
 /* pins used for PWM/GPIO motor drive */
 #define DRIVE_LPORT                PORTB
@@ -97,6 +99,20 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define CAPTURE_TIMER_COUNTER_GET  TCB1_CounterGet
 #define CAPTURE_TIMER_COUNTER_SET  TCB1_CounterSet
 
+/* settings used based on motor speed */
+#define LOW_SPEED_ENABLE()         do{\
+                                   EVSYS.CHANNEL0 = EVSYS_CHANNEL0_TCA0_OVF_LUNF_gc;\
+                                   uint8_t temp = (TCB0.CTRLA & ~TCB_CLKSEL_gm)| (TCB_CLKSEL_EVENT_gc & TCB_CLKSEL_gm); TCB0.CTRLA = temp;\
+                                   temp = (TCB1.CTRLA & ~TCB_CLKSEL_gm)| (TCB_CLKSEL_EVENT_gc & TCB_CLKSEL_gm); TCB1.CTRLA = temp;\
+                                   TCB0.EVCTRL = TCB_CAPTEI_bm;\
+                                   }while(0)               
+#define LOW_SPEED_DISABLE()        do{\
+                                   EVSYS.CHANNEL0 = EVSYS_CHANNEL0_OFF_gc;\
+                                   uint8_t temp = (TCB0.CTRLA & ~TCB_CLKSEL_gm)| (TCB_CLKSEL_DIV1_gc & TCB_CLKSEL_gm); TCB0.CTRLA = temp;\
+                                   temp = (TCB1.CTRLA & ~TCB_CLKSEL_gm)| (TCB_CLKSEL_DIV1_gc & TCB_CLKSEL_gm); TCB1.CTRLA = temp;\
+                                   TCB0.EVCTRL = 0;\
+                                   }while(0)             
+
 /* periodic 1ms software timer */
 #define SW_TIMER_CB_REGISTER       RTC_SetPITIsrCallback
 #define SW_TIMER_PERIOD            (970) /* us */
@@ -125,6 +141,25 @@ static void AC1_Invert(bool config){if(config) AC1.MUXCTRL |=  AC_INVERT_bm; els
 #define PWM_IN_TMR_REGISTER     TCB2_OverflowCallbackRegister
 #define PWM_IN_TMR_CLEAR()      TCB2_CounterSet(0)
 #define PWM_IN_TMR_READ         TCB2_CounterGet
+
+/* HALL Sensored Functions */
+
+#define HALL_PORT               PORTF
+#define HALL_A_PIN              PIN2CTRL
+#define HALL_B_PIN              PIN3CTRL
+#define HALL_C_PIN              PIN4CTRL
+#define HALL_ENABLE()           do{\
+                                EVSYS.CHANNEL4 = EVSYS_CHANNEL4_OFF_gc;\
+                                }while(0)      
+#define HALL_DISABLE()          do{\
+                                EVSYS.CHANNEL4 = EVSYS_CHANNEL4_AC1_OUT_gc;\
+                                }while(0)
+#define HALL_MASK_A             EVSYS_CHANNEL4_PORTF_PIN2_gc
+#define HALL_MASK_B             EVSYS_CHANNEL4_PORTF_PIN3_gc
+#define HALL_MASK_C             EVSYS_CHANNEL4_PORTF_PIN4_gc
+#define HALL_INVERT             PORT_INVEN_bm
+#define HALL_MASK_SET(X)        do{EVSYS.CHANNEL4 = (X);}while(0)   
+#define HALL_INV_SET(X, Y)      do{uint8_t _tmp = (Y); if((X) != NULL) *(X) = _tmp;}while(0) 
 
 
 #endif /* MCC_MAPPING_H */

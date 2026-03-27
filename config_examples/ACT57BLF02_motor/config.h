@@ -44,13 +44,16 @@
 
 /* Motor-specific settings */
 /* ACT57BLF02:  supply 24V, 3A limit */
-#define MOTOR_PHASE_ADVANCE             (15.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
-#define MOTOR_STARTUP_CURRENT           (12000.0)    /* mA - Initial alignment current pulse may be higher than overcurrent protection */
+#define MOTOR_PHASE_ADVANCE             (10.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
+#define MOTOR_STARTUP_CURRENT           (15000.0)    /* mA - Initial alignment current pulse may be higher than overcurrent protection */
 #define MOTOR_RPP                       (0.45)       /* ohms - Motor resistance measured phase-to-phase */
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (10)         /* ms */
 #define MOTOR_STARTUP_TIME              (1000)       /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (0.0)        /* e-RPM - Specify the initial speed for fast motors */
+#define MOTOR_STATRUP_SPEED             (4000.0)     /* e-RPM - Specify the initial speed - minimum value is 120 e-RPM*/
+#define HALL_ENABLED                    false        /* Setting to 'true' enables the Hall synchronization, while setting to 'false' enables the BEMF synchronization */
+#define HALL_MISALIGNMENT               (10.0)       /* Hall misalignment 0.0 ... 30.0 electrical degrees */
+#define HALL_INVERTED                   false        /* Sets the Hall pins polarity - 'true' for sensors active in '0' and 'false' for sensors active in '1' */ 
 
 /* Speed regulation specific settings */
 #define REGULATOR_SPEED_EN              true         /* Setting to 'true' enables speed control in Closed Loop, setting to 'false' enables amplitude control in Open Loop */
@@ -67,7 +70,7 @@
 #define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (150000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define STALL_MAXIMUM_ERPM              (100000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
 #define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 
 

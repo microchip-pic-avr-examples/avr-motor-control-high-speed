@@ -40,6 +40,7 @@ static void (*BEMF_A_InterruptHandler)(void);
 static void (*DRIVE_H0_InterruptHandler)(void);
 static void (*DRIVE_H1_InterruptHandler)(void);
 static void (*DRIVE_H2_InterruptHandler)(void);
+static void (*EVS_InterruptHandler)(void);
 static void (*RXD_InterruptHandler)(void);
 static void (*TXD_InterruptHandler)(void);
 static void (*VBUS_InterruptHandler)(void);
@@ -49,6 +50,9 @@ static void (*BEMF_C_InterruptHandler)(void);
 static void (*CRT_REF_InterruptHandler)(void);
 static void (*PWM_IN_InterruptHandler)(void);
 static void (*BUTTON_InterruptHandler)(void);
+static void (*HALL_A_InterruptHandler)(void);
+static void (*HALL_B_InterruptHandler)(void);
+static void (*HALL_C_InterruptHandler)(void);
 static void (*DBG_2_InterruptHandler)(void);
 static void (*DBG_3_InterruptHandler)(void);
 static void (*DRIVE_L0_InterruptHandler)(void);
@@ -70,7 +74,7 @@ void PIN_MANAGER_Initialize()
     PORTF.OUT = 0x0;
 
   /* DIR Registers Initialization */
-    PORTA.DIR = 0x37;
+    PORTA.DIR = 0xB7;
     PORTB.DIR = 0x7;
     PORTC.DIR = 0x4D;
     PORTD.DIR = 0x0;
@@ -147,6 +151,7 @@ void PIN_MANAGER_Initialize()
     DRIVE_H0_SetInterruptHandler(DRIVE_H0_DefaultInterruptHandler);
     DRIVE_H1_SetInterruptHandler(DRIVE_H1_DefaultInterruptHandler);
     DRIVE_H2_SetInterruptHandler(DRIVE_H2_DefaultInterruptHandler);
+    EVS_SetInterruptHandler(EVS_DefaultInterruptHandler);
     RXD_SetInterruptHandler(RXD_DefaultInterruptHandler);
     TXD_SetInterruptHandler(TXD_DefaultInterruptHandler);
     VBUS_SetInterruptHandler(VBUS_DefaultInterruptHandler);
@@ -156,6 +161,9 @@ void PIN_MANAGER_Initialize()
     CRT_REF_SetInterruptHandler(CRT_REF_DefaultInterruptHandler);
     PWM_IN_SetInterruptHandler(PWM_IN_DefaultInterruptHandler);
     BUTTON_SetInterruptHandler(BUTTON_DefaultInterruptHandler);
+    HALL_A_SetInterruptHandler(HALL_A_DefaultInterruptHandler);
+    HALL_B_SetInterruptHandler(HALL_B_DefaultInterruptHandler);
+    HALL_C_SetInterruptHandler(HALL_C_DefaultInterruptHandler);
     DBG_2_SetInterruptHandler(DBG_2_DefaultInterruptHandler);
     DBG_3_SetInterruptHandler(DBG_3_DefaultInterruptHandler);
     DRIVE_L0_SetInterruptHandler(DRIVE_L0_DefaultInterruptHandler);
@@ -243,6 +251,19 @@ void DRIVE_H2_DefaultInterruptHandler(void)
 {
     // add your DRIVE_H2 interrupt custom code
     // or set custom function using DRIVE_H2_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for EVS at application runtime
+*/
+void EVS_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    EVS_InterruptHandler = interruptHandler;
+}
+
+void EVS_DefaultInterruptHandler(void)
+{
+    // add your EVS interrupt custom code
+    // or set custom function using EVS_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for RXD at application runtime
@@ -360,6 +381,45 @@ void BUTTON_DefaultInterruptHandler(void)
 {
     // add your BUTTON interrupt custom code
     // or set custom function using BUTTON_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_A at application runtime
+*/
+void HALL_A_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_A_InterruptHandler = interruptHandler;
+}
+
+void HALL_A_DefaultInterruptHandler(void)
+{
+    // add your HALL_A interrupt custom code
+    // or set custom function using HALL_A_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_B at application runtime
+*/
+void HALL_B_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_B_InterruptHandler = interruptHandler;
+}
+
+void HALL_B_DefaultInterruptHandler(void)
+{
+    // add your HALL_B interrupt custom code
+    // or set custom function using HALL_B_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for HALL_C at application runtime
+*/
+void HALL_C_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    HALL_C_InterruptHandler = interruptHandler;
+}
+
+void HALL_C_DefaultInterruptHandler(void)
+{
+    // add your HALL_C interrupt custom code
+    // or set custom function using HALL_C_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for DBG_2 at application runtime
@@ -480,6 +540,10 @@ ISR(PORTA_PORT_vect)
     {
        DRIVE_H2_InterruptHandler(); 
     }
+    if(VPORTA.INTFLAGS & PORT_INT7_bm)
+    {
+       EVS_InterruptHandler(); 
+    }
     if(VPORTA.INTFLAGS & PORT_INT3_bm)
     {
        PWM_IN_InterruptHandler(); 
@@ -594,6 +658,19 @@ ISR(PORTE_PORT_vect)
 
 ISR(PORTF_PORT_vect)
 { 
+    // Call the interrupt handler for the callback registered at runtime
+    if(VPORTF.INTFLAGS & PORT_INT2_bm)
+    {
+       HALL_A_InterruptHandler(); 
+    }
+    if(VPORTF.INTFLAGS & PORT_INT3_bm)
+    {
+       HALL_B_InterruptHandler(); 
+    }
+    if(VPORTF.INTFLAGS & PORT_INT4_bm)
+    {
+       HALL_C_InterruptHandler(); 
+    }
     /* Clear interrupt flags */
     VPORTF.INTFLAGS = 0xff;
 }

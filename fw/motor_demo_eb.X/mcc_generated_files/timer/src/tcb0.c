@@ -90,8 +90,8 @@ void TCB0_Initialize(void)
     // DBGRUN disabled; 
     TCB0.DBGCTRL = 0x0;
 
-    // CAPTEI disabled; EDGE disabled; FILTER disabled; 
-    TCB0.EVCTRL = 0x0;
+    // CAPTEI enabled; EDGE disabled; FILTER disabled; 
+    TCB0.EVCTRL = 0x1;
 
     // CAPT disabled; OVF disabled; 
     TCB0.INTFLAGS = TCB0.INTFLAGS;

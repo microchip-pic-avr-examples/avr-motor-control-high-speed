@@ -46,11 +46,11 @@ static const analog_id_t  analog_sequencer[] =
 };
 #define ANALOG_SEQUENCER_MAX  (sizeof(analog_sequencer)/sizeof(analog_id_t))
 
-static inline void             AdataClear(analog_id_t id)                       {analog_results[id].W = 0;}
-static inline void             AdataInit(analog_id_t id, adc_result_t value)    {analog_results[id].H = value; analog_results[id].L = 0;}
-static inline uint16_t         AdataRead (analog_id_t id)                       {return analog_results[id].H;}
-static inline void             AdataFilterWrite(analog_id_t id, adc_result_t data) {uint24_t x = analog_results[id].W; uint24_t y = x >> 4; analog_results[id].W = x - y + ((uint24_t)data << 4);}
-static inline void             AdataSimpleWrite(analog_id_t id, adc_result_t data) {analog_results[id].H = data;}
+static inline void             AdataClear(analog_id_t id)                       {analog_results[id].W24 = 0;}
+static inline void             AdataInit(analog_id_t id, adc_result_t value)    {analog_results[id].H16 = value; analog_results[id].L8 = 0;}
+static inline uint16_t         AdataRead (analog_id_t id)                       {return analog_results[id].H16;}
+static inline void             AdataFilterWrite(analog_id_t id, adc_result_t data) {uint24_t x = analog_results[id].W24; uint24_t y = x >> 4; analog_results[id].W24 = x - y + ((uint24_t)data << 4);}
+static inline void             AdataSimpleWrite(analog_id_t id, adc_result_t data) {analog_results[id].H16 = data;}
 
 
 void Analog_Handler(void)
