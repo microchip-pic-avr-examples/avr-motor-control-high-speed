@@ -70,7 +70,7 @@
 #define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
 #define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
-#define STALL_MAXIMUM_ERPM              (100000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
+#define STALL_MAXIMUM_ERPM              (50000.0)    /* e-RPM - Threshold when the algorithm might lose synchronization */
 #define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 
 

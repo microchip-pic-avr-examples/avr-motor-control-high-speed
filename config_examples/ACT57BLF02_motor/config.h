@@ -37,7 +37,7 @@
 #define ANALOG_REFERENCE                (3300.0)     /* mV */
 #define ADC_VBUS_TRIP                   (51000.0)    /* mV - VBUS trip level */
 #define ADC_CURRENT_TRIP                (10000.0)    /* mA - ADC current trip level */
-#define COMPARATOR_CURRENT_TRIP         (20000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
+#define COMPARATOR_CURRENT_TRIP         (22000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
 #define FAULT_COMPARATOR_EN             true
 #define BOARD_PHASE_RC_DELAY            (10.0)       /* microseconds - RC filter delay */
 #define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
