@@ -1,24 +1,24 @@
 [![MCHP](images/microchip.png)](https://www.microchip.com)
 
-## Motor Control With AVR®
+## Motor Control With AVR® Family
 
-This repository features a Motor Control application designed for high-speed Trapezoidal Sensorless control, which includes three implementations based on the AVR family: AVR16EB32, AVR128DA48, and ATmega4809 devices. Check the [*Release Notes*](#release-notes) section to see the available functionality of the current release. The aim of this application is to maintain stability during a high count of electrical rotations per minute (>200,000 electrical RPM) by using a simplified Proportional-Integral (PI) algorithm. For low speeds, Sensored control is also supported. All three code examples have the same functionality; the only difference is the used device.
+This repository features a motor control application designed for high-speed trapezoidal sensorless control, which includes three implementations based on the AVR family: AVR16EB32, AVR128DA48, and ATmega4809 devices. Check the [*Release Notes*](#release-notes) section to see the available functionality of the current release. The aim of this application is to maintain stability during a high count of electrical rotations per minute (>200,000 electrical RPM) through a simplified Proportional-Integral (PI) algorithm. Sensored control is also supported for lower speeds. All these three code examples have the same functionality; the only difference being the device used.
 
-- <b>AVR EB</b> has two new peripherals, the Timer Counter type E (TCE) and Waveform Extension (WEX), that have new hardware capabilities designed to handle functions typically managed by software in motor control, as described in [Getting Started with the TCE and WEX](https://onlinedocs.microchip.com/oxy/GUID-8FB8D192-E8C9-4748-B991-D4D842E01591-en-US-1/index.html) and in the [AVR® EB Data Sheet](https://www.microchip.com/en-us/product/avr16eb32#document-table)
+- <b>AVR EB</b> has two new peripherals: the Timer Counter type E (TCE) and the Waveform Extension (WEX), with new hardware capabilities designed to handle functions typically managed by software in motor control, as described in the [Getting Started with the TCE and WEX](https://onlinedocs.microchip.com/oxy/GUID-8FB8D192-E8C9-4748-B991-D4D842E01591-en-US-1/index.html) and in the [AVR® EB Data Sheet](https://www.microchip.com/en-us/product/avr16eb32#document-table)
 
 - <b>AVR DA</b> provides increased memory, higher CPU frequency and additional pins, as described in the [AVR® DA Data Sheet](https://www.microchip.com/en-us/product/avr128da48#document-table)
 
 - <b>ATmega</b> incorporates features from both AVR EB and AVR DA families, offering a well-balanced combination of hardware capabilities, memory, and pin count, as described in the [AVR® ATmega Data Sheet](https://www.microchip.com/en-us/product/atmega4809#document-table)
   
-- The application is designed to obtain a trapezoidal drive with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) motors and Permanent Magnet Synchronous Motors (PMSMs). Also, single-phase/one-phase shaded-pole motors are supported.
+The application is designed to obtain a trapezoidal drive with motor synchronization and support for sensorless feedback type. The focus is on Brushless Direct Current (BLDC) and Permanent Magnet Synchronous (PMSMs) motors. Also, the single-phase (one-phase) shaded-pole motors are supported.
 
-- The sensorless feedback and synchronization are achieved using the Zero-Cross Detections (ZCDs) corresponding to the Back-Electromotive Forces (BEMFs) of each of the three phases of the motor. The BEMFs are captured using hardware peripherals, thus improving the accuracy of zero-cross detections at high speeds. The motor synchronization is achieved using a Proportional-Integral (PI) algorithm, that calculates the error between the measured ZCD and the ideal ZCD.
+The sensorless feedback and synchronization are achieved using the Zero-Cross Detections (ZCDs) corresponding to the Back-Electromotive Forces (BEMFs) of each of the three phases of the motor. The BEMFs are captured using hardware peripherals, thus improving the accuracy of zero-cross detections at high speeds. The motor synchronization is achieved using a Proportional-Integral (PI) algorithm, that calculates the error between  the measured and the ideal ZCD.
 
-- The sensored feedback and synchronization are aschieved using transitions from Hall sensors corresponding to each of the three phases of the motor. The transitions are captured using hardware peripherals. The motor synchronization is achieved using the same Proportional-Integral (PI) algorithm used for Sensorless control, that calculates the error between the captured transition and the ideal transition.
+The sensored feedback and synchronization are achieved using the transitions from the Hall sensors, corresponding to each of the three phases of the motor. The transitions are captured using hardware peripherals. The motor synchronization is achieved using the same Proportional-Integral (PI) algorithm used for Sensorless control, that calculates the error between the captured transition and the ideal transition.
 
 <h2> Table of Contents </h2>
 
-- [Motor Control With AVR®](#motor-control-with-avr®)
+- [Motor Control With AVR® Family](#motor-control-with-avr-family)
 - [Release Notes](#release-notes)
 - [Related Documentation](#related-documentation)
 - [Software Used](#software-used)
@@ -32,7 +32,7 @@ This repository features a Motor Control application designed for high-speed Tra
 - [Application Usage](#application-usage)
   - [Let's Spin the Motor](#lets-spin-the-motor)
   - [Tunning Guide](#tunning-guide)
-  - [Programming the AVR®](#programming-the-avr®)
+  - [Programming the AVR® MCU](#programming-the-avr-mcu)
   - [Console Interface](#console-interface)
   - [PWM Input Interface](#pwm-input-interface)
 - [Software Description](#software-description)
@@ -59,8 +59,8 @@ This repository features a Motor Control application designed for high-speed Tra
 
 Current version 1.4.0 features:
 
-- Support for Sensored control using Hall sensors
-- Updated switching frequency to 47 kHz for AVR128DA48 platform
+- Support for the sensored control using Hall sensors
+- Updated switching frequency to 47 kHz for the AVR128DA48 platform
 
 Version 1.3.0 features:
 
@@ -119,15 +119,16 @@ More details and code examples on the AVR16EB32, AVR128DA48 and ATmega4809 can b
 - [AVR EB Curiosity Nano Adaptor to MPPB](https://www.microchip.com/en-us/development-tool/EV88N31A)
 - [AVR DA Curiosity Nano Adaptor to MPPB](#curiosity-nano---mppb-pin-mapping), made with wires
 - [AVR ATmega Curiosity Nano Adaptor to MPPB](#curiosity-nano---mppb-pin-mapping), made with wires
-- A Voltage power supply (6-55V and 10A limit, depending on the motor used)
-- At least one BLDC motor. For the development and testing of this demo, the following motors were used:
+- A voltage power supply (6-55V and 10A limit, depending on the motor used)
+- At least one BLDC motor
+- For the development and testing of this demo, the following motors were used:
   - ACT42BLF01
   - ACT57BLF02
   - SZSPEED 2207 KV 2500
   - Hacker A10 KV 2900
   - A2212 KV 2200
-  - 130K RPM 12V low cost hair-dryer motor
-  - 110K RPM 220V low cost hair-dryer motor
+  - 130K RPM 12V low-cost hair-dryer motor
+  - 110K RPM 220V low-cost hair-dryer motor
   - 110K RPM 220V hair-dryer one-phase motor
   - Hurst DMA0002024C1010
 
@@ -150,13 +151,13 @@ The AVR16EB32, AVR128DA48 or ATmega4809 Curiosity Nano Development boards are us
 5. Connect the motor phase wires to the PHASE connector from MPPB in any order.
 6. Connect the Hall sensors wires to the HALL SENSOR connector from MPPB (phase A with Hall A, phase B with Hall B and phase C with Hall C).
 
-<br> <b>Note:</b> Step 6 is optional if Sensored control is preffered. The order of Hall sensors wires must match the order of motor phases wires for the control algorithm to work. The A, B, C wire connection succession is mandatory for both motor phases and Hall sensors.
+<br> <b>Note:</b> Step 6 is optional if sensored control is preffered. The order of Hall sensors wires must match the order of motor phases wires for the control algorithm to work. The A, B, and C wire connection succession is mandatory for both motor phases and Hall sensors.
 
 <h4> Example Setup: </h4>
 
 |          Three Phase Motors                                            |            One Phase Motors                                                |
 |:----------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
-| <img src="images/full_setup.png" height = "520" width = "1000">         | <img src="images/full_setup_1ph.png" height = "520" width = "1000">         |
+| <img src="images/full_setup.png">                                      | <img src="images/full_setup_1ph.png">                                      |
 
 ### Curiosity Nano - MPPB Pin Mapping
 
@@ -164,42 +165,42 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 
 | Curiosity Nano Boards Pinout                                              | Curiosity Nano - MPPB Pin Mapping                                        |
 |:-------------------------------------------------------------------------:|:------------------------------------------------------------------------:|
-| <img src="images/avr_eb_mc_pinout.png" height = "525" width = "800">      | <img src="images/avr_eb_mppb_map.png" height = "525" width = "1300">     |
-| <img src="images/avr_da_mc_pinout.png" height = "650" width = "800">      | <img src="images/avr_da_mppb_map.png" height = "650" width = "1300">     |
-| <img src="images/avr_atmega_mc_pinout.png" height = "650" width = "800">  | <img src="images/avr_atmega_mppb_map.png" height = "650" width = "1300"> |
+| <img src="images/avr_eb_mc_pinout.png">                                   | <img src="images/avr_eb_mppb_map.png">                                   |
+| <img src="images/avr_da_mc_pinout.png">                                   | <img src="images/avr_da_mppb_map.png">                                   |
+| <img src="images/avr_atmega_mc_pinout.png">                               | <img src="images/avr_atmega_mppb_map.png">                               |
 
-<br>Pin mapping legend AVR16EB32, AVR128DA48, ATmega4809 Curiosity Nano Boards to MPPB:
+<h4> Pin mapping legend AVR16EB32, AVR128DA48, ATmega4809 Curiosity Nano Boards to MPPB </h4>
 
-| Pin Name          | AVR16EB32 Curiosity Nano Board | AVR128DA48 Curiosity Nano Board | ATmega4809 Curiosity Nano Board | MPPB Board                  |
-|-------------------|--------------------------------|---------------------------------|---------------------------------|-----------------------------|
-|Drive A High       |Pin 9  - PA0                    |Pin 7  - PA0                     |Pin 7  - PA0                     |Pin 26                       |
-|Drive A Low        |Pin 10 - PA1                    |Pin 20 - PB0                     |Pin 10 - PA3                     |Pin 25                       |
-|Drive B High       |Pin 7  - PA2                    |Pin 8 -  PA1                     |Pin 8  - PA1                     |Pin 24                       |
-|Drive B Low        |Pin 8  - PA3                    |Pin 21 - PB1                     |Pin 11 - PA4                     |Pin 23                       |
-|Drive C High       |Pin 11 - PA4                    |Pin 36 - PA2                     |Pin 9  - PA2                     |Pin 22                       |
-|Drive C Low        |Pin 12 - PA5                    |Pin 22 - PB2                     |Pin 12 - PA5                     |Pin 21                       |
-|Feedback A         |Pin 35 - PD4                    |Pin 49 - PD6                     |Pin 45 - PD2                     |Pin 12                       |
-|Feedback B         |Pin 36 - PD5                    |Pin 48 - PD2                     |Pin 47 - PD4                     |Pin 10                       |
-|Feedback C         |Pin 29 - PD6                    |Pin 44 - PD4                     |Pin 49 - PD6                     |Pin 8                        |
-|Feedback N         |Pin 31 - PD0                    |Pin 50 - PD7                     |Pin 50 - PD7                     |Pin 4                        |
-|Current Sense      |Pin 34 - PD3                    |Pin 40 - PE2                     |Pin 43 - PD0                     |Pin 7                        |
-|Current Sense VREF |Pin 30 - PD7                    |Pin 38 - PE0                     |Pin 44 - PD1                     |Pin 3                        |
-|Current Trip       |Pin 34 - PD3                    |Pin 40 - PE2                     |Pin 41 - PC7                     | -                           |
-|V Supply Monitor   |Pin 27 - PF4                    |Pin 46 - PD0                     |Pin 25 - PE0                     |Pin 9                        |
-|Potentiometer      |Pin 32 - PD1                    |Pin 47 - PD1                     |Pin 27 - PE2                     |Pin 29                       |
-|LED                |Pin 21 - PF5                    |Pin 27 - PC6                     |Pin 32 - PF5                     |Pin 33                       |
-|Switch             |Pin 20 - PF6                    |Pin 28 - PC7                     |Pin 54 - PF6                     |Pin 35                       |
-|PWM IN             |Pin 23 - PF0                    |Pin 37 - PA3                     |Pin 28 - PE3                     |Pin 18                       |
-|TXC                |Pin 16 - PC1                    |Pin 25 - PC0                     |Pin 20 - PB0                     | -                           |
-|RXC                |Pin 17 - PC2                    |Pin 26 - PC1                     |Pin 21 - PB1                     | -                           |
-|HALL A             |Pin 24 - PF1                    |Pin 18 - PF2                     |Pin 29 - PF2                     |Pin 36                       |
-|HALL B             |Pin 25 - PF2                    |Pin 19 - PF3                     |Pin 30 - PF3                     |Pin 34                       |
-|HALL C             |Pin 26 - PF3                    |Pin 16 - PF4                     |Pin 31 - PF4                     |Pin 32                       |
-|3V3                |Pin 37                          |Pin 51                           |Pin 51                           |Pin 39                       |
-|VOFF               |Pin 41                          |Pin 55                           |Pin 55                           |Pin 38                       |
-|GND                |Pins 38, 28, 15                 |Pins 52, 42, 33, 24, 15          |Pins 52, 42, 33, 24, 15          |Pins 40, 28, 27, 14, 13, 2, 1|
+| Pin Name                      | AVR16EB32 Curiosity Nano Board | AVR128DA48 Curiosity Nano Board | ATmega4809 Curiosity Nano Board | MPPB Board                    |
+|-------------------------------|--------------------------------|---------------------------------|---------------------------------|-------------------------------|
+|Drive A High                   |Pin 9  - PA0                    |Pin 7  - PA0                     |Pin 7  - PA0                     |Pin 26                         |
+|Drive A Low                    |Pin 10 - PA1                    |Pin 20 - PB0                     |Pin 10 - PA3                     |Pin 25                         |
+|Drive B High                   |Pin 7  - PA2                    |Pin 8 -  PA1                     |Pin 8  - PA1                     |Pin 24                         |
+|Drive B Low                    |Pin 8  - PA3                    |Pin 21 - PB1                     |Pin 11 - PA4                     |Pin 23                         |
+|Drive C High                   |Pin 11 - PA4                    |Pin 36 - PA2                     |Pin 9  - PA2                     |Pin 22                         |
+|Drive C Low                    |Pin 12 - PA5                    |Pin 22 - PB2                     |Pin 12 - PA5                     |Pin 21                         |
+|Feedback A                     |Pin 35 - PD4                    |Pin 49 - PD6                     |Pin 45 - PD2                     |Pin 12                         |
+|Feedback B                     |Pin 36 - PD5                    |Pin 48 - PD2                     |Pin 47 - PD4                     |Pin 10                         |
+|Feedback C                     |Pin 29 - PD6                    |Pin 44 - PD4                     |Pin 49 - PD6                     |Pin 8                          |
+|Feedback N                     |Pin 31 - PD0                    |Pin 50 - PD7                     |Pin 50 - PD7                     |Pin 4                          |
+|Current Sense                  |Pin 34 - PD3                    |Pin 40 - PE2                     |Pin 43 - PD0                     |Pin 7                          |
+|Current Sense V<sub>REF</sub>  |Pin 30 - PD7                    |Pin 38 - PE0                     |Pin 44 - PD1                     |Pin 3                          |
+|Current Trip                   |Pin 34 - PD3                    |Pin 40 - PE2                     |Pin 41 - PC7                     | -                             |
+|V Supply Monitor               |Pin 27 - PF4                    |Pin 46 - PD0                     |Pin 25 - PE0                     |Pin 9                          |
+|Potentiometer                  |Pin 32 - PD1                    |Pin 47 - PD1                     |Pin 27 - PE2                     |Pin 29                         |
+|LED                            |Pin 21 - PF5                    |Pin 27 - PC6                     |Pin 32 - PF5                     |Pin 33                         |
+|Switch                         |Pin 20 - PF6                    |Pin 28 - PC7                     |Pin 54 - PF6                     |Pin 35                         |
+|PWM IN                         |Pin 23 - PF0                    |Pin 37 - PA3                     |Pin 28 - PE3                     |Pin 18                         |
+|TXC                            |Pin 16 - PC1                    |Pin 25 - PC0                     |Pin 20 - PB0                     | -                             |
+|RXC                            |Pin 17 - PC2                    |Pin 26 - PC1                     |Pin 21 - PB1                     | -                             |
+|HALL A                         |Pin 24 - PF1                    |Pin 18 - PF2                     |Pin 29 - PF2                     |Pin 36                         |
+|HALL B                         |Pin 25 - PF2                    |Pin 19 - PF3                     |Pin 30 - PF3                     |Pin 34                         |
+|HALL C                         |Pin 26 - PF3                    |Pin 16 - PF4                     |Pin 31 - PF4                     |Pin 32                         |
+|3V3                            |Pin 37                          |Pin 51                           |Pin 51                           |Pin 39                         |
+|V<sub>OFF</sub>                |Pin 41                          |Pin 55                           |Pin 55                           |Pin 38                         |
+|GND                            |Pins: 38, 28, 15                |Pins: 52, 42, 33, 24, 15         |Pins: 52, 42, 33, 24, 15         |Pins: 40, 28, 27, 14, 13, 2, 1 |
 
-<br><b>Note:</b> In this repository, schematics for all three platforms are provided in the `pdf` folder:
+<br><b>Note:</b> In this repository, schematics for all the three platforms are provided in the `pdf` folder:
  - AVR16EB32_MPPB_Mapping
  - AVR128DA48_MPPB_Mapping
  - ATMEGA4809_MPPB_Mapping
@@ -209,7 +210,7 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 
 <br> This demo requires adding three SMD capacitors of 1 nF each with the size of 0402 on the MPPB board, one for each motor phases. Also, the capacitor for the motor neutral filter must be replaced with a 3.3 nF one of the same size, as explained below.
 
-<br> Because this demo counts on capturing the BEMF using the hardware capture mechanism of a timer, the captured signals need filtering to remove false Zero-Cross Detection (ZCD). The easiest method to do this is by using a RC low-pass filter. The MPPB board has placeholder pads for the capacitors that need to be added. The capacitor for virtual neutral point is already in place, but needs to be replaced with a 3.3 nF capacitor, and the capacitor values for phases A, B and C must have the value of 1 nF (three times smaller than the one from virtual neutral). With these capacitor values, the resulted RC filters will add a 10 µs delay to the zero-cross detection. The resulted RC filters are sufficient for noise filtering and do not add a big delay, thus allowing the motor to spin at very high electrical RPMs.
+<br> Because this demo counts on capturing the BEMF using the hardware capture mechanism of a timer, the captured signals need filtering to remove the false Zero-Cross Detection (ZCD). The easiest method to do this is by using a RC low-pass filter. The MPPB board has placeholder pads for the capacitors that need to be added. The capacitor for virtual neutral point is already in place, but needs to be replaced with a 3.3 nF one, and the capacitor values for phases A, B and C must have the value of 1 nF (three times smaller than the one from virtual neutral). With these capacitor values, the resulted RC filters will add a 10-µs delay to the zero-cross detection. The resulted RC filters are sufficient for noise filtering and do not add a high delay, thus allowing the motor to spin at very high electrical RPMs.
 
 <h4> Capacitors location marked with green rectangles </h4>
 
@@ -219,14 +220,14 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 
 <br><br><img src="images/hardware_rc_zoomed.png">
 
-<br> <b>Note:</b> The capacitors are not needed if only Sensored control is preffered.
+<br> <b>Note:</b> The capacitors are not needed if only sensored control is preferred.
 
 ### Configuration Settings
 
-<br>The following are configuration settings which, apart from the default values, are needed to run the demo in the Trapezoidal Sensorless mode with the ACT42BLF01 motor, SZSPEED 2207 2500KV drone motor and one-phase hair dryer motor.
-<br>Edit the settings in the configuration file [`config.h`](#configurable-parameters) according to the usage scenario.
+<br>The following configuration settings (apart from the default values) are needed to run the demo in the Trapezoidal Sensorless mode with the ACT42BLF01 motor,the SZSPEED 2207 2500KV drone motor and the one-phase hair dryer motor.
+<br>Edit the settings in the [`config.h`](#configurable-parameters) configuration file according to the usage scenario.
 
-<br><h3> Configuration Settings for the ACT42BLF01 Motor </h3>
+<br><h3> ACT42BLF01 Motor Configuration Settings </h3>
 
 ```c
 
@@ -282,7 +283,7 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 ```
 
-<br><h3> Configuration Settings for the SZSPEED 2207 2500KV Drone Motor </h3>
+<br><h3> SZSPEED 2207 2500KV Drone Motor Configuration Settings </h3>
 
 ```c
 
@@ -338,7 +339,7 @@ If the MPPB and the adapter boards are not used, the user can integrate the AVR 
 #define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */
 ```
 
-<br><h3> Configuration Settings for the Hair Dryer One-Phase Motor </h3>
+<br><h3> Hair Dryer One-Phase Motor Configuration Settings </h3>
 
 ```c
 
@@ -405,7 +406,7 @@ The spinning direction depends on the wiring of the phases.
 
 ### Tunning Guide
 
-If the motor is not yet spining after following all the steps from [Quick Start Guide](#quick-start-guide), or an error message is displayed in the console, these are some useful steps to tune the application for a new motor:
+If the motor is not yet spining after following all the steps in [Quick Start Guide](#quick-start-guide), or an error message may appear on the console, the steps below can help tunning the application for a new motor:
 
 1. Measure the phase-to-phase resistance between any two wires of the motor. Put this value in `MOTOR_RPP`, from the `config.h` file.
 2. Disable the speed regulator by setting `REGULATOR_SPEED_EN` to `false`.
@@ -414,12 +415,12 @@ If the motor is not yet spining after following all the steps from [Quick Start 
 5. `MOTOR_ALIGNMENT_DURATION` can also be adjusted. For example, for a drone motor with low inductance, the alignment period is much smaller compared to a motor with high inductance. Try to increase or decrease the duration with steps not greater than 10 ms at a time.
 6. `MOTOR_OPEN_LOOP_RAMP` can also be adjusted. This parameter establishes how aggresive the ramp-up process is. Higher values of this parameter translate into a more aggresive ramp. For a motor with low inductance and high nominal speed, the ramp can be more aggresive compared to a motor with higher inductance and lower nominal speed. The safe and minimum value of this parameter is 0.00004.
 7. After getting the motor to spin, set the`REGULATOR_SPEED_EN` parameter back to `true`.
-8. For stability, ensure that `REGULATOR_MIN_SPEED` is high enough to run the motor stable (10% of nominal speed) and `REGULATOR_MAX_SPEED` does not exceed the maximum rated speed at the supplied voltage.
-9. For Sensored control set `HALL_ENABLED` parameter to `true`, start with initial `HALL_MISALIGNMENT` to 0 electrical degrees and set `HALL_INVERTED` to `false`. If the motor spins eratically, consumes a lot of current or enters a stall condition try to increase `HALL_MISALIGNMENT` with 5 electrical degrees at a time and run again. If the motor is still not spinning, try setting the `HALL_INVERTED` parameter to `true` and try again. Try to compare the achieved speed and current consumption with Sensorless control using BEMF. When the results are the same, the motor is tuned to use Hall sensors.
+8. For stability, ensure that `REGULATOR_MIN_SPEED` is high enough to run the motor stable (10% of nominal speed) and that `REGULATOR_MAX_SPEED` does not exceed the maximum rated speed at the supplied voltage.
+9. For sensored control set `HALL_ENABLED` parameter to `true`; start with initial `HALL_MISALIGNMENT` to 0 electrical degrees and set `HALL_INVERTED` to `false`. If the motor may spin eratically, consume a lot of current or enter a Stall condition, try to increase `HALL_MISALIGNMENT` with five electrical degrees at a time and run again. If the motor is still not spinning, try setting the `HALL_INVERTED` parameter to `true` and repeat. Compare the achieved speed and current consumption with the ones from sensorless control, using BEMF. If the results are the same, the motor is tuned to use Hall sensors.
 
-### Programming the AVR®
+### Programming the AVR® MCU
 
-1. Download the zip file or clone the repository to get the source code.
+1. Download the `.zip` file or clone the repository to get the source code.
 
 2. Open the `fw/motor_demo_eb.X`,  `fw/motor_demo_da.X` or  `fw/motor_demo_mega4809.X` project in MPLAB® X IDE.
 
@@ -573,7 +574,7 @@ The parameters from the `config.h` file used to customize the application are th
 <br>• <b>`COMPARATOR_CURRENT_TRIP`</b> - Sets the internal comparator's trip level in case of a peak overcurrent protection. This parameter does not have any effect for the external comparator configuration, specifically for the ATmega4809 configuration.
 <br>• <b>`FAULT_COMPARATOR_EN`</b> - Enables or disables the comparator used for current trip. For AVR16EB32 and AVR128DA48, this mechanism is implemented using an internal comparator. For ATmega4809, the support is implemented using an external comparator, which must be added separately to utilize this feature.
 <br>• <b>`BOARD_PHASE_RC_DELAY`</b> - Delay added to the BEMF Zero-Cross Detection (ZCD) by the RC filter present on the power board
-<br>• <b>`BOARD_MOSFET_RDSON`</b> - The drain-source on-resistance value of the transistors present on the power board. This value is acquired from the transistor's data sheet.
+<br>• <b>`BOARD_MOSFET_RDSON`</b> - The drain-source on-resistance value of the transistors present on the power board. This value is acquired from the data sheet of the transistor.
 
 <br><b> Motor Settings </b>
 
@@ -582,15 +583,15 @@ The parameters from the `config.h` file used to customize the application are th
 <br>• <b>`MOTOR_RPP`</b> - Motor resistance measured phase-to-phase
 <br>• <b>`MOTOR_OPEN_LOOP_RAMP`</b> - Amplitude increase rate; the higher the number, the more aggresive the ramp
 <br>• <b>`MOTOR_ALIGNMENT_DURATION`</b> - Initial alignment duration before start-up
-<br>• <b>`MOTOR_STARTUP_TIME`</b> - Represents the waiting time until the value from the `Motor_CommandSet()` is used to set the amplitude or reference speed. If this parameter is set to '-1', then the value written by `Motor_CommandSet()` is ignored.
-<br>• <b>`MOTOR_STARTUP_SPEED`</b> - Sets the initial speed for start-up. The minimum value is 120 e-RPM, but fast motors with low inductance need a bigger initial speed, in the range of thousands of electrical RPM.
-<br>• <b>`HALL_ENABLED`</b> - Enables or disables the Sensored control. If the Sensored control is disabled, the Sensorless control is enabled and vice-versa. The application does not support both Sensored and Sensorless control at the same time.
-<br>• <b>`HALL_MISALIGNMENT`</b> - Hall sensors transitions are imperfect due to mechanical placing, this parameter is used to compensate the error. It can take values between `0` and `30` electrical degrees.
-<br>• <b>`HALL_INVERTED`</b> - Used to invert hall pins polarity if needed. Some hall sensors are active in `1` logic, while others are active in `0` logic.
+<br>• <b>`MOTOR_STARTUP_TIME`</b> - Represents the waiting time until the value from the `Motor_CommandSet()` is used to set the amplitude or reference speed. If this parameter is set to '-1', the value written by `Motor_CommandSet()` is ignored.
+<br>• <b>`MOTOR_STARTUP_SPEED`</b> - Sets the initial speed for start-up. The minimum value is 120 e-RPM, but faster motors with low inductance need a bigger initial speed, with values of thousands of electrical RPMs.
+<br>• <b>`HALL_ENABLED`</b> - Enables or disables the sensored control. If the sensored control is disabled, the sensorless control is enabled and vice-versa. The application does not support both sensored and sensorless control at the same time.
+<br>• <b>`HALL_MISALIGNMENT`</b> - This parameter is used to compensate the errors, because the sensors transitions are imperfect, due to mechanical placing. Its values can range between 0 and 30 electrical degrees.
+<br>• <b>`HALL_INVERTED`</b> - Used to invert hall pins polarity, if needed. Some hall sensors are active in `1` logic, while others are active in `0` logic.
 
 <br><b> Speed Regulator Settings </b>
 
-<br>• <b>`MOTOR_SPEED_REGULATOR_EN`</b> - Enables or disables the Closed Loop speed regulator
+<br>• <b>`MOTOR_SPEED_REGULATOR_EN`</b> - Enables or disables the closed-loop speed regulator
 <br>• <b>`REGULATOR_MAX_SPEED`</b> - Sets the maximum speed for the speed regulator
 <br>• <b>`REGULATOR_MIN_SPEED`</b> - Sets the minimum speed for the speed regulator
 <br>• <b>`REGULATOR_PI_KP`</b> - Proportional term constant parameter used by the speed regulator. It can have values between 0.0 and 1.0. Tune this according to the motor being used.
@@ -617,8 +618,8 @@ The parameters from the `config.h` file used to customize the application are th
 Interrupts (ISRs) used by the application:
 
 1. Sector timer interrupt - Variable period, dependent on the RPM of the motor (handles drive, BEMF feedback measurement and motor synchronization)
-2. Software timer interrupt - 1 ms period (handles speed regulator, open loop controller, analog measurements, button and LED states)
-3. Software timer in main loop - 50 ms period (handles reference commands scaling, amplitude in open loop and speed in closed loop, received from the potentiometer or external PWM input)
+2. Software timer interrupt - 1-ms period (handles speed regulator, open loop controller, analog measurements, button and LED states)
+3. Software timer in main loop - 50-ms period (handles reference commands scaling, amplitude in open-loop and speed in closed-loop, received from the potentiometer or external PWM input)
 
 The table below presents the duration of each ISR or loop in the aplication:
 
@@ -631,9 +632,11 @@ The table below presents the duration of each ISR or loop in the aplication:
 |AVR128DA48 FREE      |    20.5               |   17          |   38                      |   4                         |
 |AVR128DA48 PRO       |    18.5               |   14          |   30                      |   4                         |
 
-FREE refers to the default optimization of the XC8 compiler version, available without license. PRO refers to the speed-optimized XC8 compiler version, available with license.
+<br> <b>Notes:</b>
 
-<br> <b>Note:</b> The Sector timer interrupt has a higher priority and will preempt running other interrupts, increasing their overall execution time, or will delay other interrupts. One sector duration represents one sixth of one electrical revolution. The duration of one electrical revolution is inverse proportional with the rotational speed, expressed in revolutions per second. 
+1. FREE refers to the default optimization of the XC8 compiler version, available without license. PRO refers to the speed-optimized XC8 compiler version, available with license.
+
+2. The sector timer interrupt has a higher priority and will preempt running other interrupts, increasing their overall execution time, or will delay other interrupts. One sector duration represents a sixth of one electrical revolution. The duration of one electrical revolution is inversely proportional with the rotational speed, expressed in revolutions per second. 
 
 ### Motor Drive Sequence
 
@@ -694,21 +697,23 @@ Drive sequence legend for three-phase motors:
 |:-----------------------------------------------------------------------:|:---------------------------------------------------------------------------:|
 | <img src="images/pwm_to_sp_cross.png" height = "500" width = "1000">    | <img src="images/pwm_to_sp_cross_1ph.png" height = "500" width = "1000">    |
 
-<br> It can be observed that the duty cycle (75% in this example) is kept the same after switching from one mode to the other, but it is scaled to the new period of the PWM timer.
+<br> It can be noticed that the duty cycle (75% in this example) remains the same after switching from one mode to another, but it is scaled to the new period of the PWM timer.
 
 ### Motor Feedback Sensing
 
+<br>
+
 #### BEMF Sensing
 
-<br> Rotor position estimation in the Trapezoidal Sensorless Control mode is done by monitoring the BEMF signals from motor phases. For best efficiency, the BEMF signals must be in-phase with the current signals for each motor phase.
+<br> The rotor position estimation in the Trapezoidal Sensorless Control mode is done by monitoring the BEMF signals from the motor phases. For best efficiency, the BEMF signals must be in-phase with the current signals for each motor phase.
 
 <h4> Drive, BEMF and Current Signals for One Motor Phase </h4>
 
 <br><img src="images/phase_voltage_current.png">
 
-<br> For sensorless feedback, the values for the BEMF signals for each motor phase are sampled with the Analog Comparator (AC) peripheral. During each sector, one of the three motor phases will be in the Floating state, from where the BEMF can be read. All the PWM driving signals from that motor phase must be synchronously logically low ‘`0`’, the coil is not driven, and the signal measured after all the propagation delays is the motor’s BEMF.
+<br> For sensorless feedback, the values of the BEMF signals for each motor phase are sampled with the Analog Comparator (AC) peripheral. During each sector, one of the three motor phases will be in Floating state, for the BEMF to be read. All the PWM driving signals from the respective motor phase must be ‘`0`’ logically low synchronously, the coil is not driven, and the signal measured after all the propagation delays represent the motor’s BEMF.
 
-<br> The Analog Comparator is connected to the divided motor phase signals at its positive input. A multiplexed input selection is used to switch between motor phases, enabling the acquisition of the required data. The AC is connected to the motor, summing neutral at the negative input. The neutral is reconstructed using hardware components in a resistor star configuration. The signals are divided to be in the range of 0 to 3.3V, to be readable by the microcontroller (MCU). The values for the voltage dividers used in this application are the ones present on the MPPB.
+<br> The Analog Comparator (AC) is connected to the divided motor phase signals at its positive input. A multiplexed input selection is used to switch between motor phases, enabling the acquisition of the required data. The AC is connected to the motor, summing neutral at the negative input. The neutral is reconstructed using hardware components in a resistor-star configuration. The signals are divided in ranges of 0 to 3.3V, in order to be readable by the microcontroller (MCU). The values for the voltage dividers used in this application are the ones present on the MPPB.
 
 <h4> BEMF Sensing Overview </h4>
 
@@ -720,36 +725,36 @@ Drive sequence legend for three-phase motors:
 |:----------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
 | <img src="images/commutation.png" height = "300" width = "800">        | <img src="images/commutation_1ph.png" height = "300" width = "800">        |
 
-<br> Sensorless control is very reliable at high speeds, the only drowback is achieving synchronization at speeds lower than 10% - 15% of the motor's nominal speed, because then the level of BEMF signals are comparable with noise signals from PWM and their magnitude is not high enough to accurately detect zero-crosses. Thus, motor synchronization with BEMF is not possible for very low speeds.
+<br> The sensorless control is very reliable at high speeds; however, the only drowback is related to achieving synchronization at speeds lower than 10% to 15% of the nominal speed of the motor. In this case, the level of the BEMF signals are comparable with noise signals from PWM and their magnitude is not high enough to accurately detect zero-crosses. Thus, the motor synchronization with BEMF is not possible at a very low speed.
 
 #### Hall Sensing
 
-<br> Rotor position estimation in the Trapezoidal Sensored Control mode is done by monitoring the Hall sensors signals. The transitions coming from sensors when the rotor's magnet passes by them decides when to switch to a new sector. Usually, Hall sensors are in groups of three and are placed inside the motor, each sensor 120° apart from the other.
+<br> The estimation of the rotor position in the Trapezoidal Sensored-Control mode is done by monitoring the Hall sensors signals. The transitions from the sensors during the rotor magnet passing by decides when to switch to a new sector. Usually, the Hall sensors are in groups of three, placed inside the motor, with each sensor being 120° apart one from another.
 
 <h4> Reading Hall Signals </h4>
 
 <br><img src="images/hall_signals.png">
 
-The Hall signals are monitored using GPIO pins that are connected via the Event System (EVSYS) peripheral to signal when a new transition is detected. A multiplexed input selection is used to switch between Hall pins, enabling the acquisition of the required data.
+The Hall signals are monitored using GPIO pins that are connected via the Event System (EVSYS) peripheral to signal when a new transition is detected. A multiplexed input selection is used to switch between the Hall pins, enabling the acquisition of the required data.
 
 <h4> Hall Sensing Overview </h4>
 
 <br><img src="images/reading_hall_sensors.png">
 
-<br> Sensored control is much more very reliable at low speeds compared to Sensorless control, but the drowback is achieving high speeds, where the sensors latency for detecting a transition can cause phase errors and losing synchronization.
+<br> The sensored control is more reliable at lower speed compared to the sensorless control, nonetheless with drowback is achieving high speed, where the sensor latency for detecting a transition can cause phase errors and lose synchronization.
 
-<br> <b>Note:</b> AVR16EB32 and AVR128DA48 platforms can achieve the minimum rotational speed of 120 e-RPM. ATmega4809 platform can achieve the minimum rotational speed of 1600 e-RPM, due to hardware capabilities and limitations.
+<br> <b>Note:</b> The AVR16EB32 and AVR128DA48 platforms can achieve the minimum rotational speed of 120 e-RPM. The ATmega4809 platform can achieve the minimum rotational speed of 1600 e-RPM, due to hardware capabilities and limitations.
 
 ### Motor Synchronization Algorithm
 
-<br> Synchronization is achieved using a simplified Proportional Integral Derivative (PID) algorithm that calculates the error between the ideal zero cross of BEMF, which is always set to half of the timer's period, and the actual zero cross, acquired using a timer's hardware capture mechanism. The algorithm only has the proportional and the integral terms, but no derivative. It also uses a phase advance ranging between 0 and 30 electrical degrees, which is added to ```setValue``` — representing half of the period — because the goal is to have the zero cross of the BEMF fall exactly in the middle of the sector, after 30 electrical degrees.
-<br>The advantage of this algorithm is that it is based on bit-shifting operations, and it does not add much CPU overload and interrupt time to process all the data. Using this algorithm greatly reduces the speed oscillations.
+<br> The motor synchronization is achieved through a simplified Proportional Integral Derivative (PID) algorithm that calculates the error between the ideal zero cross of BEMF (always set to half of the timer's period), and the actual zero cross, acquired through a hardware capture mechanism of a timer. The algorithm has only the proportional and the integral terms, but no derivative. It also uses a phase advance ranging between 0 and 30 electrical degrees, which is added to `setValue`, representing half of the period. The aim of the zero cross of the BEMF is to fall exactly in the middle of the sector, after 30 electrical degrees.
+<br>The advantages of this algorithm relate to being based on bit-shifting operations and not adding too much CPU overload and interrupt time to process all the data. The speed oscillations are thus greatly reduced.
 
 <h4> Synchronization Algorithm Timing </h4>
 
 <br><img src="images/synchronization_pi_timing.png">
 
-<br><b>Note:</b> The Zero-Cross Detection (ZCD) is also affected by the RC constant, which is 10 μs. The zero cross of BEMF is detected after 30 electrical degrees plus phase advance plus RC constant, translated in time, based on the length of the sector, as well as the RC delay.
+<br><b>Note:</b> The Zero-Cross Detection (ZCD) is also affected by the 10 μs RC constant. The detection of the BEMF zero cross is done after 30 electrical degrees plus the values of the phase advance and RC constant, translated in time, based on the sector length as well as on the RC delay.
 
 <h4> Synchronization Algorithm Chart </h4>
 
@@ -798,18 +803,18 @@ Oscilloscope traces:
 
 | Motor                 | Brief Specifications            | Supply Voltage [V] | Current Consumption [A] | e-RPM                    | Type    |
 |:---------------------:|:-------------------------------:|:------------------:|:-----------------------:|:------------------------:|:-------:|
-|ACT42BLF01             | 24 V / 1.9 A / 4 pp* / 4 kRPM   |    24              |      0.20  (no load)    |       15,000             | 3 phase |
-|ACT57BLF02             | 24 V / 7.8 A / 4 pp / 3 kRPM    |    24              |      0.50  (no load)    |       12,000             | 3 phase |
-|Hurst DMA0002024C1010  | 24 V / 4 A / 5 pp* / 3 kRPM     |    24              |      0.14  (no load)    |       15,000             | 3 phase |
-|Hair Dryer             | 12 V / 150 W / 1 pp / 130 kRPM  |    12              |      11.0  (own fan)    |      120,000             | 3 phase |
-|A2207 KV2500           | 16.8 V / 7 pp / 42 kRPM         |    16              |      2.2   (no load)    |      250,000             | 3 phase |
-|A2212 KV2200           | 12 V / 6 pp / 26 kRPM           |    12              |      2.5   (no load)    |      180,000             | 3 phase |
-|A10 KV2900             | 8.4 V / 6 pp / 23 kRPM          |     9              |      1.5   (no load)    |      140,000             | 3 phase |
-|Hair Dryer             | 220 V / 100 W / 1 pp / 110 kRPM |    50              |      0.07  (own fan)    |       25,000             | 3 phase |
-|Hair Dryer One Phase   | 220 V / 120 W / 2 pp / 110 kRPM |    50              |      0.12  (own fan)    |       80,000             | 1 phase |
+|ACT42BLF01             | 24 V / 1.9 A / 4 pp* / 4 kRPM   |    24              |      0.20  (no load)    |       15,000             | 3-phase |
+|ACT57BLF02             | 24 V / 7.8 A / 4 pp / 3 kRPM    |    24              |      0.50  (no load)    |       12,000             | 3-phase |
+|Hurst DMA0002024C1010  | 24 V / 4 A / 5 pp* / 3 kRPM     |    24              |      0.14  (no load)    |       15,000             | 3-phase |
+|Hair Dryer             | 12 V / 150 W / 1 pp / 130 kRPM  |    12              |      11.0  (own fan)    |      120,000             | 3-phase |
+|A2207 KV2500           | 16.8 V / 7 pp / 42 kRPM         |    16              |      2.2   (no load)    |      250,000             | 3-phase |
+|A2212 KV2200           | 12 V / 6 pp / 26 kRPM           |    12              |      2.5   (no load)    |      180,000             | 3-phase |
+|A10 KV2900             | 8.4 V / 6 pp / 23 kRPM          |     9              |      1.5   (no load)    |      140,000             | 3-phase |
+|Hair Dryer             | 220 V / 100 W / 1 pp / 110 kRPM |    50              |      0.07  (own fan)    |       25,000             | 3-phase |
+|Hair Dryer One Phase   | 220 V / 120 W / 2 pp / 110 kRPM |    50              |      0.12  (own fan)    |       80,000             | 1-phase |
 
 **Note:** *pp - pole pairs
 
 ## Summary
 
-<br>This project provides support for spinning a BLDC/PMSM motor using the Trapezoidal Drive method and feedback from the BEMF ZCD or Hall sensors to achieve motor synchronization in an Open-Loop configuration and speed control in Closed-Loop configuration. The control algorithm is straightforward and robust and it can be implemented on a variety of low-end MCUs that have a few timer capabilities, an analog comparator and an ADC.
+<br>This project provides support for spinning a BLDC/PMSM motor using the Trapezoidal Drive method and feedback from the BEMF ZCD or Hall sensors to achieve motor synchronization in an Open-Loop configuration and speed control in a Closed-Loop configuration. The control algorithm is straightforward and robust and it can be implemented on a variety of low-end MCUs that have a few timer capabilities, with an AC and an ADC.
