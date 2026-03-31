@@ -151,7 +151,7 @@ The AVR16EB32, AVR128DA48 or ATmega4809 Curiosity Nano Development boards are us
 5. Connect the motor phase wires to the PHASE connector from MPPB in any order.
 6. Connect the Hall sensors wires to the HALL SENSOR connector from MPPB (phase A with Hall A, phase B with Hall B and phase C with Hall C).
 
-<br> <b>Note:</b> Step 6 is optional if sensored control is preffered. The order of Hall sensors wires must match the order of motor phases wires for the control algorithm to work. The A, B, and C wire connection succession is mandatory for both motor phases and Hall sensors.
+<br> <b>Note:</b> Step 6 is optional if sensored control is preferred. The order of Hall sensors wires must match the order of motor phases wires for the control algorithm to work. The A, B, and C wire connection succession is mandatory for both motor phases and Hall sensors.
 
 <h4> Example Setup: </h4>
 
