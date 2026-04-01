@@ -59,7 +59,7 @@ The sensored feedback and synchronization are achieved using the transitions fro
 
 Current version 1.5.0 features:
 
-- Support for changing motor spinning direction at run time, clockwise (CW) and counter clockwise (CCW), for three-phase motors
+- Support for changing the motor spinning direction at run-time, clockwise (CW) and counterclockwise (CCW), for three-phase motors
 
 Version 1.4.0 features:
 
@@ -531,12 +531,12 @@ The `mcc_mapping.h` files are used to map all the port pins and low-level driver
 
 <br><img src="images/application_flowchart.png">
 
-1. Short-press the button on the MPPB board. The motor starts spinning in CW direction and enters the Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board or an external PWM-RC.
-2. Short-press the button from MPPB again. The motor decelerates, comes to a complete stop and enters the Idle state. The LED from MPPB turns off.
-3. Short-press the button on the MPPB board. The motor starts spinning in CCW direction and enters the Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board or an external PWM-RC.
-4. Short-press the button from MPPB again. The motor decelerates, comes to a complete stop and enters the Idle state. The LED from MPPB turns off.
-5. Long-press the button (more than 1.5s) to restart the application.
-6. If a Fault event occurs, the motor stops, the event is mentioned in the console and the application enters the Idle state. The LED blinks five times signalling the error, then stops.
+1. Short press the button on the MPPB board. The motor starts spinning in CW direction and enters Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board or through an external PWM-RC.
+2. Short press the button from MPPB again. The motor decelerates, comes to a complete stop and enters the Idle state. The LED from MPPB turns off.
+3. Short press the button on the MPPB board. The motor starts spinning in CCW direction and enters Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board or through an external PWM-RC.
+4. Short press the button from MPPB again. The motor decelerates, comes to a complete stop and enters Idle state. The LED from MPPB turns off.
+5. Long press the button (more than 1.5s) to restart the application.
+6. If a Fault event occurs, the motor stops, the event is mentioned on the console and the application enters Idle state. The LED blinks five times signaling the error, and stops afterwards.
 
 ### Application Programming Interface Functions
 
