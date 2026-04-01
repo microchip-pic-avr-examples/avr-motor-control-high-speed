@@ -34,17 +34,20 @@
 #define MAX_AMP_GET                FLOAT_TO_FIXP16(1.0)
 #define MIN_AMP_GET                ((int24_t)(0))
 
-#define DRIVE_OFF     ((split16_t){.H8 = 0,        .L8 = 0})
-#define DRIVE_ALIGN   ((split16_t){.H8 = DRIVE_BH, .L8 = DRIVE_AL | DRIVE_CL})
-
-#define DRIVE_TABLE             (ONE_PHASE_MODE ? drive_table_sp : drive_table)
-#define CMP_MUX_TABLE           (ONE_PHASE_MODE ? cmp_mux_table_sp : cmp_mux_table)
-#define HALL_MASK_TABLE         hall_mask_table
+#define DRIVE_OFF               ((split16_t){.H8 = 0,        .L8 = 0})
+#define DRIVE_ALIGN_3P          ((split16_t){.H8 = DRIVE_BH, .L8 = DRIVE_AL | DRIVE_CL})
+#define DRIVE_ALIGN_SP          ((split16_t){.H8 = DRIVE_AH, .L8 = DRIVE_BL})
+#define DRIVE_ALIGN             (ONE_PHASE_MODE ? DRIVE_ALIGN_SP : DRIVE_ALIGN_3P)
+#define DRIVE_TABLE_3P          ((direction == DIR_CW) ? drive_table_cw : drive_table_ccw)
+#define CMP_MUX_TABLE_3P        ((direction == DIR_CW) ? cmp_mux_table_cw : cmp_mux_table_ccw)
+#define DRIVE_TABLE             (ONE_PHASE_MODE ? drive_table_sp : DRIVE_TABLE_3P)
+#define CMP_MUX_TABLE           (ONE_PHASE_MODE ? cmp_mux_table_sp : CMP_MUX_TABLE_3P)
+#define HALL_MASK_TABLE		    ((direction == DIR_CW) ? hall_mask_table_cw : hall_mask_table_ccw)
 #define MAX_POSITION            (ONE_PHASE_MODE ? 5 : 7)
 #define PERIOD_SHIFT            (ONE_PHASE_MODE ? 0 : 1)
 #define ONE_PHASE_CONDITION     (ONE_PHASE_MODE ? (position & 1) : true)
 #define CMP_INV_MASK            (ONE_PHASE_MODE ? 0 : (position & 1))
-#define HALL_INV_TABLE          hall_inv_table
+#define HALL_INV_TABLE		    ((direction == DIR_CW) ? hall_inv_table_cw : hall_inv_table_ccw)
 #define EVEN_HALL_SECT          ((HALL_INVERTED == true) ? 0 : HALL_INVERT)
 #define ODD_HALL_SECT           ((HALL_INVERTED == true) ? HALL_INVERT : 0)
 #define HALL_INV_MASK           ((position & 1) ? ODD_HALL_SECT : EVEN_HALL_SECT)
@@ -72,9 +75,13 @@ typedef enum
 /****** internal data *******/
 /****************************/
 
-/* Three Phase mode tables  */
+
+/* Three Phase mode tables */
+
+/* ======================== START - Three Phase CW Direction ================= */
+
 /* Drive Table */
-const split16_t drive_table[8] = {
+const split16_t drive_table_cw[8] = {
     {.H8 = 0,        .L8 = 0},
     {.H8 = DRIVE_BH, .L8 = DRIVE_CL}, // A float
     {.H8 = DRIVE_AH, .L8 = DRIVE_CL}, // B float
@@ -86,7 +93,7 @@ const split16_t drive_table[8] = {
 };
 
 /* MUX Table */
-const uint8_t cmp_mux_table[8] = {
+const uint8_t cmp_mux_table_cw[8] = {
     0,
     CMP_MUX_A | CMP_MUX_N,
     CMP_MUX_B | CMP_MUX_N,
@@ -98,7 +105,7 @@ const uint8_t cmp_mux_table[8] = {
 };
 
 /* HALL Invert Table*/
-register8_t* const hall_inv_table[8] = {
+register8_t* const hall_inv_table_cw[8] = {
     NULL,
     &(HALL_PORT.HALL_C_PIN),
     &(HALL_PORT.HALL_A_PIN),
@@ -110,7 +117,7 @@ register8_t* const hall_inv_table[8] = {
 };
 
 /* HALL Mask Table */
-const uint8_t hall_mask_table[8] = {
+const uint8_t hall_mask_table_cw[8] = {
     0,
     HALL_MASK_C,
     HALL_MASK_A,
@@ -121,7 +128,65 @@ const uint8_t hall_mask_table[8] = {
     0
 };
 
-/* Single Phase mode tables  */
+/* ======================== END - Three Phase CW Direction =================== */
+
+/* ======================== START - Three Phase CCW Direction ================ */
+
+/* Drive Table */
+const split16_t drive_table_ccw[8] = {
+    {.H8 = 0,        .L8 = 0},
+    {.H8 = DRIVE_BH, .L8 = DRIVE_AL}, // A float
+    {.H8 = DRIVE_CH, .L8 = DRIVE_AL}, // B float
+    {.H8 = DRIVE_CH, .L8 = DRIVE_BL}, // C float
+    {.H8 = DRIVE_AH, .L8 = DRIVE_BL}, // A float
+    {.H8 = DRIVE_AH, .L8 = DRIVE_CL}, // B float
+    {.H8 = DRIVE_BH, .L8 = DRIVE_CL}, // C float
+    {.H8 = 0,        .L8 = 0},
+};
+
+/* MUX Table */
+const uint8_t cmp_mux_table_ccw[8] = {
+    0,
+    CMP_MUX_C | CMP_MUX_N,
+    CMP_MUX_B | CMP_MUX_N,
+    CMP_MUX_A | CMP_MUX_N,
+    CMP_MUX_C | CMP_MUX_N,
+    CMP_MUX_B | CMP_MUX_N,
+    CMP_MUX_A | CMP_MUX_N,
+    0
+};
+
+/* HALL Invert Table*/
+register8_t* const hall_inv_table_ccw[8] = {
+    NULL,
+    &(HALL_PORT.HALL_C_PIN),
+    &(HALL_PORT.HALL_B_PIN),
+    &(HALL_PORT.HALL_A_PIN),
+    &(HALL_PORT.HALL_C_PIN),
+    &(HALL_PORT.HALL_B_PIN),
+    &(HALL_PORT.HALL_A_PIN),
+    NULL
+};
+
+/* HALL Mask Table */
+const uint8_t hall_mask_table_ccw[8] = {
+    0,
+    HALL_MASK_C,
+    HALL_MASK_B,
+    HALL_MASK_A,
+    HALL_MASK_C,
+    HALL_MASK_B,
+    HALL_MASK_A,
+    0
+};
+
+/* ======================== END - Three Phase CCW Direction ================== */
+
+
+/* One Phase (Single Phase) mode tables  */
+
+/* ======================== START - One Phase CW/CCW Direction =================== */
+
 /* Drive Table */
 const split16_t drive_table_sp[5] = {
     {.H8 = 0,        .L8 = 0},
@@ -140,15 +205,18 @@ const uint8_t cmp_mux_table_sp[5] = {
     CMP_MUX_A | CMP_MUX_N,
 };
 
+/* ======================== END - One Phase CW/CCW Direction ===================== */
+
 /* status flags */
 static          bool status_running, command_enabled, hall_enabled, low_speed;
 static volatile motor_status_t status_events;
 
-static          uint8_t  position;
-static volatile fixp16_t actual_amplitude, target_amplitude;
-static volatile uint16_t timerPeriod;
-static volatile uint16_t integrator;
-static          mode_t   drive_mode;
+static          uint8_t     position;
+static volatile fixp16_t    actual_amplitude, target_amplitude;
+static volatile uint16_t    timerPeriod;
+static volatile uint16_t    integrator;
+static          mode_t      drive_mode;
+static          motor_dir_t direction;
 
 /****************************/
 /***** private functions ****/
@@ -481,7 +549,7 @@ uint16_t  Motor_AmplitudeGet(void)
 }
 
 
-void Motor_Start(uint16_t vbus_adc)
+void Motor_Start(uint16_t vbus_adc, motor_dir_t dir)
 {
     if(status_running == true)
         return;  /* already running */
@@ -506,6 +574,7 @@ void Motor_Start(uint16_t vbus_adc)
             low_speed = false;
             initial_sector = CONVERT_ERPM_TO_STMR(MOTOR_INITIAL_SPEED, 1);
         }
+        direction = dir;
         SECTOR_TIMER_COUNTER_SET(0);
         CAPTURE_TIMER_COUNTER_SET(0);
         SECTOR_TIMER_PERIOD_SET(initial_sector);

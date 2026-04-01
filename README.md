@@ -57,14 +57,18 @@ The sensored feedback and synchronization are achieved using the transitions fro
 
 ## Release Notes
 
-Current version 1.4.0 features:
+Current version 1.5.0 features:
 
-- Support for the sensored control using Hall sensors
+- Support for changing motor spinning direction at run time, clockwise (CW) and counter clockwise (CCW), for three-phase motors
+
+Version 1.4.0 features:
+
+- Support for the sensored control using Hall sensors for three-phase motors
 - Updated switching frequency to 47 kHz for the AVR128DA48 platform
 
 Version 1.3.0 features:
 
-- Support for one-phase (single-phase) BLDC and PMSM shaded-pole motors
+- Support for one-phase (single-phase) BLDC and PMSM shaded-pole motors, using the sensorless control with BEMF sensing
 
 Version 1.2.0 features:
 
@@ -527,17 +531,19 @@ The `mcc_mapping.h` files are used to map all the port pins and low-level driver
 
 <br><img src="images/application_flowchart.png">
 
-1. Short-press the button on the MPPB board. The motor starts spinning and enters the Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board.
+1. Short-press the button on the MPPB board. The motor starts spinning in CW direction and enters the Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board or an external PWM-RC.
 2. Short-press the button from MPPB again. The motor decelerates, comes to a complete stop and enters the Idle state. The LED from MPPB turns off.
-3. Long-press the button (more than 1.5s) to restart the application.
-4. If a Fault event occurs, the motor stops, the event is mentioned in the console and the application enters the Idle state. The LED blinks five times signalling the error, then stops.
+3. Short-press the button on the MPPB board. The motor starts spinning in CCW direction and enters the Running state. The LED from MPPB turns on. The speed can be adjusted using the potentiometer present on the MPPB board or an external PWM-RC.
+4. Short-press the button from MPPB again. The motor decelerates, comes to a complete stop and enters the Idle state. The LED from MPPB turns off.
+5. Long-press the button (more than 1.5s) to restart the application.
+6. If a Fault event occurs, the motor stops, the event is mentioned in the console and the application enters the Idle state. The LED blinks five times signalling the error, then stops.
 
 ### Application Programming Interface Functions
 
 <br> The APIs from the Motor Control Stack found in `motor_control.h` are the following:
 
 <br>• <b>`Motor_Initialize()`</b> - Initialization function, needs to be called before any other function
-<br>• <b>`Motor_Start()`</b> - Starts the motor. If the motor is already spinning, the call is ignored
+<br>• <b>`Motor_Start()`</b> - Starts the motor and sets the motor spinning direction. If the motor is already spinning, the call is ignored
 <br>• <b>`Motor_Stop()`</b> - Stops the motor. If the motor is already stopped, the call is ignored
 <br>• <b>`Motor_Fault()`</b> - Stops the motor and then clears the Fault flags. It is registered in the application to be called by the Analog module in case of a fault situation.
 <br>• <b>`Motor_CommandSet()`</b> - Has dual use. For speed regulation mode it receives the value of the target speed. For open-loop mode it receives the value of the drive amplitude (PWM duty cycle).

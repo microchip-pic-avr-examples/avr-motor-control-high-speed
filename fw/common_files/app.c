@@ -160,8 +160,11 @@ void app(void)
             }
             else
             {
-                printf(" Motor Starting");
-                Motor_Start(Analog_Get(ID_VBUS));
+                static motor_dir_t direction = DIR_CW;
+                printf(" Motor Starting %s",(direction == DIR_CW)? "CW":"CCW");
+                Motor_Start(Analog_Get(ID_VBUS), direction);
+                if(direction == DIR_CW) direction = DIR_CCW;
+                else                    direction = DIR_CW;
             }
         }
         

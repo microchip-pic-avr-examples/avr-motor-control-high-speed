@@ -46,12 +46,18 @@ typedef enum
     MOTOR_FAULT_OVERVOLTAGE,
 } motor_fault_t;
 
+typedef enum
+{
+    DIR_CW = 0,
+    DIR_CCW,
+} motor_dir_t;
+
 /*************************************/
 /***** public function prototypes ****/
 /*************************************/
 
 void           Motor_Initialize(void);
-void           Motor_Start(uint16_t vbus_adc);
+void           Motor_Start(uint16_t vbus_adc, motor_dir_t dir);
 void           Motor_Stop(void);
 void           Motor_Fault(motor_fault_t);
 void           Motor_CommandSet(uint16_t ref);
