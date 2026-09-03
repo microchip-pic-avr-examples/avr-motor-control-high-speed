@@ -44,6 +44,12 @@
  * @ingroup adc0
  * @brief Defines the Custom Name pin mapping for channels in @ref adc_channel_t
  */
+#define TEMP ADC0_CHANNEL_AIN28
+
+/**
+ * @ingroup adc0
+ * @brief Defines the Custom Name pin mapping for channels in @ref adc_channel_t
+ */
 #define POT ADC0_CHANNEL_AIN1
 
 /**

@@ -31,6 +31,7 @@ typedef enum
 	ID_VBUS,
 	ID_CRT,
     ID_REF,
+    ID_TEMP,
     ID_MAX,
 } analog_id_t;
 

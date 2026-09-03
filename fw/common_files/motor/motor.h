@@ -35,15 +35,17 @@ typedef enum
     MOTOR_EVENT_OV       = (1 << 3),
     MOTOR_EVENT_UV       = (1 << 4),
     MOTOR_EVENT_OC       = (1 << 5),
+    MOTOR_EVENT_OT       = (1 << 6),
 } motor_status_t;
 
-#define MOTOR_ERROR_FLAGS (MOTOR_EVENT_OC | MOTOR_EVENT_OV | MOTOR_EVENT_FAULT | MOTOR_EVENT_STALL | MOTOR_EVENT_UV)
+#define MOTOR_ERROR_FLAGS (MOTOR_EVENT_OC | MOTOR_EVENT_OV | MOTOR_EVENT_FAULT | MOTOR_EVENT_STALL | MOTOR_EVENT_UV | MOTOR_EVENT_OT)
 
 typedef enum
 {
     MOTOR_NO_FAULT = 0,
     MOTOR_FAULT_OVERCURRENT,
     MOTOR_FAULT_OVERVOLTAGE,
+    MOTOR_FAULT_OVERTEMPERATURE,
 } motor_fault_t;
 
 typedef enum
@@ -57,7 +59,7 @@ typedef enum
 /*************************************/
 
 void           Motor_Initialize(void);
-void           Motor_Start(uint16_t vbus_adc, motor_dir_t dir);
+void           Motor_Start(motor_dir_t dir);
 void           Motor_Stop(void);
 void           Motor_Fault(motor_fault_t);
 void           Motor_CommandSet(uint16_t ref);

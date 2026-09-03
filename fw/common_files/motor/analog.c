@@ -37,12 +37,13 @@ typedef struct
 /** private data */
 static uint8_t  index,  sequencer_idx;
 static analog_emergency_t emergency[ID_MAX];
-static split24_t analog_results[ID_MAX];
+static split_u24_t analog_results[ID_MAX];
+static bool analog_types[ID_MAX];
 static uint8_t  pins_list[ID_MAX];
 static const analog_id_t  analog_sequencer[] = 
 {
     ID_CRT, ID_VBUS, ID_CRT, ID_VBUS,
-    ID_CRT, ID_VBUS, ID_CRT, ID_POT, ID_CRT, ID_REF
+    ID_CRT, ID_VBUS, ID_CRT, ID_POT, ID_CRT, ID_REF, ID_CRT, ID_TEMP
 };
 #define ANALOG_SEQUENCER_MAX  (sizeof(analog_sequencer)/sizeof(analog_id_t))
 
@@ -68,7 +69,7 @@ void Analog_Handler(void)
         index = analog_sequencer[sequencer_idx];
         next_mux = pins_list[index];
 
-        if(ADC_IIR_FILTER == true)
+        if(analog_types[pp_index] == true)
             AdataFilterWrite(pp_index, adc);
         else
             AdataSimpleWrite(pp_index, adc);
@@ -90,10 +91,16 @@ void Analog_Initialize(void)
 {
     memset(analog_results, 0, sizeof(analog_results));
     memset(emergency, 0, sizeof(emergency));
+    analog_types[ID_CRT] = true;
+    analog_types[ID_REF] = true;
+    analog_types[ID_VBUS] = true;
+    analog_types[ID_POT] = true;
+    analog_types[ID_TEMP] = true;
     pins_list[ID_CRT]  = CRT_P_ADC_PIN;
     pins_list[ID_REF]  = CRT_N_ADC_PIN;
     pins_list[ID_VBUS] = VBUS_ADC_PIN;
     pins_list[ID_POT]  = POT_ADC_PIN;
+    pins_list[ID_TEMP]  = TEMP_ADC_PIN;
     index = analog_sequencer[0];
     sequencer_idx = 0;
     ADC_MUX_SET(pins_list[index]);

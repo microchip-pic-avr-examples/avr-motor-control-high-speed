@@ -49,10 +49,11 @@ static void Periodic_MainHandler1(void)
     uint16_t amp   = Motor_AmplitudeGet();
     uint8_t  pot   = ADC_TO_PERCENT(Analog_Get(ID_POT)) + 0.5;
     uint32_t vbus  = ADC_TO_VOLTAGE(Analog_Get(ID_VBUS));
+    uint8_t temp   = ADC_TO_CELSIUS(Analog_Get(ID_TEMP));
     int16_t  crt   = ADC_TO_CURRENT(Analog_Get(ID_CRT), Analog_Get(ID_REF));
     int16_t  ibus  = (int16_t)((int32_t)crt * (uint32_t)amp / (uint32_t)Motor_MaxAmpGet());
     char *mstate   = (motor_state == MOTOR_RUNNING)? "run":"off";
-    PrintEndl(); printf("PwmIn:%03u%% Pot:%03u%% Ampl:%05u e-rpm:%06lu Vbus:%06lumV Ibus:%05dmA Imotor:%05dmA Motor:%s", ipwm, pot, amp, erpm, vbus, ibus, crt, mstate);
+    PrintEndl(); printf("PwmIn:%03u%% Pot:%03u%% Ampl:%05u e-rpm:%06lu Vbus:%06lumV Temp:%03u°C Ibus:%05dmA Imotor:%05dmA Motor:%s", ipwm, pot, amp, erpm, vbus, temp, ibus, crt, mstate);
 }
 
 static void Periodic_MainHandler2(void)
@@ -162,7 +163,7 @@ void app(void)
             {
                 static motor_dir_t direction = DIR_CW;
                 printf(" Motor Starting %s",(direction == DIR_CW)? "CW":"CCW");
-                Motor_Start(Analog_Get(ID_VBUS), direction);
+                Motor_Start(direction);
                 if(direction == DIR_CW) direction = DIR_CCW;
                 else                    direction = DIR_CW;
             }

@@ -37,6 +37,7 @@
 static void (*BEMF_N_InterruptHandler)(void);
 static void (*BEMF_B_InterruptHandler)(void);
 static void (*CRT_P_InterruptHandler)(void);
+static void (*TEMP_InterruptHandler)(void);
 static void (*POT_InterruptHandler)(void);
 static void (*BEMF_A_InterruptHandler)(void);
 static void (*BEMF_C_InterruptHandler)(void);
@@ -81,7 +82,7 @@ void PIN_MANAGER_Initialize()
     PORTA.PIN5CTRL = 0x0;
     PORTA.PIN6CTRL = 0x0;
     PORTA.PIN7CTRL = 0x0;
-    PORTC.PIN0CTRL = 0x0;
+    PORTC.PIN0CTRL = 0x4;
     PORTC.PIN1CTRL = 0x0;
     PORTC.PIN2CTRL = 0x8;
     PORTC.PIN3CTRL = 0x0;
@@ -120,6 +121,7 @@ void PIN_MANAGER_Initialize()
     BEMF_N_SetInterruptHandler(BEMF_N_DefaultInterruptHandler);
     BEMF_B_SetInterruptHandler(BEMF_B_DefaultInterruptHandler);
     CRT_P_SetInterruptHandler(CRT_P_DefaultInterruptHandler);
+    TEMP_SetInterruptHandler(TEMP_DefaultInterruptHandler);
     POT_SetInterruptHandler(POT_DefaultInterruptHandler);
     BEMF_A_SetInterruptHandler(BEMF_A_DefaultInterruptHandler);
     BEMF_C_SetInterruptHandler(BEMF_C_DefaultInterruptHandler);
@@ -179,6 +181,19 @@ void CRT_P_DefaultInterruptHandler(void)
 {
     // add your CRT_P interrupt custom code
     // or set custom function using CRT_P_SetInterruptHandler()
+}
+/**
+  Allows selecting an interrupt handler for TEMP at application runtime
+*/
+void TEMP_SetInterruptHandler(void (* interruptHandler)(void)) 
+{
+    TEMP_InterruptHandler = interruptHandler;
+}
+
+void TEMP_DefaultInterruptHandler(void)
+{
+    // add your TEMP interrupt custom code
+    // or set custom function using TEMP_SetInterruptHandler()
 }
 /**
   Allows selecting an interrupt handler for POT at application runtime
@@ -461,6 +476,10 @@ ISR(PORTA_PORT_vect)
 ISR(PORTC_PORT_vect)
 { 
     // Call the interrupt handler for the callback registered at runtime
+    if(VPORTC.INTFLAGS & PORT_INT0_bm)
+    {
+       TEMP_InterruptHandler(); 
+    }
     if(VPORTC.INTFLAGS & PORT_INT2_bm)
     {
        RX0_InterruptHandler(); 

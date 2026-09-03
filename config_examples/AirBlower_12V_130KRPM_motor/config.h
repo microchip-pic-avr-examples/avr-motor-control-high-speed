@@ -22,9 +22,6 @@
 #ifndef CONFIG_H
 #define	CONFIG_H
 
-/* Analog module settings */
-#define ADC_IIR_FILTER                  true         /* Smoothing filter on ADC functions: POT, VBUS, current */
-
 /* PWM-In settings */
 #define PWM_IN_PERIOD                   (20.0)       /* ms */
 #define PWM_IN_MAX_DCY                  ( 2.0)       /* ms */
@@ -36,23 +33,29 @@
 #define VBUS_DIVIDER                    (16.0)
 #define ANALOG_REFERENCE                (3300.0)     /* mV */
 #define ADC_VBUS_TRIP                   (51000.0)    /* mV - VBUS trip level */
+#define ADC_TEMP_TRIP                   (100.0)      /* *C - ADC temperature trip level */
 #define ADC_CURRENT_TRIP                (22000.0)    /* mA - ADC current trip level */
 #define COMPARATOR_CURRENT_TRIP         (25000.0)    /* mA - Comparator trip level - not used on external-comparator configurations */
 #define FAULT_COMPARATOR_EN             false
 #define BOARD_PHASE_RC_DELAY            (10.0)       /* microseconds - RC filter delay */
 #define BOARD_MOSFET_RDSON              (0.004)      /* ohm - MOSFETs Rds-on resistance */
+#define TEMP_SENSOR_K1                  (400.0)      /* mV - output voltage at 0 *C  */
+#define TEMP_SENSOR_K2                  (19.53)      /* mV / *C   */
 
 /* Motor-specific settings */
 /* Hair Dryer Motor:  supply 12V, 15A limit */
 #define MOTOR_PHASE_ADVANCE             (15.0)       /* Phase advance 0.0 ... 30.0 electrical degrees */
 #define MOTOR_STARTUP_CURRENT           (20000.0)    /* mA - Initial alignment current pulse may be higher than overcurrent protection */
-#define MOTOR_RPP                       (0.15)       /* ohms - Motor resistance measured phase-to-phase */
+#define MOTOR_RPP                       (0.15)       /* ohm - Motor resistance measured phase-to-phase */
 #define MOTOR_OPEN_LOOP_RAMP            (0.0004)     /* Amplitude ramp steepness: step size per millisecond 0.00004 ... 1.0 */
 #define MOTOR_ALIGNMENT_DURATION        (5)          /* ms */
-#define MOTOR_STARTUP_TIME              (250)        /* ms -  Delay until commands (POT or PWM-in) are accepted; '-1' makes commands to be ignored */
-#define MOTOR_STATRUP_SPEED             (15000.0)    /* e-RPM - Specify the initial speed - minimum value is 120 e-RPM*/
+#define MOTOR_STARTUP_TIME              (250)        /* ms - Delay until commands (POT or PWM-in) are accepted; a value of '-1' causes commands to be ignored */
+#define MOTOR_RAMP_START_SPEED          (1000.0)     /* e-RPM - e-RPM - Specifies the initial speed - minimum value is 100 e-RPM */
+#define MOTOR_RAMP_END_SPEED            (15000.0)    /* e-RPM */
+#define MOTOR_RAMP_STEP_SPEED           (5)          /* e-RPM */
 #define HALL_ENABLED                    false        /* Setting to 'true' enables the Hall synchronization, while setting to 'false' enables the BEMF synchronization */
-#define HALL_MISALIGNMENT               (0.0)        /* Hall misalignment 0.0 ... 30.0 electrical degrees */
+#define HALL_MISALIGNMENT_CW            (8.0)        /* Hall misalignment 0.0 ... 90.0 electrical degrees */
+#define HALL_MISALIGNMENT_CCW           (10.0)       /* Hall misalignment 0.0 ... 90.0 electrical degrees */
 #define HALL_INVERTED                   false        /* Sets the Hall pins polarity - 'true' for sensors active in '0' and 'false' for sensors active in '1' */ 
 
 /* Speed regulation specific settings */
@@ -66,9 +69,9 @@
 /* Drive Algorithm settings */
 #define DRIVE_FORCED                    false        /* Setting to 'true' runs the motor without BEMF sensing, only blind drive and no rotor synchronization, which could overheat the motor */
 #define SINGLE_PULSE_MODE               true         /* Setting to 'true' enables the single pulse drive method, while setting to 'false' enables the PWM modulation drive method */
-#define PWM_TO_SP_THRESHOLD             (120000.0)   /* e-RPM  PWM -> Single Pulse transition */
-#define SP_TO_PWM_THRESHOLD             (100000.0)   /* e-RPM  Single Pulse -> PWM transition */
-#define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: higher number - more tolerant to perturbances, but slower detection */
+#define PWM_TO_SP_THRESHOLD             (100000.0)   /* e-RPM  PWM -> Single Pulse transition */
+#define SP_TO_PWM_THRESHOLD             (90000.0)    /* e-RPM  Single Pulse -> PWM transition */
+#define STALL_DETECTION_THRESHOLD       (50)         /* Stall detection tolerance: a higher number leads to more tolerance to perturbances, but slower detection */
 #define STALL_DETECTION_ENABLED         true         /* Setting to 'false' disables the stall detection mechanism */
 #define STALL_MAXIMUM_ERPM              (350000.0)   /* e-RPM - Threshold when the algorithm might lose synchronization */
 #define ONE_PHASE_MODE                  false        /* Setting to 'true' enables the One Phase mode, where only phases A and B are used. Setting to 'false' enables the Three Phase mode, where phases A, B and C are used. */

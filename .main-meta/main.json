@@ -4,27 +4,27 @@
     "content": {
         "metaDataVersion": "1.3.0",
         "name": "com.microchip.mcu8.mplabx.project.avr-motor-control-high-speed",
-        "version": "1.5.0",
+        "version": "1.6.0",
         "displayName": "Motor Control High Speed With AVR� MCUs",
         "projectName": "avr-motor-control-high-speed",
         "shortDescription": "Demo application for a simplified trapezoidal high speed motor control that keeps stability at high count of electrical rotations per minute (> 150 000 Electrical RPM ). For this demo avr16eb32, avr128da48 and atmega4809 platforms are tested.",
         "ide": {
             "name": "MPLAB X",
-            "semverRange": ">=6.30.0"
+            "semverRange": ">=6.35.0"
         },
         "compiler": [
             {
                 "name": "XC8",
-                "semverRange": "^3.10.0"
+                "semverRange": "^4.0.0"
             }
         ],
         "dfp": {
             "name": "AVR-Ex_DFP",
-            "semverRange": "^2.11.221"
+            "semverRange": "^2.12.239"
         },
         "configurator": {
             "name": "MCC",
-            "semverRange": ">=5.8.4"
+            "semverRange": ">=5.9.0"
         },
         "device": {
             "metaDataVersion": "1.0.0",

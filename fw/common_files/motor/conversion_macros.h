@@ -28,13 +28,13 @@
 #include "mcc_mapping.h"
 #include "config.h"
 
-#define ADC_MAX_SCALE                     (float)(Analog_Max())
+#define ADC_MAX_SCALE                     ADC_MAX
 #define DAC_MAX_SCALE                     AC_REF_DAC_MAX
 #define CURRENT_AMPLIFIER_OFFSET          (ANALOG_REFERENCE / 2)
 #define SECTORS_NUMBER                    (ONE_PHASE_MODE ? 4.0 : 6.0)
 
 /* potentiometer conversion formulas to/from percents */
-#define ADC_TO_PERCENT(X)                 (((float)(X) + 0.5) * 100.0 / (ADC_MAX_SCALE + 1))
+#define ADC_TO_PERCENT(X)                 ((float)(X) * 100.0 / (ADC_MAX_SCALE + 1) + 0.5)
 #define PERCENT_TO_ADC(X)                 (uint16_t)((float)(X) * (ADC_MAX_SCALE + 1) / 100.0 + 0.5)
 
 /* voltage conversion formulas to/from millivolts */
@@ -44,14 +44,23 @@
 /* current conversion formulas to/from milliamperes */
 #define ADC_TO_CURRENT(P, N)              ((((float)((P) - (N)) + 0.5) * ANALOG_REFERENCE / (ADC_MAX_SCALE + 1)) / (CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE))
 #define CURRENT_TO_ADC(MA)                (uint16_t)( ((float)(MA) * CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE) * (ADC_MAX_SCALE + 1) / ANALOG_REFERENCE + 0.5)
+/* temperature to Celsius degrees conversion formulas */
+#define ADC_TO_CELSIUS(X)                 ((float)((X) * (ANALOG_REFERENCE / (ADC_MAX_SCALE + 1)) - TEMP_SENSOR_K1) / TEMP_SENSOR_K2)
+#define CELSIUS_TO_ADC(X)                 (uint16_t)(((float)(X) * TEMP_SENSOR_K2 + TEMP_SENSOR_K1) * (ADC_MAX_SCALE + 1) / ANALOG_REFERENCE + 0.5)
 
 /* current conversion formulas to/from milliamperes - reference DAC */
 #define ACREF_TO_CURRENT(X)               ( ((float)(X) * ANALOG_REFERENCE / DAC_MAX_SCALE - CURRENT_AMPLIFIER_OFFSET) / (CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE) )
 #define CURRENT_TO_ACREF(X)               (uint8_t)( ((float)(X) * CURRENT_AMPLIFIER_GAIN * CURRENT_SHUNT_RESISTANCE + CURRENT_AMPLIFIER_OFFSET) * DAC_MAX_SCALE / ANALOG_REFERENCE + 0.5)
 
 /* conversion macros from/into float e-rpm value into/from 16-bit sector timer value (60 sec in a minute, 4/6 sectors per rev) */
-#define CONVERT_ERPM_TO_STMR(ERPM, DIV)   (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV)) / (SECTORS_NUMBER * (float)(ERPM)) - 0.5) // DIV = 1 or DIV_LOW_SPEED from mcc_mapping.h, corresponding to 24M/20M or 40 kHz
-#define CONVERT_STMR_TO_ERPM(STMR, DIV)   (60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV)) / (SECTORS_NUMBER * ((float)(STMR) + 1)))
+/* DIV_HIGH_SPEED = 1 or DIV_LOW_SPEED = 512 from mcc_mapping.h, corresponding to 24M/20M or 40 kHz */
+#define CONVERT_ERPM_TO_STMR_H(ERPM)   (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV_HIGH_SPEED)) / (SECTORS_NUMBER * (float)(ERPM)) - 0.5)
+#define CONVERT_STMR_TO_ERPM_H(STMR)   (60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV_HIGH_SPEED)) / (SECTORS_NUMBER * ((float)(STMR) + 1)))
+#define CONVERT_ERPM_TO_STMR_L(ERPM)   (uint16_t)(60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV_LOW_SPEED)) / (SECTORS_NUMBER * (float)(ERPM)) - 0.5)
+#define CONVERT_STMR_TO_ERPM_L(STMR)   (60.0 * (SECTOR_TIMER_FREQUENCY / (float)(DIV_LOW_SPEED)) / (SECTORS_NUMBER * ((float)(STMR) + 1)))
+
+#define CONVERT_ERPM_TO_STMR(ERPM)   ({uint16_t retval; if(low_speed) retval = CONVERT_ERPM_TO_STMR_L(ERPM); else retval = CONVERT_ERPM_TO_STMR_H(ERPM); retval;})
+#define CONVERT_STMR_TO_ERPM(STMR)   ({float retval; if(low_speed) retval = CONVERT_STMR_TO_ERPM_L(STMR); else retval = CONVERT_STMR_TO_ERPM_H(STMR); retval;})
 
 /* conversion macros from/into microseconds into/from clocks count */
 #define CONVERT_US_TO_CLKS(US)            (uint16_t)((US) * (F_CPU) / 1000000.0 + 0.5)
@@ -78,7 +87,17 @@ typedef union
         uint16_t  H16;
     };
     uint24_t  W24;
-} split24_t;
+} split_u24_t;
+
+typedef union
+{
+    struct
+    {
+        uint8_t   L8;
+        int16_t  H16;
+    };
+    int24_t  W24;
+} split_i24_t;
 
 typedef union
 {

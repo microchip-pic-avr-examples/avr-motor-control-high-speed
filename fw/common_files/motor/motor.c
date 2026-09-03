@@ -24,15 +24,16 @@
 #include "conversion_macros.h"
 #include "precise_delay.h"
 #include "motor.h"
+#include "ramp.h"
 #include "mcc_mapping.h"
 #include "config.h"
 
 /****************************/
 /*** internal definitions ***/
 /****************************/
-#define U16_TSECT_OFF              ((uint16_t)(-1))
-#define MAX_AMP_GET                FLOAT_TO_FIXP16(1.0)
-#define MIN_AMP_GET                ((int24_t)(0))
+#define U16_TSECT_OFF           (uint16_t)(-1)
+#define MAX_AMP_GET             FLOAT_TO_FIXP16(1.0)
+#define MIN_AMP_GET             ((int24_t)(0))
 
 #define DRIVE_OFF               ((split16_t){.H8 = 0,        .L8 = 0})
 #define DRIVE_ALIGN_3P          ((split16_t){.H8 = DRIVE_BH, .L8 = DRIVE_AL | DRIVE_CL})
@@ -48,14 +49,15 @@
 #define ONE_PHASE_CONDITION     (ONE_PHASE_MODE ? (position & 1) : true)
 #define CMP_INV_MASK            (ONE_PHASE_MODE ? 0 : (position & 1))
 #define HALL_INV_TABLE		    ((direction == DIR_CW) ? hall_inv_table_cw : hall_inv_table_ccw)
+#define HALL_MISALIGNMENT       ((direction == DIR_CW) ? HALL_MISALIGNMENT_CW : HALL_MISALIGNMENT_CCW)
 #define EVEN_HALL_SECT          ((HALL_INVERTED == true) ? 0 : HALL_INVERT)
 #define ODD_HALL_SECT           ((HALL_INVERTED == true) ? HALL_INVERT : 0)
 #define HALL_INV_MASK           ((position & 1) ? ODD_HALL_SECT : EVEN_HALL_SECT)
 #define CAPTURE_CNT_RESET       ((low_speed == false) ? 48 : 0)
-#define LOW_SPEED_MODE          ((MOTOR_STATRUP_SPEED > CONVERT_STMR_TO_ERPM(U16_TSECT_OFF, 1)) ? false : true)
+#define LOW_SPEED_MODE          ((MOTOR_RAMP_START_SPEED > CONVERT_STMR_TO_ERPM_H(U16_TSECT_OFF)) ? false : true)
 #define MOTOR_MIN_SPEED         (500.0) // e-RPM
-#define MOTOR_INITIAL_SPEED     ((MOTOR_STATRUP_SPEED < MOTOR_MIN_SPEED) ? MOTOR_MIN_SPEED : MOTOR_STATRUP_SPEED) // e-RPM
-#define CAPTURE_PER_RESET       ((HALL_ENABLED == true) ? CONVERT_ERPM_TO_STMR(MOTOR_MIN_SPEED, DIV_LOW_SPEED) : U16_TSECT_OFF)
+#define MOTOR_INITIAL_SPEED     ((MOTOR_RAMP_START_SPEED < MOTOR_MIN_SPEED) ? MOTOR_MIN_SPEED : MOTOR_RAMP_START_SPEED) // e-RPM
+#define CAPTURE_PER_RESET       ((low_speed == true) ? CONVERT_ERPM_TO_STMR_L(MOTOR_MIN_SPEED) : U16_TSECT_OFF)
 #define LOW_TO_HIGH_SP_TH       (4800.0) // e-RPM
 #define HIGH_TO_LOW_SP_TH       (4000.0) // e-RPM
 
@@ -78,62 +80,10 @@ typedef enum
 
 /* Three Phase mode tables */
 
-/* ======================== START - Three Phase CW Direction ================= */
+/* ======================== START - Three Phase CW Direction ================ */
 
 /* Drive Table */
 const split16_t drive_table_cw[8] = {
-    {.H8 = 0,        .L8 = 0},
-    {.H8 = DRIVE_BH, .L8 = DRIVE_CL}, // A float
-    {.H8 = DRIVE_AH, .L8 = DRIVE_CL}, // B float
-    {.H8 = DRIVE_AH, .L8 = DRIVE_BL}, // C float
-    {.H8 = DRIVE_CH, .L8 = DRIVE_BL}, // A float
-    {.H8 = DRIVE_CH, .L8 = DRIVE_AL}, // B float
-    {.H8 = DRIVE_BH, .L8 = DRIVE_AL}, // C float
-    {.H8 = 0,        .L8 = 0},
-};
-
-/* MUX Table */
-const uint8_t cmp_mux_table_cw[8] = {
-    0,
-    CMP_MUX_A | CMP_MUX_N,
-    CMP_MUX_B | CMP_MUX_N,
-    CMP_MUX_C | CMP_MUX_N,
-    CMP_MUX_A | CMP_MUX_N,
-    CMP_MUX_B | CMP_MUX_N,
-    CMP_MUX_C | CMP_MUX_N,
-    0
-};
-
-/* HALL Invert Table*/
-register8_t* const hall_inv_table_cw[8] = {
-    NULL,
-    &(HALL_PORT.HALL_C_PIN),
-    &(HALL_PORT.HALL_A_PIN),
-    &(HALL_PORT.HALL_B_PIN),
-    &(HALL_PORT.HALL_C_PIN),
-    &(HALL_PORT.HALL_A_PIN),
-    &(HALL_PORT.HALL_B_PIN),
-    NULL
-};
-
-/* HALL Mask Table */
-const uint8_t hall_mask_table_cw[8] = {
-    0,
-    HALL_MASK_C,
-    HALL_MASK_A,
-    HALL_MASK_B,
-    HALL_MASK_C,
-    HALL_MASK_A,
-    HALL_MASK_B,
-    0
-};
-
-/* ======================== END - Three Phase CW Direction =================== */
-
-/* ======================== START - Three Phase CCW Direction ================ */
-
-/* Drive Table */
-const split16_t drive_table_ccw[8] = {
     {.H8 = 0,        .L8 = 0},
     {.H8 = DRIVE_BH, .L8 = DRIVE_AL}, // A float
     {.H8 = DRIVE_CH, .L8 = DRIVE_AL}, // B float
@@ -145,7 +95,7 @@ const split16_t drive_table_ccw[8] = {
 };
 
 /* MUX Table */
-const uint8_t cmp_mux_table_ccw[8] = {
+const uint8_t cmp_mux_table_cw[8] = {
     0,
     CMP_MUX_C | CMP_MUX_N,
     CMP_MUX_B | CMP_MUX_N,
@@ -157,31 +107,82 @@ const uint8_t cmp_mux_table_ccw[8] = {
 };
 
 /* HALL Invert Table*/
+register8_t* const hall_inv_table_cw[8] = {
+    NULL,
+    &(HALL_PORT.HALL_A_PIN),
+    &(HALL_PORT.HALL_C_PIN),
+    &(HALL_PORT.HALL_B_PIN),
+    &(HALL_PORT.HALL_A_PIN),
+    &(HALL_PORT.HALL_C_PIN),
+    &(HALL_PORT.HALL_B_PIN),
+    NULL
+};
+
+/* HALL Mask Table */
+const uint8_t hall_mask_table_cw[8] = {
+    0,
+    HALL_MASK_A,
+    HALL_MASK_C,
+    HALL_MASK_B,
+    HALL_MASK_A,
+    HALL_MASK_C,
+    HALL_MASK_B,
+    0
+};
+
+/* ======================== END - Three Phase CW Direction ================== */
+
+/* ======================== START - Three Phase CCW Direction ================= */
+
+/* Drive Table */
+const split16_t drive_table_ccw[8] = {
+    {.H8 = 0,        .L8 = 0},
+    {.H8 = DRIVE_BH, .L8 = DRIVE_CL}, // A float
+    {.H8 = DRIVE_AH, .L8 = DRIVE_CL}, // B float
+    {.H8 = DRIVE_AH, .L8 = DRIVE_BL}, // C float
+    {.H8 = DRIVE_CH, .L8 = DRIVE_BL}, // A float
+    {.H8 = DRIVE_CH, .L8 = DRIVE_AL}, // B float
+    {.H8 = DRIVE_BH, .L8 = DRIVE_AL}, // C float
+    {.H8 = 0,        .L8 = 0},
+};
+
+/* MUX Table */
+const uint8_t cmp_mux_table_ccw[8] = {
+    0,
+    CMP_MUX_A | CMP_MUX_N,
+    CMP_MUX_B | CMP_MUX_N,
+    CMP_MUX_C | CMP_MUX_N,
+    CMP_MUX_A | CMP_MUX_N,
+    CMP_MUX_B | CMP_MUX_N,
+    CMP_MUX_C | CMP_MUX_N,
+    0
+};
+
+/* HALL Invert Table*/
 register8_t* const hall_inv_table_ccw[8] = {
     NULL,
-    &(HALL_PORT.HALL_C_PIN),
-    &(HALL_PORT.HALL_B_PIN),
     &(HALL_PORT.HALL_A_PIN),
-    &(HALL_PORT.HALL_C_PIN),
     &(HALL_PORT.HALL_B_PIN),
+    &(HALL_PORT.HALL_C_PIN),
     &(HALL_PORT.HALL_A_PIN),
+    &(HALL_PORT.HALL_B_PIN),
+    &(HALL_PORT.HALL_C_PIN),
     NULL
 };
 
 /* HALL Mask Table */
 const uint8_t hall_mask_table_ccw[8] = {
     0,
-    HALL_MASK_C,
-    HALL_MASK_B,
     HALL_MASK_A,
-    HALL_MASK_C,
     HALL_MASK_B,
+    HALL_MASK_C,
     HALL_MASK_A,
+    HALL_MASK_B,
+    HALL_MASK_C,
     0
 };
 
-/* ======================== END - Three Phase CCW Direction ================== */
-
+/* ======================== END - Three Phase CCW Direction =================== */
 
 /* One Phase (Single Phase) mode tables  */
 
@@ -208,15 +209,14 @@ const uint8_t cmp_mux_table_sp[5] = {
 /* ======================== END - One Phase CW/CCW Direction ===================== */
 
 /* status flags */
-static          bool status_running, command_enabled, hall_enabled, low_speed;
-static volatile motor_status_t status_events;
-
-static          uint8_t     position;
-static volatile fixp16_t    actual_amplitude, target_amplitude;
-static volatile uint16_t    timerPeriod;
-static volatile uint16_t    integrator;
-static          mode_t      drive_mode;
-static          motor_dir_t direction;
+static          bool            status_running, command_enabled, low_speed, drive_forced;
+static volatile motor_status_t  status_events;
+static          uint8_t         position;
+static volatile fixp16_t        actual_amplitude, target_amplitude, start_amplitude;
+static volatile uint16_t        timerPeriod;
+static volatile uint24_t        integrator;
+static          mode_t          drive_mode;
+static          motor_dir_t     direction;
 
 /****************************/
 /***** private functions ****/
@@ -357,14 +357,14 @@ static inline void  __Motor_StallHandler(stall_ev_t ev)
         switch(ev)
         {
             case STALL_NONE:     if(stall_counter) stall_counter--;  break;
-            case STALL_TOO_LATE: stall_counter++; if(stall_counter > STALL_DETECTION_THRESHOLD) {__ShutOff(); status_events |= MOTOR_EVENT_STALL; } break;
+            case STALL_TOO_LATE: stall_counter++; if(stall_counter > STALL_DETECTION_THRESHOLD) {__ShutOff(); status_events |= MOTOR_EVENT_STALL;} break;
             case STALL_TOO_FAST: __ShutOff(); status_events |= MOTOR_EVENT_STALL; break;
         }
     }
 }
 
 /* x is a constant between 0 .... 30 electrical degrees */
-static inline uint16_t __Phase_Advance(float x, uint16_t y)    { split24_t ph; ph.W24 = (uint24_t)(256.0 * (x) / 60.0) * (y); return ph.H16; }
+static inline uint16_t __Phase_Advance(float x, uint16_t y)    { split_u24_t ph; ph.W24 = (uint24_t)(256.0 * (x) / 60.0) * (y); return ph.H16; }
 
 static inline void __PWM_SP_Switch(void)
 {
@@ -383,7 +383,7 @@ static inline void __PWM_SP_Switch(void)
 
 static inline void __Clock_Switch(void)
 {
-    if((timerPeriod < CONVERT_ERPM_TO_STMR(LOW_TO_HIGH_SP_TH, DIV_LOW_SPEED)) && (low_speed == true))
+    if((timerPeriod < CONVERT_ERPM_TO_STMR_L(LOW_TO_HIGH_SP_TH)) && (low_speed == true))
     {
         LOW_SPEED_DISABLE();
         timerPeriod <<= DIV_SHIFT;
@@ -392,7 +392,7 @@ static inline void __Clock_Switch(void)
         SECTOR_TIMER_COUNTER_SET(0);
         CAPTURE_TIMER_COUNTER_SET(0);
     }
-    if((timerPeriod > CONVERT_ERPM_TO_STMR(HIGH_TO_LOW_SP_TH, 1)) && (low_speed == false))
+    if((timerPeriod > CONVERT_ERPM_TO_STMR_H(HIGH_TO_LOW_SP_TH)) && (low_speed == false))
     {
         LOW_SPEED_ENABLE();
         timerPeriod >>= DIV_SHIFT;
@@ -421,7 +421,7 @@ static inline void  __Sector_Changer(void)
                 per = SECTOR_TIMER_PERIOD_GET() << PERIOD_SHIFT;
             }
 		}
-        if((HALL_ENABLED) && (hall_enabled))
+        if(HALL_ENABLED)
         {
             HALL_MASK_SET(HALL_MASK_TABLE[position]);
             HALL_INV_SET(HALL_INV_TABLE[position], HALL_INV_MASK); /* hall pins are inverted alternatively */
@@ -432,33 +432,34 @@ static inline void  __Sector_Changer(void)
             COMP_INVERT(CMP_INV_MASK);  /* comparator's output is inverted alternatively */
         }
         position++; if(position == MAX_POSITION) position = 1;
-        if((DRIVE_FORCED == false) && (ONE_PHASE_CONDITION))
+        if((drive_forced == false) && (ONE_PHASE_CONDITION))
         {
             uint16_t setValue;
-            if((HALL_ENABLED) && (hall_enabled))
+            if(HALL_ENABLED)
                 setValue = __Phase_Advance(MOTOR_PHASE_ADVANCE + HALL_MISALIGNMENT, timerPeriod);
             else
                 setValue = __Phase_Advance(MOTOR_PHASE_ADVANCE + 30.0, timerPeriod) + CONVERT_US_TO_CLKS(BOARD_PHASE_RC_DELAY);     
             int24_t deltaValue = (int24_t)capValue - (int24_t)setValue;
 
-            uint24_t tmp = (uint24_t)integrator + (deltaValue >> 4);
-            if(tmp > U16_TSECT_OFF) integrator = U16_TSECT_OFF;
-            else                    integrator = tmp;
+            split_u24_t tmp;
+            tmp.W24 = integrator + (deltaValue << 3);
+            if(tmp.W24 > (U16_TSECT_OFF *256L)) integrator = (U16_TSECT_OFF *256L);
+            else                                integrator = tmp.W24;
 
-            tmp = (uint24_t)integrator + (deltaValue >> 2);
-            if(tmp > U16_TSECT_OFF) timerPeriod = U16_TSECT_OFF;
-            else                    timerPeriod = tmp;
+            tmp.W24 = integrator + (deltaValue << 6);
+            if(tmp.W24 > (U16_TSECT_OFF *256L)) tmp.W24 = (U16_TSECT_OFF *256L);
+            timerPeriod = tmp.H16;
 
             if(STALL_DETECTION_ENABLED)
             {
-                if((timerPeriod < CONVERT_ERPM_TO_STMR(STALL_MAXIMUM_ERPM, 1)) && (low_speed == false))
+                if((timerPeriod < CONVERT_ERPM_TO_STMR_H(STALL_MAXIMUM_ERPM)) && (low_speed == false))
                     __Motor_StallHandler(STALL_TOO_FAST);
                 if(capValue == U16_TSECT_OFF)
                     __Motor_StallHandler(STALL_TOO_LATE);
             }
-            if((LOW_SPEED_MODE) || (HALL_ENABLED)) __Clock_Switch();
-            SECTOR_TIMER_PERIOD_SET(timerPeriod);
         }
+        __Clock_Switch();
+        SECTOR_TIMER_PERIOD_SET(timerPeriod);
         PWM_TIMER_DCY_SET(fmul_FP16xU16(actual_amplitude, per));
         __Speed_Count();
     }
@@ -549,31 +550,33 @@ uint16_t  Motor_AmplitudeGet(void)
 }
 
 
-void Motor_Start(uint16_t vbus_adc, motor_dir_t dir)
+void Motor_Start(motor_dir_t dir)
 {
     if(status_running == true)
         return;  /* already running */
+	__ShutOff();
+    drive_forced = true;
     __Speed_Reset();
+    uint16_t vbus_adc = Analog_Get(ID_VBUS);
     if(vbus_adc < VOLTAGE_TO_ADC(MOTOR_STARTUP_CURRENT * (MOTOR_RPP + 2*BOARD_MOSFET_RDSON + CURRENT_SHUNT_RESISTANCE)))
         status_events |= MOTOR_EVENT_UV;
     else
     {
         uint16_t start_amp = (uint16_t)(MOTOR_STARTUP_CURRENT * (float)FLOAT_TO_FIXP16(1.0) * (MOTOR_RPP + 2*BOARD_MOSFET_RDSON + CURRENT_SHUNT_RESISTANCE) / ADC_TO_VOLTAGE(vbus_adc));
-        ATOMIC_COPY(target_amplitude, start_amp);
-        ATOMIC_COPY(actual_amplitude, start_amp);
+        ATOMIC_COPY(target_amplitude, start_amp / 2);
+        ATOMIC_COPY(actual_amplitude, start_amp / 2);
         uint16_t initial_sector;
         if(LOW_SPEED_MODE == true)
         {
             LOW_SPEED_ENABLE();
             low_speed = true;
-            initial_sector = CONVERT_ERPM_TO_STMR(MOTOR_INITIAL_SPEED, DIV_LOW_SPEED);
         }
         else
         {
             LOW_SPEED_DISABLE();
             low_speed = false;
-            initial_sector = CONVERT_ERPM_TO_STMR(MOTOR_INITIAL_SPEED, 1);
         }
+        initial_sector = CONVERT_ERPM_TO_STMR(MOTOR_INITIAL_SPEED);
         direction = dir;
         SECTOR_TIMER_COUNTER_SET(0);
         CAPTURE_TIMER_COUNTER_SET(0);
@@ -581,24 +584,34 @@ void Motor_Start(uint16_t vbus_adc, motor_dir_t dir)
         CAPTURE_TIMER_PERIOD_SET(initial_sector);
         PWM_TIMER_PERIOD_SET(PWM_PERIOD);
         PWM_TIMER_DCY_SET(fmul_FP16xU16(actual_amplitude, PWM_PERIOD));
-        timerPeriod = initial_sector;
-        integrator = initial_sector;
         __Motor_StallHandler(STALL_NONE); /* clear any previous stall flag */
         status_running = true;
         drive_mode = PWM_MODE;
-        if(HALL_ENABLED) hall_enabled = true;
-        else             hall_enabled = false;
-        __Align();
-        if(REGULATOR_SPEED_EN == true)
-        {
-            __Speed_Control(true); /* initialize speed regulator */
-        }
         if(FAULT_COMPARATOR_EN == true)
         {
             CURRENT_TRIP_SetInterruptHandler(__Current_Trip_Handler);
         }
+        __Align();
+        ATOMIC_COPY(target_amplitude, start_amp);
+        ATOMIC_COPY(actual_amplitude, start_amp);
+        if(REGULATOR_SPEED_EN == true)
+        {
+            __Speed_Control(true); /* initialize speed regulator */
+        }
+        ATOMIC_COPY(timerPeriod, initial_sector);
         SECTOR_TIMER_START();
-
+        ramp_t speed;
+        uint16_t ramp_steps = (uint16_t)((MOTOR_RAMP_END_SPEED - MOTOR_RAMP_START_SPEED) / MOTOR_RAMP_STEP_SPEED);
+        Ramp_Init((uint16_t)MOTOR_RAMP_START_SPEED, (uint16_t)MOTOR_RAMP_END_SPEED, ramp_steps, &speed);     
+        do
+        {
+            uint16_t tmr = CONVERT_ERPM_TO_STMR(Ramp_Get(&speed));
+            ATOMIC_COPY(timerPeriod, tmr);
+            PRECISE_DELAY_MS(1);
+        } while(speed.is_done == false);
+        ATOMIC_COPY(timerPeriod, CONVERT_ERPM_TO_STMR(MOTOR_RAMP_END_SPEED));
+        ATOMIC_COPY(integrator, timerPeriod * 256L);
+        drive_forced = DRIVE_FORCED;
         if(MOTOR_STARTUP_TIME != -1)
         {
             PRECISE_DELAY_MS(MOTOR_STARTUP_TIME);
@@ -622,6 +635,8 @@ void  Motor_Fault(motor_fault_t event)
         status_events |= MOTOR_EVENT_OC;
     if(event == MOTOR_FAULT_OVERVOLTAGE)
         status_events |= MOTOR_EVENT_OV;
+    if(event == MOTOR_FAULT_OVERTEMPERATURE)
+        status_events |= MOTOR_EVENT_OT;
 }
 
 
@@ -639,6 +654,7 @@ uint16_t Motor_MaxAmpGet(void)
 {
     return FLOAT_TO_FIXP16(1.0);
 }
+
 
 /* this function has to be called once every 1 ms, on interrupt context */
 void  Motor_TimeTick(void)
