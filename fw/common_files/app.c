@@ -123,6 +123,7 @@ void app(void)
     PRECISE_DELAY_MS(1000); /* delay required for analog engine to perform measurements */
     
     Analog_EmergencyStop_Register(ID_VBUS, Motor_Fault, VOLTAGE_TO_ADC(ADC_VBUS_TRIP),                         MOTOR_FAULT_OVERVOLTAGE);
+    Analog_EmergencyStop_Register(ID_TEMP,  Motor_Fault, CELSIUS_TO_ADC(ADC_TEMP_TRIP),                        MOTOR_FAULT_OVERTEMPERATURE);
     Analog_EmergencyStop_Register(ID_CRT,  Motor_Fault, CURRENT_TO_ADC(ADC_CURRENT_TRIP) + Analog_Get(ID_REF), MOTOR_FAULT_OVERCURRENT);
 
     PrintEndl(); printf("%s%s", buildString, platformString);
@@ -146,6 +147,8 @@ void app(void)
                 printf("Motor ADC OverVoltage");
             if(motor_events & MOTOR_EVENT_UV)
                 printf("Supply UnderVoltage");
+            if(motor_events & MOTOR_EVENT_OT)
+                printf("Motor ADC OverTemperature");
             motor_events = 0;
         }
         
